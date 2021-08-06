@@ -1,0 +1,40 @@
+<html>
+
+<head>
+    <script src="jquery-3.6.0.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#page-image').mousemove(function(e) {
+                $('#status').val(e.pageX + ', ' + e.pageY);
+            });
+
+            const canvas = $('#canvi')[0]; // 
+
+            //canvas.width = 800;
+            //canvas.height = 600;
+
+            //const canvas = document.getElementById("canvi");
+
+            const context = canvas.getContext('2d');
+
+            const image = new Image();
+
+            image.src = "featured-image-backyard-landscaping.jpeg"; // can also be a remote URL e.g. http://
+
+            image.onload = function() {
+                canvas.height = image.height;
+                canvas.width = image.width;
+
+                context.drawImage(image, 0, 0);
+            };
+        })
+    </script>
+</head>
+
+<body>
+    <input type="text" id="status" />
+    <!--<img id="page-image" src="featured-image-backyard-landscaping.jpeg" alt="featured-image-backyard-landscaping.jpeg">-->
+    <canvas id="canvi" />
+</body>
+
+</html>
