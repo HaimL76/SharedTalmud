@@ -5,36 +5,90 @@
     <script>
         $(document).ready(function() {
             $('#page-image').mousemove(function(e) {
-                $('#status').val(e.pageX + ', ' + e.pageY);
+                $('#dynamic-status').val(e.pageX + ', ' + e.pageY + ', ' + $('#page-image').position().left);
             });
 
-            const canvas = $('#canvi')[0]; // 
+            $("#page-image").dblclick(function(e) {
+                $('#static-status').val(e.pageX + ', ' + e.pageY);
 
-            //canvas.width = 800;
-            //canvas.height = 600;
+                insert();
+            });
 
-            //const canvas = document.getElementById("canvi");
+            const insert = function() {
+                //alert("Hello, world!");
 
-            const context = canvas.getContext('2d');
+                $.ajax({
+                    type: "GET",
+                    url: "http://localhost:3000/",
+                    success: function(data) {
+                        console.log(data.toString);
 
-            const image = new Image();
-
-            image.src = "featured-image-backyard-landscaping.jpeg"; // can also be a remote URL e.g. http://
-
-            image.onload = function() {
-                canvas.height = image.height;
-                canvas.width = image.width;
-
-                context.drawImage(image, 0, 0);
+                        alert(JSON.stringify(data));
+                    }
+                });
             };
+            /*
+                        const canvas = $('#canvi')[0]; // 
+
+                        //canvas.width = 800;
+                        //canvas.height = 600;
+
+                        //const canvas = document.getElementById("canvi");
+
+                        const context = canvas.getContext('2d');
+
+                        const image = new Image();
+
+                        image.src = "featured-image-backyard-landscaping.jpeg"; // can also be a remote URL e.g. http://
+
+                        image.onload = function() {
+                            canvas.height = image.height;
+                            canvas.width = image.width;
+
+                            context.drawImage(image, 0, 0);
+                        };
+                        */
         })
     </script>
 </head>
+<style>
+    /*
+    #page-image {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+    }
+    
+    input[type=text] {
+        position: absolute;
+        top: 500px;
+    }
+    */
+    
+    .super-container {
+        display: flex;
+        flex-direction: row;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+    }
+    
+    .container {
+        display: flex;
+        flex-direction: column;
+    }
+</style>
 
 <body>
-    <input type="text" id="status" />
-    <!--<img id="page-image" src="featured-image-backyard-landscaping.jpeg" alt="featured-image-backyard-landscaping.jpeg">-->
-    <canvas id="canvi" />
+    <div class="super-container">
+        <input type="text" id="dynamic-status" />
+        <input type="text" id="static-status" />
+
+        <div class="container">
+            <img id="page-image" src="featured-image-backyard-landscaping.jpeg" alt="featured-image-backyard-landscaping.jpeg">
+        </div>
+    </div>
+    <!--<canvas id="canvi" />-->
 </body>
 
 </html>
