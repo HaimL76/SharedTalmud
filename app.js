@@ -27,22 +27,27 @@ app.get('/', (req, res) => {
 
     connection.on('connect', function(err) {
         // If no error, then good to proceed.  
-        console.log("Connected");
 
-        executeStatement1();
+        executeStatement1(connection);
     });
 
     connection.connect();
 });
 
-function executeStatement1() {
-    console.log("lalaluliu");
+function executeStatement1(connection) {
+    var Request = require('tedious').Request
 
-    request = new Request("insert into SharedTalmud.Comments (ResId, Row, Col) values(1, 1, 1));", function(err) {
+    request = new Request("insert into SharedTalmud.Comments (ResId, Row, Col) values(1, 1, 1);", function(err) {
         if (err) {
             console.log(err);
         }
     });
+
+    request.on("requestCompleted", function(rowCount, more) {
+        connection.close();
+    });
+
+    connection.execSql(request);
 }
 
 app.listen(port, () => {
