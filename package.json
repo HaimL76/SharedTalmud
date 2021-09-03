@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/HaimL76/SharedTalmud#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mssql": "^7.2.1"
   }
 }
