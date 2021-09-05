@@ -11,14 +11,26 @@ app.use(function(req, res, next) {
 app.get('/', (req, res) => {
     var sql = require("mssql");
 
-    var Connection = require('tedious').Connection;
+    const Connection = require('tedious').Connection;
 
     // config for your database
-    var config = {
+    let config0 = {
         user: 'sa',
         password: 'sa',
         server: 'localhost',
         database: 'SharedTalmud'
+    };
+
+    var config = {
+        server: "localhost",
+        authentication: {
+            type: "default",
+            options: {
+                userName: "sa",
+                password: "sa",
+            }
+        },
+        database: "SharedTalmud"
     };
 
     var connection = new Connection(config);
@@ -27,6 +39,8 @@ app.get('/', (req, res) => {
 
     connection.on('connect', function(err) {
         // If no error, then good to proceed.  
+        if (err)
+            console.log(JSON.stringify(err))
 
         executeStatement1(connection);
     });
@@ -37,9 +51,9 @@ app.get('/', (req, res) => {
 function executeStatement1(connection) {
     var Request = require('tedious').Request
 
-    request = new Request("insert into SharedTalmud.Comments (ResId, Row, Col) values(1, 1, 1);", function(err) {
+    request = new Request("insert into [SharedTalmud].[dbo].[Comments] (ResId, Row, Col) values(1, 1, 1);", function(err) {
         if (err) {
-            console.log(err);
+            console.log(JSON.stringify(err));
         }
     });
 
