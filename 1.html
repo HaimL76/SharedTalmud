@@ -5,21 +5,33 @@
     <script>
         $(document).ready(function() {
             $('#page-image').mousemove(function(e) {
-                $('#dynamic-status').val(e.pageX + ', ' + e.pageY + ', ' + $('#page-image').position().left);
+                const left = $("#page-image").position().left;
+                const top = $("#page-image").position().top;
+
+                row = e.pageY - top;
+                col = e.pageX - left;
+
+                $('#dynamic-status').val(col + ', ' + row);
             });
 
             $("#page-image").dblclick(function(e) {
-                $('#static-status').val(e.pageX + ', ' + e.pageY);
+                const left = $("#page-image").position().left;
+                const top = $("#page-image").position().top;
 
-                insert();
+                row = e.pageY - top;
+                col = e.pageX - left;
+
+                $('#static-status').val(col + ', ' + row);
+
+                insert(row, col);
             });
 
-            const insert = function() {
+            const insert = function(row, col) {
                 //alert("Hello, world!");
 
                 $.ajax({
-                    type: "GET",
-                    url: "http://localhost:3000/",
+                    type: "POST",
+                    url: `http://localhost:3000/${row}/${col}`,
                     success: function(data) {
                         console.log(data.toString);
 
