@@ -39,8 +39,10 @@ app.get('/', (req, res) => {
 });
 
 app.post('/:row/:col', (req, res) => {
-    if (req && params in req)
+    if (req && 'params' in req)
         console.log(JSON.stringify(req.params));
+
+    const { row, col } = req.params;
 
     var sql = require("mssql");
 
