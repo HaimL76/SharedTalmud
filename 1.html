@@ -2,8 +2,20 @@
 
 <head>
     <script src="jquery-3.6.0.js"></script>
+    <script type='text/javascript' src='timedFunctions.js'></script>
     <script>
         $(document).ready(function() {
+            const pageImage = new Image;
+            pageImage.src = 'featured-image-backyard-landscaping.jpeg';
+            const topOpacity = 10;
+            const interval = 250; //ms
+
+            let countDown;
+
+            let timestamp;
+
+            let centerX, centerY, radius = 55;
+
             //var design = $(this).attr('data-design');
             //var id = $(this).attr('id');
             var canvas = $("#page-image")[0];
@@ -39,39 +51,72 @@
 
                 insert(row, col);
 
-                let i = 10;
+                centerX = col;
+                centerY = row;
 
-                const centerX = col;
-                const centerY = row;
+                countDown = topOpacity;
+                timestamp = Date.now();
 
-                var myInterval = setInterval(() => {
-                        var canvas = $("#page-image")[0];
-                        const context = canvas.getContext('2d');
-                        //const centerX = canvas.width / 2;
-                        //const centerY = canvas.height / 2;
-
-                        //context.clearRect(0, 0, canvas.width, canvas.height);
-
-                        const radius = 70;
-
-                        alpha = (i / 10) * 255;
-                        i--;
-
-                        str_rgba = `rgba(0, 255, 255, ${alpha})`;
-
-                        context.beginPath();
-                        context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-                        context.fillStyle = str_rgba;
-                        context.fill();
-                        context.lineWidth = 5;
-                        context.strokeStyle = '#003300';
-                        context.stroke();
-
-                        if (i < 1)
-                            clearInterval(myInterval);
-                    },
-                    1000);
+                window.requestAnimationFrame(drawCircles);
             });
+
+            const drawCircles = function() {
+                timestamp = intervalFunction(interval, timestamp, () => {
+                    const canvas = $("#page-image")[0];
+                    const ctx = canvas.getContext('2d');
+
+                    //ctx.globalCompositeOperation = 'destination-over';
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); // clear canvas
+
+                    ctx.drawImage(pageImage, 0, 0); //-12 * countDown, -12);
+
+                    const alpha = countDown / topOpacity;
+
+                    const str_rgba = `rgba(0, 255, 255, ${alpha})`;
+
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+                    ctx.fillStyle = str_rgba;
+                    ctx.fill();
+                    //ctx.lineWidth = 5;
+                    //ctx.strokeStyle = '#003300';
+                    //ctx.stroke();
+
+                    countDown--;
+
+                    /*
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                    ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
+                    ctx.save();
+                    ctx.translate(150, 150);
+
+                    // Earth
+                    var time = new Date();
+                    ctx.rotate(((2 * Math.PI) / 60) * time.getSeconds() + ((2 * Math.PI) / 60000) * time.getMilliseconds());
+                    ctx.translate(105, 0);
+                    ctx.fillRect(0, -12, 40, 24); // Shadow
+                    ctx.drawImage(pageImage, -12, -12);
+
+                    // Moon
+                    ctx.save();
+                    ctx.rotate(((2 * Math.PI) / 6) * time.getSeconds() + ((2 * Math.PI) / 6000) * time.getMilliseconds());
+                    ctx.translate(0, 28.5);
+                    ctx.drawImage(moon, -3.5, -3.5);
+                    ctx.restore();
+
+                    ctx.restore();
+
+                    ctx.beginPath();
+                    ctx.arc(150, 150, 105, 0, Math.PI * 2, false); // Earth orbit
+                    ctx.stroke();
+
+                    ctx.drawImage(sun, 0, 0, 300, 300);
+                    */
+                });
+
+                if (countDown >= 0)
+                    window.requestAnimationFrame(drawCircles);
+            }
 
             const insert = function(row, col) {
                 //alert("Hello, world!");
