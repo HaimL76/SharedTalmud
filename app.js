@@ -2,6 +2,9 @@ const express = require('express')
 const app = express()
 const port = 3000
 
+const Request = require('tedious').Request
+const Connection = require('tedious').Connection;
+
 const config = {
     server: "localhost",
     authentication: {
@@ -21,18 +24,27 @@ app.use(function(req, res, next) {
 });
 
 app.get('/', (req, res) => {
-    var sql = require("mssql");
-
-    const Connection = require('tedious').Connection;
+    var db = require("./dbModule.js");
 
     var connection = new Connection(config);
 
     connection.on('connect', function(err) {
-        // If no error, then good to proceed.  
-        if (err)
-            console.log(JSON.stringify(err))
+        sql = "select * from [SharedTalmud].[dbo].[Comments]";
 
-        executeStatement1(connection);
+        console.log(sql);
+
+        request = new Request(sql, function(err) {
+            if (err)
+                console.log(JSON.stringify(err));
+        });
+
+        request.on("requestCompleted", function(rowCount, more) {
+            console.log("before close");
+            connection.close();
+            console.log("after close");
+        });
+
+        connection.execSql(request);
     });
 
     connection.connect();
@@ -66,8 +78,6 @@ app.post('/:row/:col', (req, res) => {
 
 
 function executeStatement1(connection, row, col) {
-    const Request = require('tedious').Request
-
     const sql = `insert into [SharedTalmud].[dbo].[Comments] (ResId, Row, Col) values(1, ${row}, ${col});`
 
     console.log(sql);

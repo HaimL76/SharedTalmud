@@ -5,6 +5,18 @@
     <script type='text/javascript' src='timedFunctions.js'></script>
     <script>
         $(document).ready(function() {
+            var int0 = setInterval(() => {
+                $.ajax({
+                    type: "GET",
+                    url: `http://localhost:3000/`,
+                    success: function(data) {
+                        console.log(data.toString);
+
+                        //alert(JSON.stringify(data));
+                    }
+                });
+            }, 1800);
+
             const pageImage = new Image;
             pageImage.src = 'featured-image-backyard-landscaping.jpeg';
             const topOpacity = 28;
