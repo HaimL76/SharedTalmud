@@ -99,53 +99,61 @@ const getComments = () => {
     });
 }
 
-app.post('/:row/:col', (req, res) => {
+app.post('/:row/:col', async(req, res) => {
     if (req && 'params' in req)
         console.log(JSON.stringify(req.params));
 
     const { row, col } = req.params;
 
-    var sql = require("mssql");
+    var result = await insertComment(row, col);
 
-    const Connection = require('tedious').Connection;
-
-    var connection = new Connection(config);
-
-    connection.on('connect', function(err) {
-        // If no error, then good to proceed.  
-        if (err)
-            console.log(JSON.stringify(err));
-
-        console.log(row);
-        console.log(col);
-
-        executeStatement1(connection, row, col);
-    });
-
-    connection.connect();
+    res.send(result);
 });
 
+const insertComment = (row, col) => {
+    return new Promise((resolve, reject) => {
+        var sql = require("mssql");
 
-function executeStatement1(connection, row, col) {
-    const sql = `
-insert into[SharedTalmud].[dbo].[Comments](ResId, Row, Col) values(1, $ { row }, $ { col }
-`;
+        const Connection = require('tedious').Connection;
 
-    console.log(sql);
+        var connection = new Connection(config);
 
-    request = new Request(sql, function(err) {
-        if (err)
-            console.log(JSON.stringify(err));
+        connection.on('connect', function(err) {
+            // If no error, then good to proceed.  
+            if (err)
+                console.log(JSON.stringify(err));
+
+            console.log(row);
+            console.log(col);
+
+            iRow = ~~row;
+            iCol = ~~col;
+
+            console.log(iRow);
+            console.log(iCol);
+
+            const sql = `insert into [SharedTalmud].[dbo].[Comments] (ResId, Row, Col) values(1, ${iRow}, ${iCol})`;
+
+            console.log(sql);
+
+            request = new Request(sql, function(err) {
+                if (err)
+                    console.log(JSON.stringify(err));
+            });
+
+            request.on("requestCompleted", function(rowCount, more) {
+                connection.close();
+
+                resolve(more);
+            });
+
+            connection.execSql(request);
+        });
+
+        connection.connect();
     });
-
-    request.on("requestCompleted", function(rowCount, more) {
-        connection.close();
-    });
-
-    connection.execSql(request);
 }
 
 app.listen(port, () => {
-    console.log(`
-Example app listening at http: //localhost:${port}`)
+    console.log(`Example app listening at http: //localhost:${port}`)
 });

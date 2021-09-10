@@ -12,10 +12,18 @@
                     success: function(data) {
                         console.log(data.toString);
 
+                        comments = data;
+
+                        countdown = topOpacity;
+                        timestamp = Date.now();
+
                         //alert(JSON.stringify(data));
+                        window.requestAnimationFrame(drawCircles);
                     }
                 });
             }, 1800);
+
+            let comments;
 
             const pageImage = new Image;
             pageImage.src = 'featured-image-backyard-landscaping.jpeg';
@@ -87,7 +95,13 @@
                     const str_rgba = `rgba(0, 255, 255, ${alpha})`;
 
                     ctx.beginPath();
+
+                    comments.forEach(element => {
+                        ctx.arc(element[2], element[3], radius, 0, 2 * Math.PI, false);
+                    });
+
                     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+
                     ctx.fillStyle = str_rgba;
                     ctx.fill();
                     //ctx.lineWidth = 5;
@@ -140,7 +154,7 @@
                     success: function(data) {
                         console.log(data.toString);
 
-                        alert(JSON.stringify(data));
+                        //alert(JSON.stringify(data));
                     }
                 });
             };
