@@ -32,7 +32,9 @@ app.get('/', async(req, res) => {
     const arr = await getComments();
 
     if (Array.isArray(arr))
-        console.log(arr.length);
+        console.log(`arr.length=${arr.length}`);
+
+    res.send(arr);
 });
 
 const getComments = () => {
@@ -52,12 +54,35 @@ const getComments = () => {
                 }
             });
 
-            request.on('row', function(columns) {
+            const arr = [];
+
+            request.on('row', function(cols) {
+                //if (Array.isArray(cols))
+                //  console.log(`cols.length = ${cols.length}`);
+
+                const arr0 = [];
+
+                cols.forEach((col) => {
+                    //console.log(`${strDateTime}, ${col.value}`);
+                    arr0.push(col.value)
+                });
+
+                arr.push(arr0);
+            });
+
+            request.on('requestCompleted', function() {
+                connection.close();
+
+                resolve(arr);
+            });
+
+            request.on('done', function(rowCount, more, rows) {
+                //console.log(rowCount);
                 const arr = [];
 
-                columns.forEach((col) => {
-                    //console.log(column.value);
-                    arr.push(col)
+                rows.forEach((row) => {
+                    //console.log(`${strDateTime}, ${row.value}`);
+                    arr.push(row.value)
                 });
 
                 resolve(arr);
