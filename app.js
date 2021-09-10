@@ -1,9 +1,11 @@
 const express = require('express')
+const dtu = require('./dateTimeUtils.js')
 const app = express()
 const port = 3000
 
 const Request = require('tedious').Request
 const Connection = require('tedious').Connection;
+var ConnectionPool = require('tedious-connection-pool');
 
 const config = {
     server: "localhost",
@@ -24,30 +26,15 @@ app.use(function(req, res, next) {
 });
 
 app.get('/', (req, res) => {
-    var db = require("./dbModule.js");
+    console.log(`get ${dtu.formatDateTime(new Date())}`);
 
-    var connection = new Connection(config);
+    const connection = new Connection(config);
 
-    connection.on('connect', function(err) {
-        sql = "select * from [SharedTalmud].[dbo].[Comments]";
-
-        console.log(sql);
-
-        request = new Request(sql, function(err) {
-            if (err)
-                console.log(JSON.stringify(err));
-        });
-
-        request.on("requestCompleted", function(rowCount, more) {
-            console.log("before close");
-            connection.close();
-            console.log("after close");
-        });
+    connection.on('connect', (err) => {
+        console.log("it's connected!");
 
         connection.execSql(request);
     });
-
-    connection.connect();
 });
 
 app.post('/:row/:col', (req, res) => {
