@@ -29,20 +29,15 @@ const formatDateTime0 = (dateTime, isUtc = false) => {
     var strTime = `${strHour}${timeSeperator}${strMinute}${timeSeperator}${strSecond}`;
 
     var strDateTime = `${strDate}${dateTimeSeparator}${strTime}`;
-    //("0" + (month + 1)).slice(-2) + dateSeperator +
-    //("0" + dt.getUTCDate()).slice(-2) + dateTimeSeparator +
-    //("0" + dt.getUTCHours()).slice(-2) + timeSeperator +
-    //("0" + dt.getUTCMinutes()).slice(-2) + timeSeperator +
-    //("0" + dt.getUTCSeconds()).slice(-2);
 
-    console.log(strDateTime);
+    //console.log(strDateTime);
 
     return strDateTime;
 }
 
 var DateTimeUtils = {
     formatDateTime: (dateTime, isUtc = false) => {
-        formatDateTime0(dateTime, isUtc);
+        return formatDateTime0(dateTime, isUtc);
     }
 };
 
