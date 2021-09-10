@@ -3,6 +3,9 @@ const dtu = require('./dateTimeUtils.js')
 const app = express()
 const port = 3000
 
+const Database = "SharedTalmud";
+const TableComments = `[${Database}].[dbo].[Comments]`;
+
 const Request = require('tedious').Request
 const Connection = require('tedious').Connection;
 var ConnectionPool = require('tedious-connection-pool');
@@ -39,9 +42,9 @@ const getComments = () => {
         const connection = new Connection(config);
 
         connection.on('connect', (err) => {
-            console.log(`${strDateTime}, connected`);
+            console.log(`${strDateTime}, connected `);
 
-            request = new Request("select 42, 'hello world'", function(err, rowCount) {
+            request = new Request(`select * from ${TableComments}`, function(err, rowCount) {
                 if (err) {
                     console.log(err);
                 } else {
@@ -99,7 +102,9 @@ app.post('/:row/:col', (req, res) => {
 
 
 function executeStatement1(connection, row, col) {
-    const sql = `insert into[SharedTalmud].[dbo].[Comments](ResId, Row, Col) values(1, ${row}, ${col}`;
+    const sql = `
+insert into[SharedTalmud].[dbo].[Comments](ResId, Row, Col) values(1, $ { row }, $ { col }
+`;
 
     console.log(sql);
 
@@ -116,5 +121,6 @@ function executeStatement1(connection, row, col) {
 }
 
 app.listen(port, () => {
-    console.log(`Example app listening at http: //localhost:${port}`)
+    console.log(`
+Example app listening at http: //localhost:${port}`)
 });
