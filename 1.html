@@ -73,7 +73,7 @@
             });
 
             const drawCircles = function() {
-                const [ts, cd] = intervalFunction(interval, timestamp, countdown, (countdown) => {
+                const [ts, cd] = intervalFunction(interval, timestamp, countdown, (counter) => {
                     const canvas = $("#page-image")[0];
                     const ctx = canvas.getContext('2d');
 
@@ -82,7 +82,7 @@
 
                     ctx.drawImage(pageImage, 0, 0); //-12 * countDown, -12);
 
-                    const alpha = countdown / topOpacity;
+                    const alpha = counter / topOpacity;
 
                     const str_rgba = `rgba(0, 255, 255, ${alpha})`;
 
