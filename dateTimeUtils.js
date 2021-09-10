@@ -14,6 +14,7 @@ const formatDateTime0 = (dateTime, isUtc = false) => {
     const hour = isUtc ? dt.getUTCHours() : dt.getHours();
     const minute = isUtc ? dt.getUTCMinutes() : dt.getMinutes();
     const second = isUtc ? dt.getUTCSeconds() : dt.getSeconds();
+    const ms = isUtc ? dt.getUTCMilliseconds() : dt.getMilliseconds();
 
     //console.log(year);
     //console.log(month);
@@ -26,7 +27,7 @@ const formatDateTime0 = (dateTime, isUtc = false) => {
     const strSecond = utils.leftPadOneZeroOrNone(second);
 
     var strDate = `${year}${dateSeperator}${strMonth}${dateSeperator}${strDay}`;
-    var strTime = `${strHour}${timeSeperator}${strMinute}${timeSeperator}${strSecond}`;
+    var strTime = `${strHour}${timeSeperator}${strMinute}${timeSeperator}${strSecond}.${ms}`;
 
     var strDateTime = `${strDate}${dateTimeSeparator}${strTime}`;
 

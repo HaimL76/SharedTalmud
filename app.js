@@ -25,17 +25,51 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.get('/', (req, res) => {
-    console.log(`get ${dtu.formatDateTime(new Date())}`);
+app.get('/', async(req, res) => {
+    const arr = await getComments();
 
-    const connection = new Connection(config);
-
-    connection.on('connect', (err) => {
-        console.log("it's connected!");
-
-        connection.execSql(request);
-    });
+    if (Array.isArray(arr))
+        console.log(arr.length);
 });
+
+const getComments = () => {
+    return new Promise((resolve, reject) => {
+        const strDateTime = dtu.formatDateTime(new Date());
+
+        const connection = new Connection(config);
+
+        connection.on('connect', (err) => {
+            console.log(`${strDateTime}, connected`);
+
+            request = new Request("select 42, 'hello world'", function(err, rowCount) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    //console.log(rowCount + ' rows');
+                }
+            });
+
+            request.on('row', function(columns) {
+                const arr = [];
+
+                columns.forEach((col) => {
+                    //console.log(column.value);
+                    arr.push(col)
+                });
+
+                resolve(arr);
+            });
+
+            connection.execSql(request);
+
+            console.log(`${strDateTime}, after calling exeSql`);
+        });
+
+        connection.connect();
+
+        console.log(`${strDateTime}, after calling connect`);
+    });
+}
 
 app.post('/:row/:col', (req, res) => {
     if (req && 'params' in req)
@@ -65,7 +99,7 @@ app.post('/:row/:col', (req, res) => {
 
 
 function executeStatement1(connection, row, col) {
-    const sql = `insert into [SharedTalmud].[dbo].[Comments] (ResId, Row, Col) values(1, ${row}, ${col});`
+    const sql = `insert into[SharedTalmud].[dbo].[Comments](ResId, Row, Col) values(1, ${row}, ${col}`;
 
     console.log(sql);
 
@@ -82,5 +116,5 @@ function executeStatement1(connection, row, col) {
 }
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`Example app listening at http: //localhost:${port}`)
 });
