@@ -22,7 +22,7 @@
             const topOpacity = 28;
             const interval = 75; //ms
 
-            let countDown;
+            let countdown;
 
             let timestamp;
 
@@ -66,14 +66,14 @@
                 centerX = col;
                 centerY = row;
 
-                countDown = topOpacity;
+                countdown = topOpacity;
                 timestamp = Date.now();
 
                 window.requestAnimationFrame(drawCircles);
             });
 
             const drawCircles = function() {
-                timestamp = intervalFunction(interval, timestamp, () => {
+                const [ts, cd] = intervalFunction(interval, timestamp, countdown, (countdown) => {
                     const canvas = $("#page-image")[0];
                     const ctx = canvas.getContext('2d');
 
@@ -82,7 +82,7 @@
 
                     ctx.drawImage(pageImage, 0, 0); //-12 * countDown, -12);
 
-                    const alpha = countDown / topOpacity;
+                    const alpha = countdown / topOpacity;
 
                     const str_rgba = `rgba(0, 255, 255, ${alpha})`;
 
@@ -93,8 +93,6 @@
                     //ctx.lineWidth = 5;
                     //ctx.strokeStyle = '#003300';
                     //ctx.stroke();
-
-                    countDown--;
 
                     /*
                     ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
@@ -126,7 +124,10 @@
                     */
                 });
 
-                if (countDown >= 0)
+                countdown = cd;
+                timestamp = ts;
+
+                if (countdown >= 0)
                     window.requestAnimationFrame(drawCircles);
             }
 
