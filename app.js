@@ -1,6 +1,16 @@
 const express = require('express')
 const dtu = require('./dateTimeUtils.js')
+const utils = require('./Utils.js')
 const app = express()
+
+const bodyParser = require("body-parser");
+
+// Parse URL-encoded bodies (as sent by HTML forms)
+//app.use(express.urlencoded());
+
+// Parse JSON bodies (as sent by API clients)
+app.use(bodyParser.json({ type: '*/*' }));
+
 const port = 3000
 
 const Database = "SharedTalmud";
@@ -32,7 +42,7 @@ app.get('/comments', async(req, res) => {
     const arr = await getComments();
 
     if (Array.isArray(arr))
-        console.log(`arr.length=${arr.length}`);
+        utils.log(`arr.length=${arr.length}`);
 
     res.send(arr);
 });
@@ -44,13 +54,13 @@ const getComments = () => {
         const connection = new Connection(config);
 
         connection.on('connect', (err) => {
-            console.log(`${strDateTime}, connected `);
+            utils.log(`${strDateTime}, connected `);
 
             request = new Request(`select * from ${TableComments}`, function(err, rowCount) {
                 if (err) {
-                    console.log(err);
+                    utils.log(err);
                 } else {
-                    //console.log(rowCount + ' rows');
+                    //utils.log(rowCount + ' rows');
                 }
             });
 
@@ -58,12 +68,12 @@ const getComments = () => {
 
             request.on('row', function(cols) {
                 //if (Array.isArray(cols))
-                //  console.log(`cols.length = ${cols.length}`);
+                //  utils.log(`cols.length = ${cols.length}`);
 
                 const arr0 = [];
 
                 cols.forEach((col) => {
-                    //console.log(`${strDateTime}, ${col.value}`);
+                    //utils.log(`${strDateTime}, ${col.value}`);
                     arr0.push(col.value)
                 });
 
@@ -77,11 +87,11 @@ const getComments = () => {
             });
 
             request.on('done', function(rowCount, more, rows) {
-                //console.log(rowCount);
+                //utils.log(rowCount);
                 const arr = [];
 
                 rows.forEach((row) => {
-                    //console.log(`${strDateTime}, ${row.value}`);
+                    //utils.log(`${strDateTime}, ${row.value}`);
                     arr.push(row.value)
                 });
 
@@ -90,22 +100,34 @@ const getComments = () => {
 
             connection.execSql(request);
 
-            console.log(`${strDateTime}, after calling exeSql`);
+            utils.log(`${strDateTime}, after calling exeSql`);
         });
 
         connection.connect();
 
-        console.log(`${strDateTime}, after calling connect`);
+        utils.log(`${strDateTime}, after calling connect`);
     });
 }
 
 app.post('/comments', async(req, res) => {
-    if (req && 'params' in req)
-        console.log(JSON.stringify(req.params));
+    if (req) {
+        //let isValid = utils.validateObject(req, ["body"]);
 
-    const { row, col } = req.params;
+        //utils.log(`isValid = ${isValid}`, 1);
 
-    var result = await insertComment(row, col);
+        //isValid = isValid && utils.validateObject(req.body, ["resId", "row", "col"]);
+
+        //utils.log(`isValid = ${isValid}`, 1);
+
+        console.log(req.body.resId);
+        console.log(req.body.col);
+        console.log(req.body.row);
+
+        const col = req.col;
+        const row = req.row;
+
+        var result = await insertComment(row, col);
+    }
 
     res.send(result);
 });
@@ -121,24 +143,24 @@ const insertComment = (row, col) => {
         connection.on('connect', function(err) {
             // If no error, then good to proceed.  
             if (err)
-                console.log(JSON.stringify(err));
+                utils.log(JSON.stringify(err));
 
-            console.log(row);
-            console.log(col);
+            utils.log(row);
+            utils.log(col);
 
             iRow = ~~row;
             iCol = ~~col;
 
-            console.log(iRow);
-            console.log(iCol);
+            utils.log(iRow);
+            utils.log(iCol);
 
             const sql = `insert into [SharedTalmud].[dbo].[Comments] (ResId, Row, Col) values(1, ${iRow}, ${iCol})`;
 
-            console.log(sql);
+            utils.log(sql);
 
             request = new Request(sql, function(err) {
                 if (err)
-                    console.log(JSON.stringify(err));
+                    utils.log(JSON.stringify(err));
             });
 
             request.on("requestCompleted", function(rowCount, more) {
@@ -155,5 +177,5 @@ const insertComment = (row, col) => {
 }
 
 app.listen(port, () => {
-    console.log(`Example app listening at http: //localhost:${port}`)
+    utils.log(`Example app listening at http: //localhost:${port}`)
 });
