@@ -28,7 +28,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.get('/', async(req, res) => {
+app.get('/comments', async(req, res) => {
     const arr = await getComments();
 
     if (Array.isArray(arr))
@@ -99,7 +99,7 @@ const getComments = () => {
     });
 }
 
-app.post('/:row/:col', async(req, res) => {
+app.post('/comments', async(req, res) => {
     if (req && 'params' in req)
         console.log(JSON.stringify(req.params));
 
