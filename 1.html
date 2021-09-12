@@ -10,6 +10,11 @@
                     type: "GET",
                     url: `http://localhost:3000/comments/`,
                     success: function(data) {
+                        const width = window.screen.width * window.devicePixelRatio;
+                        const height = window.screen.height * window.devicePixelRatio;
+
+                        $('#resolution').val(`${height}, ${width}`);
+
                         console.log(data.toString);
 
                         comments = data;
@@ -149,12 +154,13 @@
             }
 
             const insert = function(resId, row, col) {
-                var comment = prompt("כתוב את חידושך", "");
+                var text = prompt("כתוב את חידושך", "");
 
                 const data = {
                     resId: resId,
                     row: row,
-                    col: col
+                    col: col,
+                    text: text
                 };
 
                 const strData = JSON.stringify(data);
@@ -211,7 +217,15 @@
     .super-container {
         display: flex;
         flex-direction: row;
-        position: absolute;
+        position: relative;
+        top: 0px;
+        left: 0px;
+    }
+    
+    .inner-container {
+        display: flex;
+        flex-direction: column;
+        position: relative;
         top: 0px;
         left: 0px;
     }
@@ -227,10 +241,13 @@
         <input type="text" id="dynamic-status" />
         <input type="text" id="static-status" />
 
-        <div class="container">
-            <!--<img id="page-image" src="featured-image-backyard-landscaping.jpeg" alt="featured-image-backyard-landscaping.jpeg">-->
-            <canvas id="page-image"><!--</canvas> width="200" height="100" style="border:1px solid #000000;">-->
-            </canvas>
+        <div class="inner-container">
+            <div class="container">
+                <!--<img id="page-image" src="featured-image-backyard-landscaping.jpeg" alt="featured-image-backyard-landscaping.jpeg">-->
+                <canvas id="page-image"><!--</canvas> width="200" height="100" style="border:1px solid #000000;">-->
+                </canvas>
+            </div>
+            <input type="text" id="resolution" />
         </div>
     </div>
     <!--<canvas id="canvi" />-->

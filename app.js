@@ -122,18 +122,20 @@ app.post('/comments', async(req, res) => {
         const col = req.body.col;
         const row = req.body.row;
         const resId = req.body.resId;
+        const text = req.body.text;
 
         utils.log(`resId = ${resId}`);
         utils.log(`col = ${col}`);
         utils.log(`row = ${row}`);
+        utils.log(`text = ${text}`);
 
-        var result = await insertComment(resId, row, col);
+        var result = await insertComment(resId, row, col, text);
     }
 
     res.send(result);
 });
 
-const insertComment = (resId, row, col) => {
+const insertComment = (resId, row, col, text) => {
     return new Promise((resolve, reject) => {
         var sql = require("mssql");
 
@@ -155,9 +157,9 @@ const insertComment = (resId, row, col) => {
             utils.log(iRow);
             utils.log(iCol);
 
-            const sql = `insert into [SharedTalmud].[dbo].[Comments] (ResId, Row, Col) values(${resId}, ${iRow}, ${iCol})`;
+            const sql = `insert into [SharedTalmud].[dbo].[Comments] (ResId, Row, Col, Text) values(${resId}, ${iRow}, ${iCol}, '${text}')`;
 
-            utils.log(sql);
+            utils.log(sql, 1);
 
             request = new Request(sql, function(err) {
                 if (err)

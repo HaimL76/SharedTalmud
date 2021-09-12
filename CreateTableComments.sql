@@ -1,7 +1,7 @@
 USE [SharedTalmud]
 GO
 
-/****** Object:  Table [dbo].[Comments]    Script Date: 09/09/2021 9:00:59 pm ******/
+/****** Object:  Table [dbo].[Comments]    Script Date: 12/09/2021 9:11:54 pm ******/
 SET ANSI_NULLS ON
 GO
 
@@ -13,6 +13,7 @@ CREATE TABLE [dbo].[Comments](
 	[ResId] [bigint] NOT NULL,
 	[Row] [int] NOT NULL,
 	[Col] [int] NOT NULL,
+	[Text] [nvarchar](max) NOT NULL,
 	[Timestamp] [datetime] NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
