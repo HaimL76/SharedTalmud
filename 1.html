@@ -71,6 +71,14 @@
                 col = e.pageX - left;
 
                 $('#dynamic-status').val(col + ', ' + row);
+
+                if (mapRows) {
+                    const keysRows = mapRows.keys();
+                }
+
+                if (mapCols) {
+                    const keysCols = mapCols.keys();
+                }
             });
 
             $("#page-image").dblclick(function(e) {
