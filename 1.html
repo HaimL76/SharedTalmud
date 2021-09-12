@@ -17,7 +17,13 @@
 
                         console.log(data.toString);
 
-                        comments = data;
+                        comments = new Map();
+                        mapRows = new Map();
+                        mapCols = new Map();
+
+                        data.forEach(c => comments.set(c[0], c));
+                        data.forEach(c => mapRows.set(c[2], c[0]));
+                        data.forEach(c => mapCols.set(c[3], c[0]));
 
                         countdown = topOpacity;
                         timestamp = Date.now();
@@ -29,6 +35,8 @@
             }, 1800);
 
             let comments;
+
+            let mapRows, mapCols;
 
             const pageImage = new Image;
             pageImage.src = 'featured-image-backyard-landscaping.jpeg';
