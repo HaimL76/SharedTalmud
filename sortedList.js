@@ -1,12 +1,13 @@
 class listItem {
     constructor(k, v) {
-        key = k;
-        val = v;
+        this.key = k;
+        this.val = v;
     }
 
     key = null;
     val = null;
 }
+
 class sortedList {
     arr = [];
     begin = 0;
@@ -26,7 +27,7 @@ class sortedList {
     }
 
     add = (obj) => {
-        if (obj && key in obj) {
+        if (obj && this.key in obj) {
             if (this.arr.length < 1)
                 this.arr.push(obj);
             else
@@ -35,7 +36,7 @@ class sortedList {
     }
 
     add0 = (obj, b, e) => {
-        if (obj && key in obj) {
+        if (obj && this.key in obj) {
             if (b === e) {
                 const obj0 = this.arr[b];
 
@@ -55,15 +56,15 @@ class sortedList {
                 if (obj.key == obj0.key)
                     this.insert(obj, middle);
                 else if (obj.key > obj0.key)
-                    this.add0(obj, max.min(middle + 1, this.arr.length - 1), e);
+                    this.add0(obj, Math.min(middle + 1, e), e);
                 else if (obj.key < obj0.key)
-                    this.add0(obj, b, Math.max(middle - 1, 0));
+                    this.add0(obj, b, Math.max(middle - 1, b));
             }
         }
     }
 
     insert = (obj, index) => {
-        if (obj && key in obj) {
+        if (obj && this.key in obj) {
             const addEnd = index >= this.arr.length;
 
             this.arr.push(obj);
