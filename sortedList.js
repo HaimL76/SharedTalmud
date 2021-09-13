@@ -26,18 +26,24 @@ class sortedList {
 
         middle = ~~middle;
 
-        const obj0 = this.arr[middle];
+        if (middle >= this.end)
+            this.insert(obj, middle, this.end < this.size);
+        else if (middle < this.begin)
+            this.insert(obj, middle, this.end < this.size);
+        else {
+            const obj0 = this.arr[middle];
 
-        if (middle == obj0)
-            this.insert(obj, middle, this.end < this.arr.length - 1);
-        else if (obj > obj0)
-            this.add0(obj, middle + 1, e);
-        else if (obj < obj0)
-            this.add0(obj, b, middle - 1);
+            if (middle == obj0)
+                this.insert(obj, middle, this.end < this.arr.length - 1);
+            else if (obj > obj0)
+                this.add0(obj, middle + 1, e);
+            else if (obj < obj0)
+                this.add0(obj, b, middle - 1);
+        }
     }
 
     insert = (obj, index, up = null) => {
-        if (up === null)
+        if (up === null || up === undefined)
             up = this.end < this.arr.length;
 
         if (up === true) {
