@@ -53,8 +53,8 @@ class sortedList {
         this.arr.push(obj);
 
         if (!addEnd) {
-            for (let i = index; i < this.arr.length - 1; i++)
-                this.arr[i + 1] = this.arr[i];
+            for (let i = this.arr.length - 1; i > index; i--)
+                this.arr[i] = this.arr[i - 1];
 
             this.arr[index] = obj;
         }
