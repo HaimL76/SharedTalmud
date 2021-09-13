@@ -1,7 +1,18 @@
+class listItem {
+    constructor(k, v) {
+        key = k;
+        val = v;
+    }
+
+    key = null;
+    val = null;
+}
 class sortedList {
     arr = [];
     begin = 0;
     end = 0;
+
+    key = 'key';
 
     constructor(size) {
         //for (let i = 0; i < size; i++)
@@ -15,48 +26,54 @@ class sortedList {
     }
 
     add = (obj) => {
-        if (this.arr.length < 1)
-            this.arr.push(obj);
-        else
-            this.add0(obj, 0, this.arr.length - 1)
+        if (obj && key in obj) {
+            if (this.arr.length < 1)
+                this.arr.push(obj);
+            else
+                this.add0(obj, 0, this.arr.length - 1)
+        }
     }
 
     add0 = (obj, b, e) => {
-        if (b === e) {
-            const obj0 = this.arr[b];
+        if (obj && key in obj) {
+            if (b === e) {
+                const obj0 = this.arr[b];
 
-            let index = b;
+                let index = b;
 
-            if (obj > obj0)
-                index = b + 1;
+                if (obj.key > obj0.key)
+                    index = b + 1;
 
-            this.insert(obj, index);
-        } else {
-            let middle = (b + e) / 2;
+                this.insert(obj, index);
+            } else {
+                let middle = (b + e) / 2;
 
-            middle = Math.floor(middle);
+                middle = Math.floor(middle);
 
-            const obj0 = this.arr[middle];
+                const obj0 = this.arr[middle];
 
-            if (obj == obj0)
-                this.insert(obj, middle);
-            else if (obj > obj0)
-                this.add0(obj, max.min(middle + 1, this.arr.length - 1), e);
-            else if (obj < obj0)
-                this.add0(obj, b, Math.max(middle - 1, 0));
+                if (obj.key == obj0.key)
+                    this.insert(obj, middle);
+                else if (obj.key > obj0.key)
+                    this.add0(obj, max.min(middle + 1, this.arr.length - 1), e);
+                else if (obj.key < obj0.key)
+                    this.add0(obj, b, Math.max(middle - 1, 0));
+            }
         }
     }
 
     insert = (obj, index) => {
-        const addEnd = index >= this.arr.length;
+        if (obj && key in obj) {
+            const addEnd = index >= this.arr.length;
 
-        this.arr.push(obj);
+            this.arr.push(obj);
 
-        if (!addEnd) {
-            for (let i = this.arr.length - 1; i > index; i--)
-                this.arr[i] = this.arr[i - 1];
+            if (!addEnd) {
+                for (let i = this.arr.length - 1; i > index; i--)
+                    this.arr[i] = this.arr[i - 1];
 
-            this.arr[index] = obj;
+                this.arr[index] = obj;
+            }
         }
     }
 

@@ -25,10 +25,13 @@
 
                         mapRows = new sortedList(data.length);
 
+                        mapCols = new sortedList(data.length);
+
                         data.forEach(c => comments.set(c[0], c));
 
-                        data.forEach(c => mapRows.add(c[2])); //, c[0]));
-                        //data.forEach(c => mapCols.set(c[3], c[0]));
+                        data.forEach(c => mapRows.add(new listItem(c[2], c[0])));
+
+                        data.forEach(c => mapCols.add(new listItem(c[3], c[0])));
 
                         countdown = topOpacity;
                         timestamp = Date.now();
