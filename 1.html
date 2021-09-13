@@ -2,6 +2,7 @@
 
 <head>
     <script src="jquery-3.6.0.js"></script>
+    <script type='text/javascript' src='hitTest.js'></script>
     <script type='text/javascript' src='timedFunctions.js'></script>
     <script>
         $(document).ready(function() {
@@ -18,12 +19,12 @@
                         console.log(data.toString);
 
                         comments = new Map();
-                        mapRows = new Map();
-                        mapCols = new Map();
+                        //mapRows = new Map();
+                        //mapCols = new Map();
 
                         data.forEach(c => comments.set(c[0], c));
-                        data.forEach(c => mapRows.set(c[2], c[0]));
-                        data.forEach(c => mapCols.set(c[3], c[0]));
+                        //data.forEach(c => mapRows.set(c[2], c[0]));
+                        //data.forEach(c => mapCols.set(c[3], c[0]));
 
                         countdown = topOpacity;
                         timestamp = Date.now();
@@ -71,6 +72,8 @@
                 col = e.pageX - left;
 
                 $('#dynamic-status').val(col + ', ' + row);
+
+                const c = hitTest(row, col, comments);
 
                 if (mapRows) {
                     const keysRows = mapRows.keys();
