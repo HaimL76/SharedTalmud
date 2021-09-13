@@ -3,6 +3,7 @@
 <head>
     <script src="jquery-3.6.0.js"></script>
     <script type='text/javascript' src='hitTest.js'></script>
+    <script type='text/javascript' src='sortedList.js'></script>
     <script type='text/javascript' src='timedFunctions.js'></script>
     <script>
         $(document).ready(function() {
@@ -22,8 +23,11 @@
                         //mapRows = new Map();
                         //mapCols = new Map();
 
+                        mapRows = new sortedList(data.length);
+
                         data.forEach(c => comments.set(c[0], c));
-                        //data.forEach(c => mapRows.set(c[2], c[0]));
+
+                        data.forEach(c => mapRows.add(c[2])); //, c[0]));
                         //data.forEach(c => mapCols.set(c[3], c[0]));
 
                         countdown = topOpacity;
@@ -76,11 +80,12 @@
                 const c = hitTest(row, col, comments);
 
                 if (mapRows) {
-                    const keysRows = mapRows.keys();
+                    //const keysRows = mapRows.keys();
+                    mapRows.printConsole();
                 }
 
                 if (mapCols) {
-                    const keysCols = mapCols.keys();
+                    //const keysCols = mapCols.keys();
                 }
             });
 
