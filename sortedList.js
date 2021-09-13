@@ -4,8 +4,8 @@ class sortedList {
     end = 0;
 
     constructor(size) {
-        for (let i = 0; i < size; i++)
-            this.arr.push(null);
+        //for (let i = 0; i < size; i++)
+        //this.arr.push(null);
 
         let middle = size / 2;
 
@@ -15,13 +15,59 @@ class sortedList {
     }
 
     add = (obj) => {
+        if (this.arr.length < 1)
+            this.arr.push(obj);
+        else
+            this.add0(obj, 0, this.arr.length - 1)
+    }
+
+    add0 = (obj, b, e) => {
+        if (b === e) {
+            const obj0 = this.arr[b];
+
+            let index = b;
+
+            if (obj > obj0)
+                index = b + 1;
+
+            this.insert(obj, index);
+        } else {
+            let middle = (b + e) / 2;
+
+            middle = Math.floor(middle);
+
+            const obj0 = this.arr[middle];
+
+            if (obj == obj0)
+                this.insert(obj, middle);
+            else if (obj > obj0)
+                this.add0(obj, max.min(middle + 1, this.arr.length - 1), e);
+            else if (obj < obj0)
+                this.add0(obj, b, Math.max(middle - 1, 0));
+        }
+    }
+
+    insert = (obj, index) => {
+        const addEnd = index >= this.arr.length;
+
+        this.arr.push(obj);
+
+        if (!addEnd) {
+            for (let i = index; i < this.arr.length - 1; i++)
+                this.arr[i + 1] = this.arr[i];
+
+            this.arr[index] = obj;
+        }
+    }
+
+    _add = (obj) => {
         if (this.begin === this.end)
             this.insert(obj, this.begin, this.end < this.arr.length);
         else
             this.add0(obj, this.begin, this.end)
     }
 
-    add0 = (obj, b, e) => {
+    _add0 = (obj, b, e) => {
         let middle = (b + e) / 2;
 
         middle = ~~middle;
@@ -42,7 +88,7 @@ class sortedList {
         }
     }
 
-    insert = (obj, index, up = null) => {
+    _insert = (obj, index, up = null) => {
         if (up === null || up === undefined)
             up = this.end < this.arr.length;
 
