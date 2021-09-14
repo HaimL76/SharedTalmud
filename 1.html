@@ -80,7 +80,9 @@
 
                 $('#dynamic-status').val(col + ', ' + row);
 
-                const c = hitTest(row, col, comments);
+                if (mapRows && mapCols) {
+                    const c = hitTest(row, col, [mapRows, mapCols]);
+                }
 
                 if (mapRows) {
                     //const keysRows = mapRows.keys();
