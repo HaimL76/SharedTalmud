@@ -138,7 +138,7 @@
                     comments.forEach(element => {
                         ctx.beginPath();
 
-                        ctx.arc(element[3], element[2], radius, 0, 2 * Math.PI, false);
+                        ctx.arc(element.Col, element.Row, radius, 0, 2 * Math.PI, false);
 
                         ctx.fillStyle = str_rgba;
                         ctx.fill();
