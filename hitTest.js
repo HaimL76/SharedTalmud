@@ -4,7 +4,9 @@ const distance10 = (x1, y1, x2, y2) => {
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
 
-const hitTest = (row, col, arrayOfArrays) => {
+const val = "val";
+
+const hitTest = (comments, row, col, arrayOfArrays) => {
     if (Array.isArray(arrayOfArrays) && arrayOfArrays.length == 2) {
         const objRow = { key: row };
         const objCol = { key: col };
