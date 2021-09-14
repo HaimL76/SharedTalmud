@@ -34,11 +34,11 @@ const hitTest = (comments, row, col, arrayOfArrays) => {
 
         const distCol = distance1(objCol0, obj);
 
-        return distCol < distRow ? { val: objCol, dist: distCol } : { val: objRow, dist: distRow };
+        return distCol < distRow ? { val: objCol0, dist: distCol } : { val: objRow0, dist: distRow };
     }
 }
 
-const distance1 = (obj, obj0) => Math.sqrt(Math.pow(obj.col - obj0.col, 2) + Math.pow(obj.row - obj0.row, 2));
+const distance1 = (obj, obj0) => Math.sqrt(Math.pow(obj.Col - obj0.Col, 2) + Math.pow(obj.Row - obj0.Row, 2));
 
 const distance0 = (obj, obj0) => Math.abs(obj.key - obj0.key);
 
