@@ -19,26 +19,25 @@
 
                             console.log(data.toString);
 
-                            comments = new Map();
-                            //mapRows = new Map();
-                            //mapCols = new Map();
-
                             mapRows = new sortedList(data.length);
 
                             mapCols = new sortedList(data.length);
 
-                            const arr = data.map(c => {
+                            comments = data.map(c => {
                                 return {
                                     Id: c[0],
-                                    ResId: c[1],
-                                    Row: c[2],
-                                    Col: c[3],
+                                    Comment: {
+                                        Id: c[0],
+                                        ResId: c[1],
+                                        Row: c[2],
+                                        Col: c[3]
+                                    }
                                 }
                             });
 
-                            arr.forEach(c => mapRows.add(new listItem(c.Row, c.Id)));
+                            comments.forEach(pair => mapRows.add(new listItem(pair.Comment.Row, pair.Comment.Id)));
 
-                            arr.forEach(c => mapCols.add(new listItem(c.Col, c.Id)));
+                            comments.forEach(pair => mapCols.add(new listItem(pair.Comment.Col, pair.Comment.Id)));
 
                             countdown = topOpacity;
                             timestamp = Date.now();
