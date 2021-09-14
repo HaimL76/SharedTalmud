@@ -17,9 +17,30 @@ const hitTest = (comments, row, col, arrayOfArrays) => {
         const clRow = searchArray(arrRows, objRow, 0, arrRows.arr.length - 1, (obj, obj0) => distance0(obj, obj0));
         const clCol = searchArray(arrCols, objCol, 0, arrCols.arr.length - 1, (obj, obj0) => distance0(obj, obj0));
 
-        return 0;
+        let objRow0;
+        let objCol0;
+
+        if (clRow && val in clRow && comments.has(clRow.val)) {
+            const arr = comments.get(clRow.val);
+            objRow0 = { val: arr, col: arr[2], row: arr[3] };
+        }
+
+        if (clCol && val in clCol && comments.has(clCol.val)) {
+            const arr = comments.get(clCol.val);
+            objCol0 = { val: arr, col: arr[2], row: arr[3] };
+        }
+
+        const obj = { row: row, col: col };
+
+        const distRow = distance1(objRow0, obj);
+
+        const distCol = distance1(objCol0, obj);
+
+        return distCol < distRow ? { val: objCol, dist: distCol } : { val: objRow, dist: distRow };
     }
 }
+
+const distance1 = (obj, obj0) => Math.sqrt(Math.pow(obj.col - obj0.col, 2) + Math.pow(obj.row - obj0.row, 2));
 
 const distance0 = (obj, obj0) => Math.abs(obj.key - obj0.key);
 

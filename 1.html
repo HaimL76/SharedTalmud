@@ -8,39 +8,47 @@
     <script>
         $(document).ready(function() {
             var int0 = setInterval(() => {
-                $.ajax({
-                    type: "GET",
-                    url: `http://localhost:3000/comments/`,
-                    success: function(data) {
-                        const width = window.screen.width * window.devicePixelRatio;
-                        const height = window.screen.height * window.devicePixelRatio;
+                    $.ajax({
+                        type: "GET",
+                        url: `http://localhost:3000/comments/`,
+                        success: function(data) {
+                            const width = window.screen.width * window.devicePixelRatio;
+                            const height = window.screen.height * window.devicePixelRatio;
 
-                        $('#resolution').val(`${height}, ${width}`);
+                            $('#resolution').val(`${height}, ${width}`);
 
-                        console.log(data.toString);
+                            console.log(data.toString);
 
-                        comments = new Map();
-                        //mapRows = new Map();
-                        //mapCols = new Map();
+                            comments = new Map();
+                            //mapRows = new Map();
+                            //mapCols = new Map();
 
-                        mapRows = new sortedList(data.length);
+                            mapRows = new sortedList(data.length);
 
-                        mapCols = new sortedList(data.length);
+                            mapCols = new sortedList(data.length);
 
-                        data.forEach(c => comments.set(c[0], c));
+                            const arr = data.map(c => {
+                                return {
+                                    Id: c[0],
+                                    ResId: c[1],
+                                    Row: c[2],
+                                    Col: c[3],
+                                }
+                            });
 
-                        data.forEach(c => mapRows.add(new listItem(c[2], c[0])));
+                            arr.forEach(c => mapRows.add(new listItem(c.Row, c.Id)));
 
-                        data.forEach(c => mapCols.add(new listItem(c[3], c[0])));
+                            arr.forEach(c => mapCols.add(new listItem(c.Col, c.Id)));
 
-                        countdown = topOpacity;
-                        timestamp = Date.now();
+                            countdown = topOpacity;
+                            timestamp = Date.now();
 
-                        //alert(JSON.stringify(data));
-                        window.requestAnimationFrame(drawCircles);
-                    }
-                });
-            }, 1800);
+                            //alert(JSON.stringify(data));
+                            window.requestAnimationFrame(drawCircles);
+                        }
+                    });
+                },
+                1800);
 
             let comments;
 
@@ -81,7 +89,10 @@
                 $('#dynamic-status').val(col + ', ' + row);
 
                 if (mapRows && mapCols) {
-                    const c = hitTest(comments, row, col, [mapRows, mapCols]);
+                    const hit = hitTest(comments, row, col, [mapRows, mapCols]);
+
+                    if (hit.dist < 10)
+                        alert(JSON.stringify(hit));
                 }
 
                 if (mapRows) {
