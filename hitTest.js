@@ -5,6 +5,8 @@ const distance10 = (x1, y1, x2, y2) => {
 }
 
 const val = "val";
+const Id = "Id";
+const Comment0 = "Comment";
 
 const hitTest = (comments, row, col, arrayOfArrays) => {
     if (Array.isArray(arrayOfArrays) && arrayOfArrays.length == 2) {
@@ -20,14 +22,18 @@ const hitTest = (comments, row, col, arrayOfArrays) => {
         let objRow0;
         let objCol0;
 
-        if (clRow && val in clRow && comments.has(clRow.val)) {
-            const arr = comments.get(clRow.val);
-            objRow0 = { val: arr, col: arr[2], row: arr[3] };
+        if (clRow && val in clRow && clRow.val in comments) {
+            const obj = comments[clRow.val];
+
+            if (obj && Comment0 in obj)
+                objRow0 = { val: arr, col: arr[2], row: arr[3] };
         }
 
-        if (clCol && val in clCol && comments.has(clCol.val)) {
-            const arr = comments.get(clCol.val);
-            objCol0 = { val: arr, col: arr[2], row: arr[3] };
+        if (clCol && val in clCol && clCol.val in comments) {
+            const obj = comments[clCol.val];
+
+            if (obj && Comment0 in obj)
+                objCol0 = { val: arr, col: arr[2], row: arr[3] };
         }
 
         const obj = { row: row, col: col };

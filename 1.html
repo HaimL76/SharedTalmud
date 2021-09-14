@@ -23,21 +23,18 @@
 
                             mapCols = new sortedList(data.length);
 
-                            comments = data.map(c => {
-                                return {
-                                    Id: c[0],
-                                    Comment: {
-                                        Id: c[0],
-                                        ResId: c[1],
-                                        Row: c[2],
-                                        Col: c[3]
-                                    }
-                                }
-                            });
+                            comments = new Map();
 
-                            comments.forEach(pair => mapRows.add(new listItem(pair.Comment.Row, pair.Comment.Id)));
+                            data.forEach(c => comments.set(c[0], {
+                                Id: c[0],
+                                ResId: c[1],
+                                Row: c[2],
+                                Col: c[3]
+                            }));
 
-                            comments.forEach(pair => mapCols.add(new listItem(pair.Comment.Col, pair.Comment.Id)));
+                            comments.forEach(obj => mapRows.add(new listItem(obj.Row, obj.Id)));
+
+                            comments.forEach(obj => mapCols.add(new listItem(obj.Col, obj.Id)));
 
                             countdown = topOpacity;
                             timestamp = Date.now();
