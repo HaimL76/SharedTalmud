@@ -22,21 +22,13 @@ const hitTest = (comments, row, col, arrayOfArrays) => {
         let objRow0;
         let objCol0;
 
-        if (clRow && val in clRow && clRow.val in comments) {
-            const obj = comments[clRow.val];
+        if (clRow && val in clRow && comments.has(clRow.val))
+            objRow0 = comments.get(clRow.val);
 
-            if (obj && Comment0 in obj)
-                objRow0 = { val: arr, col: arr[2], row: arr[3] };
-        }
+        if (clCol && val in clCol && comments.has(clCol.val))
+            objCol0 = comments.get(clCol.val);
 
-        if (clCol && val in clCol && clCol.val in comments) {
-            const obj = comments[clCol.val];
-
-            if (obj && Comment0 in obj)
-                objCol0 = { val: arr, col: arr[2], row: arr[3] };
-        }
-
-        const obj = { row: row, col: col };
+        const obj = { Row: row, Col: col };
 
         const distRow = distance1(objRow0, obj);
 
