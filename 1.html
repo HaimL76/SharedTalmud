@@ -1,50 +1,51 @@
 <html>
 
 <head>
+    <link rel="stylesheet" href="1.css">
     <script src="jquery-3.6.0.js"></script>
     <script type='text/javascript' src='hitTest.js'></script>
     <script type='text/javascript' src='sortedList.js'></script>
     <script type='text/javascript' src='timedFunctions.js'></script>
     <script>
         $(document).ready(function() {
-            var int0 = setInterval(() => {
-                    $.ajax({
-                        type: "GET",
-                        url: `http://localhost:3000/comments/`,
-                        success: function(data) {
-                            const width = window.screen.width * window.devicePixelRatio;
-                            const height = window.screen.height * window.devicePixelRatio;
+            //var int0 = setInterval(() => {
+            $.ajax({
+                type: "GET",
+                url: `http://localhost:3000/comments/`,
+                success: function(data) {
+                    const width = window.screen.width * window.devicePixelRatio;
+                    const height = window.screen.height * window.devicePixelRatio;
 
-                            $('#resolution').val(`${height}, ${width}`);
+                    $('#resolution').val(`${height}, ${width}`);
 
-                            console.log(data.toString);
+                    console.log(data.toString);
 
-                            mapRows = new sortedList(data.length);
+                    mapRows = new sortedList(data.length);
 
-                            mapCols = new sortedList(data.length);
+                    mapCols = new sortedList(data.length);
 
-                            comments = new Map();
+                    comments = new Map();
 
-                            data.forEach(c => comments.set(c[0], {
-                                Id: c[0],
-                                ResId: c[1],
-                                Row: c[2],
-                                Col: c[3]
-                            }));
+                    data.forEach(c => comments.set(c[0], {
+                        Id: c[0],
+                        ResId: c[1],
+                        Row: c[2],
+                        Col: c[3]
+                    }));
 
-                            comments.forEach(obj => mapRows.add(new listItem(obj.Row, obj.Id)));
+                    comments.forEach(obj => mapRows.add(new listItem(obj.Row, obj.Id)));
 
-                            comments.forEach(obj => mapCols.add(new listItem(obj.Col, obj.Id)));
+                    comments.forEach(obj => mapCols.add(new listItem(obj.Col, obj.Id)));
 
-                            countdown = topOpacity;
-                            timestamp = Date.now();
+                    countdown = topOpacity;
+                    timestamp = Date.now();
 
-                            //alert(JSON.stringify(data));
-                            window.requestAnimationFrame(drawCircles);
-                        }
-                    });
-                },
-                1800);
+                    //alert(JSON.stringify(data));
+                    window.requestAnimationFrame(drawCircles);
+                }
+            });
+            //},
+            //1800);
 
             let comments;
 
@@ -52,7 +53,7 @@
 
             const pageImage = new Image;
             pageImage.src = 'featured-image-backyard-landscaping.jpeg';
-            const topOpacity = 28;
+            const topOpacity = 0; // 28;
             const interval = 75; //ms
 
             let countdown;
@@ -76,6 +77,10 @@
             img.src = 'featured-image-backyard-landscaping.jpeg';
 
             $('#page-image').mousemove(function(e) {
+                var tipCanvas = $("#tip")[0];
+
+                let hitComment = false;
+
                 const left = $("#page-image").position().left;
                 const top = $("#page-image").position().top;
 
@@ -87,8 +92,28 @@
                 if (mapRows && mapCols) {
                     const hit = hitTest(comments, row, col, [mapRows, mapCols]);
 
-                    if (hit.dist < 10)
-                        alert(JSON.stringify(hit));
+                    if (hit.dist < 10) {
+                        hitComment = true;
+
+                        var tipCtx = tipCanvas.getContext("2d");
+
+                        tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
+
+                        dispRow = hit.val.Row + top - 35;
+                        dispCol = hit.val.Col + left;
+
+                        tipCanvas.style.left = dispCol + "px";
+                        tipCanvas.style.top = dispRow + "px";
+                        tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
+
+                        //countdown = topOpacity;
+                        //timestamp = Date.now();
+
+                        //alert(JSON.stringify(data));
+                        //window.requestAnimationFrame(drawCircles);
+
+                        tipCtx.fillText("Hello, World!", 0, 0); // 5, 15); //hit.val.Col, hit.val.Row - 10);
+                    }
                 }
 
                 if (mapRows) {
@@ -99,6 +124,9 @@
                 if (mapCols) {
                     //const keysCols = mapCols.keys();
                 }
+
+                if (!hitComment && tipCanvas && "style" in tipCanvas)
+                    tipCanvas.style.top = tipCanvas.style.left = -1000;
             });
 
             $("#page-image").dblclick(function(e) {
@@ -131,7 +159,9 @@
 
                     ctx.drawImage(pageImage, 0, 0); //-12 * countDown, -12);
 
-                    const alpha = counter / topOpacity;
+                    const alpha = topOpacity < 1 ?
+                        1 :
+                        counter / topOpacity;
 
                     const str_rgba = `rgba(0, 255, 255, ${alpha})`;
 
@@ -273,6 +303,30 @@
 </style>
 
 <body>
+    <style>
+        body {
+            background-color: ivory;
+            margin-top: 35px;
+        }
+        
+        #wrapper {
+            position: relative;
+            width: 300px;
+            height: 150px;
+        }
+        
+        canvas {
+            border: 1px solid red;
+        }
+        
+        #tip {
+            background-color: white;
+            border: 1px solid blue;
+            position: absolute;
+            left: -200px;
+            top: 100px;
+        }
+    </style>
     <div class="super-container">
         <input type="text" id="dynamic-status" />
         <input type="text" id="static-status" />
@@ -281,6 +335,8 @@
         <div class="container">
             <!--<img id="page-image" src="featured-image-backyard-landscaping.jpeg" alt="featured-image-backyard-landscaping.jpeg">-->
             <canvas id="page-image"><!--</canvas> width="200" height="100" style="border:1px solid #000000;">-->
+            </canvas>
+            <canvas id="tip" style="position: absolute; left: 0; top: 0; z-index: 1; height: 25px; width: 100px;"></canvas>>
             </canvas>
         </div>
         <!--<input type="text" id="resolution" />-->
