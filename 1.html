@@ -92,7 +92,7 @@
                 if (mapRows && mapCols) {
                     const hit = hitTest(comments, row, col, [mapRows, mapCols]);
 
-                    if (hit.dist < 10) {
+                    if (hit.dist < hitTestDistSquare) {
                         hitComment = true;
 
                         var tipCtx = tipCanvas.getContext("2d");
@@ -106,13 +106,8 @@
                         tipCanvas.style.top = dispRow + "px";
                         tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
 
-                        //countdown = topOpacity;
-                        //timestamp = Date.now();
-
-                        //alert(JSON.stringify(data));
-                        //window.requestAnimationFrame(drawCircles);
-
-                        tipCtx.fillText("Hello, World!", 0, 0); // 5, 15); //hit.val.Col, hit.val.Row - 10);
+                        tipCtx.font = '48px Arial';
+                        tipCtx.fillText('Hello World', 100, 100, 100);
                     }
                 }
 
@@ -294,7 +289,7 @@
             <!--<img id="page-image" src="featured-image-backyard-landscaping.jpeg" alt="featured-image-backyard-landscaping.jpeg">-->
             <canvas id="page-image"><!--</canvas> width="200" height="100" style="border:1px solid #000000;">-->
             </canvas>
-            <canvas id="tip" style="position: absolute; left: 0; top: 0; z-index: 1; height: 25px; width: 100px;"></canvas>>
+            <canvas id="tip"></canvas>>
             </canvas>
         </div>
         <!--<input type="text" id="resolution" />-->

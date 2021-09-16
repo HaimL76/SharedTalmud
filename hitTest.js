@@ -38,7 +38,9 @@ const hitTest = (comments, row, col, arrayOfArrays) => {
     }
 }
 
-const distance1 = (obj, obj0) => Math.sqrt(Math.pow(obj.Col - obj0.Col, 2) + Math.pow(obj.Row - obj0.Row, 2));
+const hitTestDistSquare = 16;
+
+const distance1 = (obj, obj0) => Math.pow(obj.Col - obj0.Col, 2) + Math.pow(obj.Row - obj0.Row, 2);
 
 const distance0 = (obj, obj0) => Math.abs(obj.key - obj0.key);
 
