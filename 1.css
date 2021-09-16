@@ -1,4 +1,43 @@
-#tipCanvas {
-    left: 10px;
-    top: 10px;
+.super-container {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+.inner-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: 0px;
+    left: 0px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    background-color: ivory;
+    margin-top: 35px;
+}
+
+#wrapper {
+    position: relative;
+    width: 300px;
+    height: 150px;
+}
+
+canvas {
+    /*border: 1px solid red;*/
+}
+
+#tip {
+    background-color: white;
+    border: 1px solid blue;
+    position: absolute;
+    left: -1000px;
+    top: -1000px;
 }
