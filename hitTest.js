@@ -23,7 +23,8 @@ const hitTest = (comments, row, col, arrayOfArrays, threshold = 4) => {
             searchArray(outList, arrRows, obj, 0, arrRows.arr.length - 1, (obj, obj0, threshold) => distanceRow(obj, obj0));
             //searchArray(outList, arrCols, obj, 0, arrCols.arr.length - 1, (obj, obj0, threshold) => distanceRow(obj, obj0));
 
-
+            if (outList.length > 0)
+                return outList[0];
 
             /*
             let distRow;
