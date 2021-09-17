@@ -3,11 +3,24 @@
 <head>
     <link rel="stylesheet" href="1.css">
     <script src="jquery-3.6.0.js"></script>
+    <!--<script type='text/javascript' src='utils.js'></script>-->
     <script type='text/javascript' src='hitTest.js'></script>
     <script type='text/javascript' src='sortedList.js'></script>
     <script type='text/javascript' src='timedFunctions.js'></script>
     <script>
         $(document).ready(function() {
+            const loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+            const loremIpsumLength = loremIpsum.length;
+
+            const randomString = (size) => {
+                from = loremIpsumLength * Math.random();
+
+                size %= (loremIpsumLength - from);
+
+                return loremIpsum.substr(from, size);
+            }
+
             //var int0 = setInterval(() => {
             $.ajax({
                 type: "GET",
@@ -141,7 +154,7 @@
 
                 $('#static-status').val(col + ', ' + row);
 
-                insert(1, row, col);
+                insert(1, 1, row, col);
 
                 centerX = col;
                 centerY = row;
@@ -222,15 +235,16 @@
                     window.requestAnimationFrame(drawCircles);
             }
 
-            const insert = function(resId, row, col) {
+            const insert = function(authorId, resId, row, col) {
                 //var text = prompt("כתוב את חידושך", "");
-                var test = randomString();
+                const text = randomString(10);
 
                 const data = {
                     resId: resId,
                     row: row,
                     col: col,
-                    text: text
+                    text: text,
+                    authorId: authorId
                 };
 
                 const strData = JSON.stringify(data);

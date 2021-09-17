@@ -56,7 +56,7 @@ const getComments = () => {
         connection.on('connect', (err) => {
             utils.log(`${strDateTime}, connected `);
 
-            request = new Request(`select * from ${TableComments}`, function(err, rowCount) {
+            request = new Request(`select c.[Id], c.[ResId], c.[Row], c.[Col] from ${TableComments} c`, function(err, rowCount) {
                 if (err) {
                     utils.log(err);
                 } else {
@@ -123,19 +123,21 @@ app.post('/comments', async(req, res) => {
         const row = req.body.row;
         const resId = req.body.resId;
         const text = req.body.text;
+        const authorId = req.body.authorId;
 
         utils.log(`resId = ${resId}`);
         utils.log(`col = ${col}`);
         utils.log(`row = ${row}`);
         utils.log(`text = ${text}`);
+        utils.log(`authorId = ${authorId}`);
 
-        var result = await insertComment(resId, row, col, text);
+        var result = await insertComment(authorId, resId, row, col, text);
     }
 
     res.send(result);
 });
 
-const insertComment = (resId, row, col, text) => {
+const insertComment = (authorId, resId, row, col, text) => {
     return new Promise((resolve, reject) => {
         var sql = require("mssql");
 
@@ -157,13 +159,13 @@ const insertComment = (resId, row, col, text) => {
             utils.log(iRow);
             utils.log(iCol);
 
-            const sql = `insert into [SharedTalmud].[dbo].[Comments] (ResId, Row, Col, Text) values(${resId}, ${iRow}, ${iCol}, '${text}')`;
+            const sql = `insert into [SharedTalmud].[dbo].[Comments] (AuthorId, ResId, Row, Col, Text) values(${authorId}, ${resId}, ${iRow}, ${iCol}, '${text}')`;
 
             utils.log(sql, 1);
 
             request = new Request(sql, function(err) {
                 if (err)
-                    utils.log(JSON.stringify(err));
+                    utils.log(JSON.stringify(err), 1);
             });
 
             request.on("requestCompleted", function(rowCount, more) {
