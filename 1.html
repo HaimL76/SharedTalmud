@@ -105,28 +105,17 @@
                         tipCanvas.style.left = dispCol + "px";
                         tipCanvas.style.top = dispRow + "px";
 
-                        counter = 0;
+                        tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
 
-                        setInterval(() => {
-                            percent = (counter / 100);
-                            counter++;
-                            textWidth = percent * tipCanvas.width;
+                        text = "Hello, World";
 
-                            left0 = percent * 100;
+                        //tipCtx.fillText('Hello World', 10, 100, tipCanvas.width);
+                        textWidth = tipCtx.measureText(text).width;
 
-                            tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
+                        //tipCanvas.style.width = textWidth + 10;
 
-                            fontSize = 2;
-
-                            //tipCtx.font = `30px Arial`;
-
-                            text = "Hello, World";
-
-                            //tipCtx.fillText('Hello World', 10, 100, tipCanvas.width);
-                            textWidth = tipCtx.measureText(text).width;
-
-                            tipCtx.fillText(text, 5, 15);
-                        }, 250);
+                        tipCtx.fillText(text, 5, 15);
+                        //}, 250);
                     }
                 }
 
