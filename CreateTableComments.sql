@@ -26,4 +26,5 @@ GO
 ALTER TABLE [dbo].[Comments] ADD  DEFAULT (getdate()) FOR [Timestamp]
 GO
 
-
+ALTER TABLE [dbo].[Comments]
+ADD FOREIGN KEY ([AuthorId]) REFERENCES [dbo].[Authors]([Id]);
