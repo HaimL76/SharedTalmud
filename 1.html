@@ -162,6 +162,58 @@
                     tipCanvas.style.top = tipCanvas.style.left = -1000;
             });
 
+            $('#page-image').click(function(e) {
+                var tipCanvas = $("#tip")[0];
+
+                let hitComment = false;
+
+                const left = $("#page-image").position().left;
+                const top = $("#page-image").position().top;
+
+                row = e.pageY - top;
+                col = e.pageX - left;
+
+                $('#dynamic-status').val(col + ', ' + row);
+
+                if (mapRows && mapCols) {
+                    const hit = hitTest(comments, row, col, [mapRows, mapCols]);
+
+                    if (hit && hit.dist < hitTestDistSquare) {
+                        hitComment = true;
+
+                        const Id = hit.obj.val.Id;
+
+                        if (comments.has(Id)) {
+
+                            const c = comments.get(Id);
+
+                            text = `${c.First} ${c.Last}`;
+
+                            const div0 = $(".comment-text")[0];
+
+                            div0.innerHTML = text;
+
+                            let a = 0;
+
+                            //.innerHTML(text);
+                            //}, 250);
+                        }
+                    }
+                }
+
+                if (mapRows) {
+                    //const keysRows = mapRows.keys();
+                    mapRows.printConsole();
+                }
+
+                if (mapCols) {
+                    //const keysCols = mapCols.keys();
+                }
+
+                if (!hitComment && tipCanvas && "style" in tipCanvas)
+                    tipCanvas.style.top = tipCanvas.style.left = -1000;
+            });
+
             $("#page-image").dblclick(function(e) {
                 const left = $("#page-image").position().left;
                 const top = $("#page-image").position().top;
@@ -323,7 +375,8 @@
     <div class="super-container">
         <input type="text" id="dynamic-status" />
         <input type="text" id="static-status" />
-
+        <div class="comment-text">
+        </div>
         <!--<div class="inner-container">-->
         <div class="container">
             <!--<img id="page-image" src="featured-image-backyard-landscaping.jpeg" alt="featured-image-backyard-landscaping.jpeg">-->

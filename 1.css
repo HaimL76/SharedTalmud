@@ -34,6 +34,11 @@ canvas {
     /*border: 1px solid red;*/
 }
 
+.comment-text {
+    background-color: cadetblue;
+    color: brown;
+}
+
 #tip {
     background-color: white;
     border: 1px solid blue;
