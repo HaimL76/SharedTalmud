@@ -35,10 +35,9 @@ canvas {
 }
 
 #tip {
-    color: darkgreen;
     background-color: white;
     border: 1px solid blue;
     position: absolute;
-    left: -1000px;
-    top: -1000px;
+    left: -200px;
+    top: 100px;
 }

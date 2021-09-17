@@ -104,10 +104,29 @@
 
                         tipCanvas.style.left = dispCol + "px";
                         tipCanvas.style.top = dispRow + "px";
-                        tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
 
-                        tipCtx.font = '48px Arial';
-                        tipCtx.fillText('Hello World', 100, 100, 100);
+                        counter = 0;
+
+                        setInterval(() => {
+                            percent = (counter / 100);
+                            counter++;
+                            textWidth = percent * tipCanvas.width;
+
+                            left0 = percent * 100;
+
+                            tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
+
+                            fontSize = 2;
+
+                            //tipCtx.font = `30px Arial`;
+
+                            text = "Hello, World";
+
+                            //tipCtx.fillText('Hello World', 10, 100, tipCanvas.width);
+                            textWidth = tipCtx.measureText(text).width;
+
+                            tipCtx.fillText(text, 5, 15);
+                        }, 250);
                     }
                 }
 
@@ -289,7 +308,7 @@
             <!--<img id="page-image" src="featured-image-backyard-landscaping.jpeg" alt="featured-image-backyard-landscaping.jpeg">-->
             <canvas id="page-image"><!--</canvas> width="200" height="100" style="border:1px solid #000000;">-->
             </canvas>
-            <canvas id="tip"></canvas>>
+            <canvas id="tip" width=100 height=25></canvas>
             </canvas>
         </div>
         <!--<input type="text" id="resolution" />-->
