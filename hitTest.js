@@ -17,8 +17,8 @@ const hitTest = (comments, row, col, arrayOfArrays, threshold = 4) => {
 
         if (arrRows && Array.isArray(arrRows.arr) && arrRows.arr.length > 0 &&
             arrCols && Array.isArray(arrCols.arr) && arrCols.arr.length > 0) {
-            const clRow = searchArray(arrRows, obj, 0, arrRows.arr.length - 1, (obj, obj0) => distance0(obj, obj0));
-            const clCol = searchArray(arrCols, obj, 0, arrCols.arr.length - 1, (obj, obj0) => distance0(obj, obj0));
+            const clRow = searchArray(arrRows, obj, 0, arrRows.arr.length - 1, (obj, obj0) => distance0(obj, obj0, threshold));
+            const clCol = searchArray(arrCols, obj, 0, arrCols.arr.length - 1, (obj, obj0) => distance0(obj, obj0, threshold));
 
             let distRow;
             let distCol;
@@ -54,7 +54,18 @@ const hitTestDistSquare = 16;
 
 const distance1 = (obj, obj0) => Math.pow(obj.Col - obj0.Col, 2) + Math.pow(obj.Row - obj0.Row, 2);
 
-const distance0 = (obj, obj0) => Math.abs(obj.key - obj0.key);
+const distance0 = (obj, objRow, threshold) => {
+    if (objRow && val in objRow && objRow.val && Col in objRow.val) {
+        const dy = Math.abs(obj.Row - objRow.key);
+
+        if (dy < threshold) {
+            const dx = Math.abs(obj.Col - objRow.val.Col);
+
+            if (dx > threshold)
+                distRow = dx * dx + dy * dy;
+        }
+    }
+}
 
 const searchArray = (list, obj, b, e, distance, threshold = 4) => {
     //if (typeof arr === )
@@ -73,6 +84,7 @@ const searchArray = (list, obj, b, e, distance, threshold = 4) => {
 
     if (middle > 0) {
         objBefore = list.arr[middle - 1];
+
         distBefore = distance(obj, objBefore);
     }
 
