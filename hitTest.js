@@ -23,18 +23,26 @@ const hitTest = (comments, row, col, arrayOfArrays, threshold = 4) => {
             let distRow;
             let distCol;
 
-            if (clRow && val in clRow && clCol.val && Col in clCol.val) {
-                const x = clCol.val.Col;
-                const y = clRow.key;
+            if (clRow && val in clRow && clRow.val && Col in clRow.val) {
+                const dy = Math.abs(row - clRow.key);
 
-                distRow = x * x + y * y;
+                if (dy < threshold) {
+                    const dx = Math.abs(col - clRow.val.Col);
+
+                    if (dx > threshold)
+                        distRow = dx * dx + dy * dy;
+                }
             }
 
             if (clCol && val in clCol && clCol.val && Row in clCol.val) {
-                const y = clCol.val.Row;
-                const x = clCol.key;
+                const dx = Math.abs(col - clCol.key);
 
-                distCol = x * x + y * y;
+                if (dx < threshold) {
+                    const dy = Math.abs(row - clCol.val.Row);
+
+                    if (dy < threshold)
+                        distCol = dx * dx + dy * dy;
+                }
             }
 
             return distCol < distRow ? { val: clCol, dist: distCol } : { val: clRow, dist: distRow };
