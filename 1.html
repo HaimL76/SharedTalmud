@@ -48,9 +48,17 @@
                         Last: c[5]
                     }));
 
-                    comments.forEach(obj => mapRows.add(new listItem(obj.Row, obj.Id)));
+                    comments.forEach(obj => mapRows.add(new listItem(obj.Row, {
+                        Row: obj.Row,
+                        Col: obj.Col,
+                        Id: obj.Id
+                    })));
 
-                    comments.forEach(obj => mapCols.add(new listItem(obj.Col, obj.Id)));
+                    comments.forEach(obj => mapCols.add(new listItem(obj.Col, {
+                        Row: obj.Row,
+                        Col: obj.Col,
+                        Id: obj.Id
+                    })));
 
                     countdown = topOpacity;
                     timestamp = Date.now();

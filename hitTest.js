@@ -4,37 +4,40 @@ const distance10 = (x1, y1, x2, y2) => Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow
 
 const val = "val";
 const Id = "Id";
+const Row = "Row";
+const Col = "Col";
 const Comment0 = "Comment";
 
-const hitTest = (comments, row, col, arrayOfArrays) => {
+const hitTest = (comments, row, col, arrayOfArrays, threshold = 4) => {
     if (Array.isArray(arrayOfArrays) && arrayOfArrays.length == 2) {
-        const objRow = { key: row };
-        const objCol = { key: col };
+        const obj = { Row: row, Col: col };
 
         const arrRows = arrayOfArrays[0];
         const arrCols = arrayOfArrays[1];
 
         if (arrRows && Array.isArray(arrRows.arr) && arrRows.arr.length > 0 &&
             arrCols && Array.isArray(arrCols.arr) && arrCols.arr.length > 0) {
-            const clRow = searchArray(arrRows, objRow, 0, arrRows.arr.length - 1, (obj, obj0) => distance0(obj, obj0));
-            const clCol = searchArray(arrCols, objCol, 0, arrCols.arr.length - 1, (obj, obj0) => distance0(obj, obj0));
+            const clRow = searchArray(arrRows, obj, 0, arrRows.arr.length - 1, (obj, obj0) => distance0(obj, obj0));
+            const clCol = searchArray(arrCols, obj, 0, arrCols.arr.length - 1, (obj, obj0) => distance0(obj, obj0));
 
-            let objRow0;
-            let objCol0;
+            let distRow;
+            let distCol;
 
-            if (clRow && val in clRow && comments.has(clRow.val))
-                objRow0 = comments.get(clRow.val);
+            if (clRow && val in clRow && clCol.val && Col in clCol.val) {
+                const x = clCol.val.Col;
+                const y = clRow.key;
 
-            if (clCol && val in clCol && comments.has(clCol.val))
-                objCol0 = comments.get(clCol.val);
+                distRow = x * x + y * y;
+            }
 
-            const obj = { Row: row, Col: col };
+            if (clCol && val in clCol && clCol.val && Row in clCol.val) {
+                const y = clCol.val.Row;
+                const x = clCol.key;
 
-            const distRow = distance1(objRow0, obj);
+                distCol = x * x + y * y;
+            }
 
-            const distCol = distance1(objCol0, obj);
-
-            return distCol < distRow ? { val: objCol0, dist: distCol } : { val: objRow0, dist: distRow };
+            return distCol < distRow ? { val: clCol, dist: distCol } : { val: clRow, dist: distRow };
         }
     }
 }
@@ -45,7 +48,7 @@ const distance1 = (obj, obj0) => Math.pow(obj.Col - obj0.Col, 2) + Math.pow(obj.
 
 const distance0 = (obj, obj0) => Math.abs(obj.key - obj0.key);
 
-const searchArray = (list, obj, b, e, distance) => {
+const searchArray = (list, obj, b, e, distance, threshold = 4) => {
     //if (typeof arr === )
     let middle = (b + e) / 2;
 
