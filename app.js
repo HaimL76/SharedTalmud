@@ -15,6 +15,7 @@ const port = 3000
 
 const Database = "SharedTalmud";
 const TableComments = `[${Database}].[dbo].[Comments]`;
+const TableAuthors = `[${Database}].[dbo].[Authors]`;
 
 const Request = require('tedious').Request
 const Connection = require('tedious').Connection;
@@ -56,9 +57,12 @@ const getComments = () => {
         connection.on('connect', (err) => {
             utils.log(`${strDateTime}, connected `);
 
-            request = new Request(`select c.[Id], c.[ResId], c.[Row], c.[Col] from ${TableComments} c`, function(err, rowCount) {
+            const sql = `select c.[Id], c.[ResId], c.[Row], c.[Col], a.[First], a.[Last] ` +
+                ` from ${TableComments} c inner join ${TableAuthors} a on a.[Id] = c.[AuthorId]`
+
+            request = new Request(sql, function(err, rowCount) {
                 if (err) {
-                    utils.log(err);
+                    utils.log(err, 1);
                 } else {
                     //utils.log(rowCount + ' rows');
                 }
