@@ -9,6 +9,8 @@ const Col = "Col";
 const Comment0 = "Comment";
 
 const hitTest = (comments, row, col, arrayOfArrays, threshold = 4) => {
+    let obj0;
+
     if (Array.isArray(arrayOfArrays) && arrayOfArrays.length == 2) {
         const obj = { Row: row, Col: col };
 
@@ -22,9 +24,27 @@ const hitTest = (comments, row, col, arrayOfArrays, threshold = 4) => {
 
             searchArray(outList, arrRows, obj, 0, arrRows.arr.length - 1, (obj, obj0, threshold) => distanceRow(obj, obj0));
             //searchArray(outList, arrCols, obj, 0, arrCols.arr.length - 1, (obj, obj0, threshold) => distanceRow(obj, obj0));
+            let found = false;
+            let index = 0;
 
             if (outList.length > 0)
-                return outList[0];
+                while (!found && index < outList.length) {
+                    const obj1 = outList[index];
+
+                    index++;
+
+                    const dx = Math.abs(obj1.obj.val.Col - obj.Col);
+
+                    if (dx < threshold) {
+                        const dy = obj1.obj.val.Row - obj.Row;
+
+                        square = dx * dx + dy * dy;
+                        tSquare = threshold * threshold;
+
+                        if (square < tSquare)
+                            obj0 = obj1;
+                    }
+                }
 
             /*
             let distRow;
@@ -54,7 +74,7 @@ const hitTest = (comments, row, col, arrayOfArrays, threshold = 4) => {
 
             return distCol < distRow ? { val: clCol, dist: distCol } : { val: clRow, dist: distRow };
             */
-            return null;
+            return obj0;
         }
     }
 }
