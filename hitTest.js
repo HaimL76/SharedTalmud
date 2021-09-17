@@ -16,65 +16,68 @@ const hitTest = (comments, row, col, arrayOfArrays) => {
         const arrRows = arrayOfArrays[0];
         const arrCols = arrayOfArrays[1];
 
-        const clRow = searchArray(arrRows, objRow, 0, arrRows.arr.length - 1, (obj, obj0) => distance0(obj, obj0));
-        const clCol = searchArray(arrCols, objCol, 0, arrCols.arr.length - 1, (obj, obj0) => distance0(obj, obj0));
+        if (arrRows && Array.isArray(arrRows.arr) && arrRows.length > 0 &&
+            arrCols && Array.isArray(arrCols.arr) && arrRows.length > 0) {
+            const clRow = searchArray(arrRows, objRow, 0, arrRows.arr.length - 1, (obj, obj0) => distance0(obj, obj0));
+            const clCol = searchArray(arrCols, objCol, 0, arrCols.arr.length - 1, (obj, obj0) => distance0(obj, obj0));
 
-        let objRow0;
-        let objCol0;
+            let objRow0;
+            let objCol0;
 
-        if (clRow && val in clRow && comments.has(clRow.val))
-            objRow0 = comments.get(clRow.val);
+            if (clRow && val in clRow && comments.has(clRow.val))
+                objRow0 = comments.get(clRow.val);
 
-        if (clCol && val in clCol && comments.has(clCol.val))
-            objCol0 = comments.get(clCol.val);
+            if (clCol && val in clCol && comments.has(clCol.val))
+                objCol0 = comments.get(clCol.val);
 
-        const obj = { Row: row, Col: col };
+            const obj = { Row: row, Col: col };
 
-        const distRow = distance1(objRow0, obj);
+            const distRow = distance1(objRow0, obj);
 
-        const distCol = distance1(objCol0, obj);
+            const distCol = distance1(objCol0, obj);
 
-        return distCol < distRow ? { val: objCol0, dist: distCol } : { val: objRow0, dist: distRow };
-    }
-}
-
-const hitTestDistSquare = 16;
-
-const distance1 = (obj, obj0) => Math.pow(obj.Col - obj0.Col, 2) + Math.pow(obj.Row - obj0.Row, 2);
-
-const distance0 = (obj, obj0) => Math.abs(obj.key - obj0.key);
-
-const searchArray = (list, obj, b, e, distance) => {
-    //if (typeof arr === )
-    let middle = (b + e) / 2;
-
-    middle = Math.floor(middle);
-
-    const objMiddle = list.arr[middle];
-
-    const distMiddle = distance(obj, objMiddle);
-
-    let minDist = distMiddle;
-
-    let distBefore = distMiddle;
-    let distAfter = distMiddle;
-
-    if (middle > 0) {
-        objBefore = list.arr[middle - 1];
-        distBefore = distance(obj, objBefore);
+            return distCol < distRow ? { val: objCol0, dist: distCol } : { val: objRow0, dist: distRow };
+        }
     }
 
-    if (middle < list.arr.length - 1) {
-        objAfter = list.arr[middle + 1];
-        distAfter = distance(obj, objAfter);
-    }
+    const hitTestDistSquare = 16;
 
-    if (distBefore < distMiddle)
-        return searchArray(list, obj, b, middle - 1, distance);
-    else if (distAfter < distMiddle)
-        return searchArray(list, obj, middle + 1, e, distance);
-    else
-        return objMiddle;
+    const distance1 = (obj, obj0) => Math.pow(obj.Col - obj0.Col, 2) + Math.pow(obj.Row - obj0.Row, 2);
+
+    const distance0 = (obj, obj0) => Math.abs(obj.key - obj0.key);
+
+    const searchArray = (list, obj, b, e, distance) => {
+        //if (typeof arr === )
+        let middle = (b + e) / 2;
+
+        middle = Math.floor(middle);
+
+        const objMiddle = list.arr[middle];
+
+        const distMiddle = distance(obj, objMiddle);
+
+        let minDist = distMiddle;
+
+        let distBefore = distMiddle;
+        let distAfter = distMiddle;
+
+        if (middle > 0) {
+            objBefore = list.arr[middle - 1];
+            distBefore = distance(obj, objBefore);
+        }
+
+        if (middle < list.arr.length - 1) {
+            objAfter = list.arr[middle + 1];
+            distAfter = distance(obj, objAfter);
+        }
+
+        if (distBefore < distMiddle)
+            return searchArray(list, obj, b, middle - 1, distance);
+        else if (distAfter < distMiddle)
+            return searchArray(list, obj, middle + 1, e, distance);
+        else
+            return objMiddle;
+    }
 }
 
 // Naive method, to be replaced with a proper one.

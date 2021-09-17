@@ -92,7 +92,7 @@
                 if (mapRows && mapCols) {
                     const hit = hitTest(comments, row, col, [mapRows, mapCols]);
 
-                    if (hit.dist < hitTestDistSquare) {
+                    if (hit && hit.dist < hitTestDistSquare) {
                         hitComment = true;
 
                         var tipCtx = tipCanvas.getContext("2d");
