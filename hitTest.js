@@ -83,11 +83,15 @@ const hitTestDistSquare = 16;
 
 const distance1 = (obj, obj0) => Math.pow(obj.Col - obj0.Col, 2) + Math.pow(obj.Row - obj0.Row, 2);
 
-const distanceRow = (obj, objRow) => {
+const distanceRow = (obj, listObject) => {
     let dy;
 
-    if (objRow && val in objRow && objRow.val && Col in objRow.val)
-        dy = Math.abs(obj.Row - objRow.key);
+    if (obj && Row in obj && listObject) {
+        const row1 = obj.Row;
+        const row2 = listObject.getVal(Row);
+
+        dy = Math.abs(row1 - row2);
+    }
 
     return dy;
 }

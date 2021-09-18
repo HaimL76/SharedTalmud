@@ -116,40 +116,37 @@
 
                 $('#dynamic-status').val(col + ', ' + row);
 
+                mapCols = new sortedList();
+
                 if (mapRows && mapCols) {
-                    const hit = hitTest(comments, row, col, [mapRows, mapCols]);
+                    const hit = hitTest(mapCols, row, col, [mapRows, mapCols]);
 
                     if (hit && hit.dist < hitTestDistSquare) {
                         hitComment = true;
 
-                        const Id = hit.obj.val.Id;
+                        const c = hit.obj.val;
 
-                        if (comments.has(Id)) {
+                        text = `${c.First} ${c.Last}`;
 
-                            const c = comments.get(Id);
+                        var tipCtx = tipCanvas.getContext("2d");
 
-                            text = `${c.First} ${c.Last}`;
+                        tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
 
-                            var tipCtx = tipCanvas.getContext("2d");
+                        dispRow = hit.obj.val.Row + top - 35;
+                        dispCol = hit.obj.val.Col + left;
 
-                            tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
+                        tipCanvas.style.left = dispCol + "px";
+                        tipCanvas.style.top = dispRow + "px";
 
-                            dispRow = hit.obj.val.Row + top - 35;
-                            dispCol = hit.obj.val.Col + left;
+                        tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
 
-                            tipCanvas.style.left = dispCol + "px";
-                            tipCanvas.style.top = dispRow + "px";
+                        //tipCtx.fillText('Hello World', 10, 100, tipCanvas.width);
+                        textWidth = tipCtx.measureText(text).width;
 
-                            tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
+                        //tipCanvas.style.width = textWidth + 10;
 
-                            //tipCtx.fillText('Hello World', 10, 100, tipCanvas.width);
-                            textWidth = tipCtx.measureText(text).width;
-
-                            //tipCanvas.style.width = textWidth + 10;
-
-                            tipCtx.fillText(text, 5, 15);
-                            //}, 250);
-                        }
+                        tipCtx.fillText(text, 5, 15);
+                        //}, 250);
                     }
                 }
 
