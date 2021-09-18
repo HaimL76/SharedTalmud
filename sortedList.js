@@ -15,6 +15,8 @@ class listItem {
 
         return v;
     }
+
+    getVal = (key) => this.getKey(key);
 }
 
 class sortedList {

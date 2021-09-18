@@ -18,7 +18,7 @@ const hitTest = (comments, row, col, arrayOfArrays, threshold = 4) => {
         const arrCols = arrayOfArrays[1];
 
         if (arrRows && Array.isArray(arrRows.arr) && arrRows.arr.length > 0 &&
-            arrCols && Array.isArray(arrCols.arr) && arrCols.arr.length > 0) {
+            arrCols && Array.isArray(arrCols.arr)) {
 
             let outList = [];
 
