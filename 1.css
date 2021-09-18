@@ -6,14 +6,6 @@
     left: 0px;
 }
 
-.inner-container {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    top: 0px;
-    left: 0px;
-}
-
 .container {
     display: flex;
     flex-direction: column;
