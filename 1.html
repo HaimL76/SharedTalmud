@@ -177,29 +177,26 @@
 
                 $('#dynamic-status').val(col + ', ' + row);
 
-                if (mapRows && mapCols) {
-                    const hit = hitTest(comments, row, col, [mapRows, mapCols]);
+                mapCols = new sortedList();
 
-                    if (hit && hit.dist < hitTestDistSquare) {
+                if (mapRows && mapCols) {
+                    const hit = hitTest(row, col, [mapRows, mapCols]);
+
+                    if (hit && val in hit) { //}.dist < hitTestDistSquare) {
                         hitComment = true;
 
-                        const Id = hit.obj.val.Id;
+                        const c = hit.val;
 
-                        if (comments.has(Id)) {
+                        text = `${c.First} ${c.Last}`;
 
-                            const c = comments.get(Id);
+                        const div0 = $(".comment-text")[0];
 
-                            text = `${c.First} ${c.Last}`;
+                        div0.innerHTML = text;
 
-                            const div0 = $(".comment-text")[0];
+                        let a = 0;
 
-                            div0.innerHTML = text;
-
-                            let a = 0;
-
-                            //.innerHTML(text);
-                            //}, 250);
-                        }
+                        //.innerHTML(text);
+                        //}, 250);
                     }
                 }
 
