@@ -21,6 +21,8 @@
                 return loremIpsum.substr(from, size);
             }
 
+            const Row = "Row";
+
             //var int0 = setInterval(() => {
             $.ajax({
                 type: "GET",
@@ -35,30 +37,31 @@
 
                     mapRows = new sortedList(data.length);
 
-                    mapCols = new sortedList(data.length);
+                    //comments = new Map();
 
-                    comments = new Map();
+                    //data.forEach(c => comments.set(c[0], {
+                    //  Id: c[0],
+                    //                        ResId: c[1],
+                    //Row: c[2],
+                    //Col: c[3],
+                    //First: c[4],
+                    //Last: c[5]
+                    //}));
 
-                    data.forEach(c => comments.set(c[0], {
+                    data.forEach(c => mapRows.add(new listItem({
                         Id: c[0],
                         ResId: c[1],
                         Row: c[2],
                         Col: c[3],
                         First: c[4],
                         Last: c[5]
-                    }));
+                    }), Row));
 
-                    comments.forEach(obj => mapRows.add(new listItem(obj.Row, {
-                        Row: obj.Row,
-                        Col: obj.Col,
-                        Id: obj.Id
-                    })));
-
-                    comments.forEach(obj => mapCols.add(new listItem(obj.Col, {
-                        Row: obj.Row,
-                        Col: obj.Col,
-                        Id: obj.Id
-                    })));
+                    //comments.forEach(obj => mapCols.add(new listItem(obj.Col, {
+                    //  Row: obj.Row,
+                    //Col: obj.Col,
+                    //Id: obj.Id
+                    //})));
 
                     countdown = topOpacity;
                     timestamp = Date.now();
@@ -250,7 +253,7 @@
 
                     const str_rgba = `rgba(0, 255, 255, ${alpha})`;
 
-                    comments.forEach(element => {
+                    mapRows.arr.forEach(element => {
                         ctx.beginPath();
 
                         ctx.arc(element.Col, element.Row, radius, 0, 2 * Math.PI, false);
