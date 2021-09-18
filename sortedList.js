@@ -24,6 +24,24 @@ class sortedList {
     begin = 0;
     end = 0;
 
+    getObject = (index) => {
+        let obj = null;
+
+        if (Array.isArray(this.arr) && this.arr.length > index)
+            obj = this.arr[index];
+
+        return obj;
+    }
+
+    getLength = () => {
+        let len = 0;
+
+        if (Array.isArray(this.arr))
+            len = this.arr.length;
+
+        return len;
+    }
+
     add = (obj, key) => {
         if (obj) {
             if (this.arr.length < 1)

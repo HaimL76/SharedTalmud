@@ -8,7 +8,7 @@ const Row = "Row";
 const Col = "Col";
 const Comment0 = "Comment";
 
-const hitTest = (comments, row, col, arrayOfArrays, threshold = 4) => {
+const hitTest = (row, col, arrayOfArrays, threshold = 4) => {
     let obj0;
 
     if (Array.isArray(arrayOfArrays) && arrayOfArrays.length == 2) {
@@ -20,23 +20,23 @@ const hitTest = (comments, row, col, arrayOfArrays, threshold = 4) => {
         if (arrRows && Array.isArray(arrRows.arr) && arrRows.arr.length > 0 &&
             arrCols && Array.isArray(arrCols.arr)) {
 
-            let outList = [];
+            searchArray(arrCols, arrRows, obj, 0, arrRows.getLength() - 1, (obj, obj0, threshold) => distanceRow(obj, obj0));
 
-            searchArray(outList, arrRows, obj, 0, arrRows.arr.length - 1, (obj, obj0, threshold) => distanceRow(obj, obj0));
-            //searchArray(outList, arrCols, obj, 0, arrCols.arr.length - 1, (obj, obj0, threshold) => distanceRow(obj, obj0));
             let found = false;
             let index = 0;
 
-            if (outList.length > 0)
-                while (!found && index < outList.length) {
-                    const obj1 = outList[index];
+            const len = arrCols.getLength();
+
+            if (len > 0)
+                while (!found && index < len) {
+                    const obj1 = arrCols.getObject(index);
 
                     index++;
 
-                    const dx = Math.abs(obj1.obj.val.Col - obj.Col);
+                    const dx = Math.abs(obj1.getVal(Col) - obj.Col);
 
                     if (dx < threshold) {
-                        const dy = obj1.obj.val.Row - obj.Row;
+                        const dy = obj1.getVal(Row) - obj.Row;
 
                         square = dx * dx + dy * dy;
                         tSquare = threshold * threshold;
@@ -96,7 +96,7 @@ const distanceRow = (obj, listObject) => {
     return dy;
 }
 
-const searchArray = (outList, list, obj, b, e, distance, threshold = 4) => {
+const searchArray = (arrCols, list, obj, b, e, distance, threshold = 4) => {
     let distBefore;
     let distAfter;
     //if (typeof arr === )
@@ -109,10 +109,7 @@ const searchArray = (outList, list, obj, b, e, distance, threshold = 4) => {
     const distMiddle = distance(obj, objMiddle);
 
     if (distMiddle < threshold) {
-        outList.push({
-            dist: distMiddle,
-            obj: objMiddle
-        });
+        arrCols.add(objMiddle, Col);
 
         //let minDist = distMiddle;
 
@@ -133,11 +130,10 @@ const searchArray = (outList, list, obj, b, e, distance, threshold = 4) => {
             if (distBefore > threshold)
                 foundHigher = true;
             else
-                outList.push({
-                    dist: distBefore,
-                    obj: objBefore
-                });
+                arrCols.add(objBefore, Col);
         }
+
+        index = middle;
 
         foundHigher = false;
 
@@ -151,10 +147,7 @@ const searchArray = (outList, list, obj, b, e, distance, threshold = 4) => {
             if (distAfter > threshold)
                 foundHigher = true;
             else
-                outList.push({
-                    dist: distAfter,
-                    obj: objAfter
-                });
+                arrCols.add(objAfter, Col);
         }
     } else {
         if (b < e) {
@@ -173,11 +166,11 @@ const searchArray = (outList, list, obj, b, e, distance, threshold = 4) => {
             //if (distBefore < distMiddle)
             //return
             if (distBefore < distAfter)
-                searchArray(outList, list, obj, b, middle - 1, distance);
+                searchArray(arrCols, list, obj, b, middle - 1, distance);
             else
             //else if (distAfter < distMiddle)
             //return
-                searchArray(outList, list, obj, middle + 1, e, distance);
+                searchArray(arrCols, list, obj, middle + 1, e, distance);
             //else
             //  return objMiddle;
         }

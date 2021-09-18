@@ -23,6 +23,7 @@
 
             const Row = "Row";
             const Col = "Col";
+            const val = "val";
 
             //var int0 = setInterval(() => {
             $.ajax({
@@ -119,12 +120,12 @@
                 mapCols = new sortedList();
 
                 if (mapRows && mapCols) {
-                    const hit = hitTest(mapCols, row, col, [mapRows, mapCols]);
+                    const hit = hitTest(row, col, [mapRows, mapCols]);
 
-                    if (hit && hit.dist < hitTestDistSquare) {
+                    if (hit && val in hit) { //} && hit.dist < hitTestDistSquare) {
                         hitComment = true;
 
-                        const c = hit.obj.val;
+                        const c = hit.val;
 
                         text = `${c.First} ${c.Last}`;
 
@@ -132,8 +133,8 @@
 
                         tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
 
-                        dispRow = hit.obj.val.Row + top - 35;
-                        dispCol = hit.obj.val.Col + left;
+                        dispRow = c.Row + top - 35;
+                        dispCol = c.Col + left;
 
                         tipCanvas.style.left = dispCol + "px";
                         tipCanvas.style.top = dispRow + "px";
