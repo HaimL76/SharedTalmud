@@ -8,7 +8,7 @@
 
 .container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 body {
@@ -29,6 +29,7 @@ canvas {
 .comment-text {
     background-color: cadetblue;
     color: brown;
+    bottom: 1ch;
 }
 
 #tip {

@@ -94,13 +94,13 @@
             //var id = $(this).attr('id');
             var canvas = $("#page-image")[0];
 
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            canvas.width = 1000; // window.innerWidth;
+            canvas.height = 500; //window.innerHeight;
 
             var ctx = canvas.getContext("2d");
             var img = new Image;
             img.onload = function() {
-                ctx.drawImage(this, 0, 0);
+                ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
             };
             img.src = 'featured-image-backyard-landscaping.jpeg';
 
@@ -220,7 +220,7 @@
                 row = e.pageY - top;
                 col = e.pageX - left;
 
-                $('#static-status').val(col + ', ' + row);
+                //$('#static-status').val(col + ', ' + row);
 
                 insert(1, 1, row, col);
 
@@ -373,9 +373,7 @@
     </style>
     <div class="super-container">
         <input type="text" id="dynamic-status" />
-        <input type="text" id="static-status" />
-        <div class="comment-text">
-        </div>
+
         <!--<div class="inner-container">-->
         <div class="container">
             <!--<img id="page-image" src="featured-image-backyard-landscaping.jpeg" alt="featured-image-backyard-landscaping.jpeg">-->
@@ -383,6 +381,8 @@
             </canvas>
             <canvas id="tip" width=100 height=25></canvas>
             </canvas>
+            <div class="comment-text">
+            </div>
         </div>
         <!--<input type="text" id="resolution" />-->
     </div>
