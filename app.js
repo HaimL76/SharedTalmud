@@ -57,8 +57,8 @@ const getComments = () => {
         connection.on('connect', (err) => {
             utils.log(`${strDateTime}, connected `);
 
-            const sql = `select c.[Id], c.[ResId], c.[Row], c.[Col], a.[First], a.[Last] ` +
-                ` from ${TableComments} c inner join ${TableAuthors} a on a.[Id] = c.[AuthorId]`
+            const sql = `select c.[Id], c.[Resource], c.[Row], c.[Col], a.[First], a.[Last] ` +
+                ` from ${TableComments} c inner join ${TableAuthors} a on a.[Id] = c.[Author]`
 
             request = new Request(sql, function(err, rowCount) {
                 if (err) {
@@ -163,7 +163,7 @@ const insertComment = (authorId, resId, row, col, text) => {
             utils.log(iRow);
             utils.log(iCol);
 
-            const sql = `insert into [SharedTalmud].[dbo].[Comments] (AuthorId, ResId, Row, Col, Text) values(${authorId}, ${resId}, ${iRow}, ${iCol}, '${text}')`;
+            const sql = `insert into [SharedTalmud].[dbo].[Comments] (Author, Resource, Row, Col, Text) values(${authorId}, ${resId}, ${iRow}, ${iCol}, '${text}')`;
 
             utils.log(sql, 1);
 
