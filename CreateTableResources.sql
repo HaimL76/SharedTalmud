@@ -1,7 +1,7 @@
 USE [SharedTalmud]
 GO
 
-/****** Object:  Table [dbo].[Authors]    Script Date: 21/09/2021 10:39:27 pm ******/
+/****** Object:  Table [dbo].[Authors]    Script Date: 21/09/2021 10:32:07 pm ******/
 SET ANSI_NULLS ON
 GO
 
@@ -9,13 +9,14 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 drop table [dbo].[Comments]
-drop table [dbo].[Authors]
+drop table [dbo].[Resources]
 
-CREATE TABLE [dbo].[Authors](
+CREATE TABLE [dbo].[Resources](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[First] [nvarchar](50) NOT NULL,
-	[Last] [nvarchar](50) NOT NULL,
-	[Timestamp] [datetime] NOT NULL,
+	[Book] [int] NOT NULL,
+	[Page] [int] NOT NULL,
+	[Path] [nvarchar](1024) NOT NULL,	
+	[Timestamp] [datetime] NOT NULL
 PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -23,7 +24,5 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[Authors] ADD  DEFAULT (getdate()) FOR [Timestamp]
+ALTER TABLE [dbo].[Resources] ADD  DEFAULT (getdate()) FOR [Timestamp]
 GO
-
-
