@@ -14,11 +14,12 @@ IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Comments')
 IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Resources')
 	drop table [dbo].[Resources]
 
-CREATE TABLE [dbo].[Resources](
+IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Books')
+	drop table [dbo].[Books]
+
+CREATE TABLE [dbo].[Books](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Book] [int] NOT NULL,
-	[Page] [int] NOT NULL,
-	[Path] [nvarchar](1024) NOT NULL,	
+	[Name] [nvarchar](1024) NOT NULL,	
 	[Timestamp] [datetime] NOT NULL
 PRIMARY KEY CLUSTERED 
 (
@@ -27,9 +28,5 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[Resources] ADD  DEFAULT (getdate()) FOR [Timestamp]
-GO
-
-ALTER TABLE [dbo].[Resources]  WITH CHECK ADD FOREIGN KEY([Book])
-REFERENCES [dbo].[Books] ([Id])
+ALTER TABLE [dbo].[Books] ADD  DEFAULT (getdate()) FOR [Timestamp]
 GO

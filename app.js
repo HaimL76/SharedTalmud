@@ -163,7 +163,7 @@ const insertComment = (authorId, resId, row, col, text) => {
             utils.log(iRow);
             utils.log(iCol);
 
-            const sql = `insert into [SharedTalmud].[dbo].[Comments] (Author, Resource, Row, Col, Text) values(${authorId}, ${resId}, ${iRow}, ${iCol}, '${text}')`;
+            const sql = `insert into [SharedTalmud].[dbo].[Comments] (Author, Resource, Row, Col, Text, Headline) values(${authorId}, ${resId}, ${iRow}, ${iCol}, '${text}', '${text}')`;
 
             utils.log(sql, 1);
 
