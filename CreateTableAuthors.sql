@@ -8,8 +8,11 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-drop table [dbo].[Comments]
-drop table [dbo].[Authors]
+IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Comments')
+	drop table [dbo].[Comments]
+
+IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Authors')
+	drop table [dbo].[Authors]
 
 CREATE TABLE [dbo].[Authors](
 	[Id] [int] IDENTITY(1,1) NOT NULL,

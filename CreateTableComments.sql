@@ -8,7 +8,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-drop table [dbo].[Comments]
+IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Comments')
+	drop table [dbo].[Comments]
 
 CREATE TABLE [dbo].[Comments](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
