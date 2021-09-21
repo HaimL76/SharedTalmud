@@ -17,9 +17,11 @@ IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Resources')
 IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Books')
 	drop table [dbo].[Books]
 
-CREATE TABLE [dbo].[Books](
+IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Categories')
+	drop table [dbo].[Categories]
+
+CREATE TABLE [dbo].[Categories](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Category] [int] NOT NULL,
 	[Name] [nvarchar](1024) NOT NULL,	
 	[Timestamp] [datetime] NOT NULL
 PRIMARY KEY CLUSTERED 
@@ -29,9 +31,5 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[Books] ADD  DEFAULT (getdate()) FOR [Timestamp]
-GO
-
-ALTER TABLE [dbo].[Books]  WITH CHECK ADD FOREIGN KEY([Category])
-REFERENCES [dbo].[Categories] ([Id])
+ALTER TABLE [dbo].[Categories] ADD  DEFAULT (getdate()) FOR [Timestamp]
 GO
