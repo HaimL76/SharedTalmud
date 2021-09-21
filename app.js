@@ -16,6 +16,8 @@ const port = 3000
 const Database = "SharedTalmud";
 const TableComments = `[${Database}].[dbo].[Comments]`;
 const TableAuthors = `[${Database}].[dbo].[Authors]`;
+const TableCategories = `[${Database}].[dbo].[Categories]`;
+const TableBooks = `[${Database}].[dbo].[Books]`;
 
 const Request = require('tedious').Request
 const Connection = require('tedious').Connection;
@@ -48,6 +50,28 @@ app.get('/comments', async(req, res) => {
     res.send(arr);
 });
 
+app.get('/categories', async(req, res) => {
+    const arr = await getCategories();
+
+    if (Array.isArray(arr))
+        utils.log(`arr.length=${arr.length}`);
+
+    res.send(arr);
+});
+
+app.get('/books/:category', async(req, res) => {
+    var cat = req.params.category
+
+    if (cat) {
+        const arr = await getBooks(cat);
+
+        if (Array.isArray(arr))
+            utils.log(`arr.length=${arr.length}`);
+
+        res.send(arr);
+    }
+});
+
 const getComments = () => {
     return new Promise((resolve, reject) => {
         const strDateTime = dtu.formatDateTime(new Date());
@@ -59,6 +83,141 @@ const getComments = () => {
 
             const sql = `select c.[Id], c.[Resource], c.[Row], c.[Col], a.[First], a.[Last] ` +
                 ` from ${TableComments} c inner join ${TableAuthors} a on a.[Id] = c.[Author]`
+
+            request = new Request(sql, function(err, rowCount) {
+                if (err) {
+                    utils.log(err, 1);
+                } else {
+                    //utils.log(rowCount + ' rows');
+                }
+            });
+
+            const arr = [];
+
+            request.on('row', function(cols) {
+                //if (Array.isArray(cols))
+                //  utils.log(`cols.length = ${cols.length}`);
+
+                const arr0 = [];
+
+                cols.forEach((col) => {
+                    //utils.log(`${strDateTime}, ${col.value}`);
+                    arr0.push(col.value)
+                });
+
+                arr.push(arr0);
+            });
+
+            request.on('requestCompleted', function() {
+                connection.close();
+
+                resolve(arr);
+            });
+
+            request.on('done', function(rowCount, more, rows) {
+                //utils.log(rowCount);
+                const arr = [];
+
+                rows.forEach((row) => {
+                    //utils.log(`${strDateTime}, ${row.value}`);
+                    arr.push(row.value)
+                });
+
+                resolve(arr);
+            });
+
+            connection.execSql(request);
+
+            utils.log(`${strDateTime}, after calling exeSql`);
+        });
+
+        connection.connect();
+
+        utils.log(`${strDateTime}, after calling connect`);
+    });
+}
+
+const getCategories = () => {
+    return new Promise((resolve, reject) => {
+        const strDateTime = dtu.formatDateTime(new Date());
+
+        const connection = new Connection(config);
+
+        connection.on('connect', (err) => {
+            utils.log(`${strDateTime}, connected `);
+
+            const sql = `select cat.[Id], cat.[Name] ` +
+                ` from ${TableCategories} cat`
+
+            request = new Request(sql, function(err, rowCount) {
+                if (err) {
+                    utils.log(err, 1);
+                } else {
+                    //utils.log(rowCount + ' rows');
+                }
+            });
+
+            const arr = [];
+
+            request.on('row', function(cols) {
+                //if (Array.isArray(cols))
+                //  utils.log(`cols.length = ${cols.length}`);
+
+                const arr0 = [];
+
+                cols.forEach((col) => {
+                    //utils.log(`${strDateTime}, ${col.value}`);
+                    arr0.push(col.value)
+                });
+
+                arr.push(arr0);
+            });
+
+            request.on('requestCompleted', function() {
+                connection.close();
+
+                resolve(arr);
+            });
+
+            request.on('done', function(rowCount, more, rows) {
+                //utils.log(rowCount);
+                const arr = [];
+
+                rows.forEach((row) => {
+                    //utils.log(`${strDateTime}, ${row.value}`);
+                    arr.push(row.value)
+                });
+
+                resolve(arr);
+            });
+
+            connection.execSql(request);
+
+            utils.log(`${strDateTime}, after calling exeSql`);
+        });
+
+        connection.connect();
+
+        utils.log(`${strDateTime}, after calling connect`);
+    });
+}
+
+const getBooks = (category) => {
+    return new Promise((resolve, reject) => {
+        const strDateTime = dtu.formatDateTime(new Date());
+
+        const connection = new Connection(config);
+
+        connection.on('connect', (err) => {
+            utils.log(`${strDateTime}, connected `);
+
+            let sql = `select b.[Id], b.[Name] ` +
+                ` from ${TableBooks} b`;
+
+            if (category)
+                sql += ` where b.[Category] = ${category}`
+
+            utils.log(sql, 1);
 
             request = new Request(sql, function(err, rowCount) {
                 if (err) {

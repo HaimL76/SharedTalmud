@@ -2,13 +2,29 @@
 
 <head>
     <link rel="stylesheet" href="1.css">
+    <link rel="stylesheet" href="list.css">
     <script src="jquery-3.6.0.js"></script>
     <!--<script type='text/javascript' src='utils.js'></script>-->
     <script type='text/javascript' src='hitTest.js'></script>
     <script type='text/javascript' src='sortedList.js'></script>
     <script type='text/javascript' src='timedFunctions.js'></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(async function() {
+            let comments;
+
+            let mapRows, mapCols;
+
+            const pageImage = new Image;
+            pageImage.src = 'featured-image-backyard-landscaping.jpeg';
+            const topOpacity = 0; // 28;
+            const interval = 75; //ms
+
+            let countdown;
+
+            let timestamp;
+
+            let centerX, centerY, radius = 5;
+
             const loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
             const loremIpsumLength = loremIpsum.length;
@@ -21,12 +37,76 @@
                 return loremIpsum.substr(from, size);
             }
 
+            const drawCircles = function() {
+                const [ts, cd] = intervalFunction(interval, timestamp, countdown, (counter) => {
+                    const canvas = $("#page-image")[0];
+                    const ctx = canvas.getContext('2d');
+
+                    //ctx.globalCompositeOperation = 'destination-over';
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); // clear canvas
+
+                    ctx.drawImage(pageImage, 0, 0); //-12 * countDown, -12);
+
+                    const alpha = topOpacity < 1 ?
+                        1 :
+                        counter / topOpacity;
+
+                    const str_rgba = `rgba(0, 255, 255, ${alpha})`;
+
+                    mapRows.arr.forEach(element => {
+                        ctx.beginPath();
+
+                        ctx.arc(element.getVal(Col), element.getVal(Row), radius, 0, 2 * Math.PI, false);
+
+                        ctx.fillStyle = str_rgba;
+                        ctx.fill();
+                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = 'black';
+                        ctx.stroke();
+                    });
+                });
+
+                countdown = cd;
+                timestamp = ts;
+
+                if (countdown >= 0)
+                    window.requestAnimationFrame(drawCircles);
+            }
+
             const Row = "Row";
             const Col = "Col";
             const val = "val";
 
+            await $.ajax({
+                type: "GET",
+                url: `http://localhost:3000/categories/`,
+                success: function(data) {
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach(arr => $("#ulCategories").append(`<li id="#cat_${arr[0]}"><span class="caret">${arr[1]}</span></li>`));
+
+                        $('#ulCategories > li').each(function() {
+                            console.log($(this).attr('id'));
+                        });
+
+                        $('#ulCategories > li').click(async function() {
+                            console.log($(this).attr('id'));
+
+                            await $.ajax({
+                                type: "GET",
+                                url: `http://localhost:3000/books/${1}`,
+                                success: function(data) {
+                                    if (Array.isArray(data) && data.length > 0) {
+                                        data.forEach(arr0 => console.log(arr0));
+                                    }
+                                }
+                            });
+                        });
+                    }
+                }
+            });
+
             //var int0 = setInterval(() => {
-            $.ajax({
+            await $.ajax({
                 type: "GET",
                 url: `http://localhost:3000/comments/`,
                 success: function(data) {
@@ -75,21 +155,6 @@
             //},
             //1800);
 
-            let comments;
-
-            let mapRows, mapCols;
-
-            const pageImage = new Image;
-            pageImage.src = 'featured-image-backyard-landscaping.jpeg';
-            const topOpacity = 0; // 28;
-            const interval = 75; //ms
-
-            let countdown;
-
-            let timestamp;
-
-            let centerX, centerY, radius = 5;
-
             //var design = $(this).attr('data-design');
             //var id = $(this).attr('id');
             var canvas = $("#page-image")[0];
@@ -115,7 +180,7 @@
                 row = e.pageY - top;
                 col = e.pageX - left;
 
-                $('#dynamic-status').val(col + ', ' + row);
+                //$('#dynamic-status').val(col + ', ' + row);
 
                 mapCols = new sortedList();
 
@@ -233,76 +298,6 @@
                 window.requestAnimationFrame(drawCircles);
             });
 
-            const drawCircles = function() {
-                const [ts, cd] = intervalFunction(interval, timestamp, countdown, (counter) => {
-                    const canvas = $("#page-image")[0];
-                    const ctx = canvas.getContext('2d');
-
-                    //ctx.globalCompositeOperation = 'destination-over';
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); // clear canvas
-
-                    ctx.drawImage(pageImage, 0, 0); //-12 * countDown, -12);
-
-                    const alpha = topOpacity < 1 ?
-                        1 :
-                        counter / topOpacity;
-
-                    const str_rgba = `rgba(0, 255, 255, ${alpha})`;
-
-                    mapRows.arr.forEach(element => {
-                        ctx.beginPath();
-
-                        ctx.arc(element.getVal(Col), element.getVal(Row), radius, 0, 2 * Math.PI, false);
-
-                        ctx.fillStyle = str_rgba;
-                        ctx.fill();
-                        ctx.lineWidth = 1;
-                        ctx.strokeStyle = 'black';
-                        ctx.stroke();
-                    });
-
-                    //ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-                    //ctx.lineWidth = 5;
-                    //ctx.strokeStyle = '#003300';
-                    //ctx.stroke();
-
-                    /*
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-                    ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
-                    ctx.save();
-                    ctx.translate(150, 150);
-
-                    // Earth
-                    var time = new Date();
-                    ctx.rotate(((2 * Math.PI) / 60) * time.getSeconds() + ((2 * Math.PI) / 60000) * time.getMilliseconds());
-                    ctx.translate(105, 0);
-                    ctx.fillRect(0, -12, 40, 24); // Shadow
-                    ctx.drawImage(pageImage, -12, -12);
-
-                    // Moon
-                    ctx.save();
-                    ctx.rotate(((2 * Math.PI) / 6) * time.getSeconds() + ((2 * Math.PI) / 6000) * time.getMilliseconds());
-                    ctx.translate(0, 28.5);
-                    ctx.drawImage(moon, -3.5, -3.5);
-                    ctx.restore();
-
-                    ctx.restore();
-
-                    ctx.beginPath();
-                    ctx.arc(150, 150, 105, 0, Math.PI * 2, false); // Earth orbit
-                    ctx.stroke();
-
-                    ctx.drawImage(sun, 0, 0, 300, 300);
-                    */
-                });
-
-                countdown = cd;
-                timestamp = ts;
-
-                if (countdown >= 0)
-                    window.requestAnimationFrame(drawCircles);
-            }
-
             const insert = function(authorId, resId, row, col) {
                 //var text = prompt("כתוב את חידושך", "");
                 const text = randomString(10);
@@ -372,7 +367,11 @@
 
     </style>
     <div class="super-container">
-        <input type="text" id="dynamic-status" />
+        <div>
+            <ul id="ulCategories">
+
+            </ul>
+        </div>
 
         <!--<div class="inner-container">-->
         <div class="container">
