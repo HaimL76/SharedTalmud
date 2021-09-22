@@ -99,6 +99,13 @@
 
                             myId = parseInt(myId);
 
+                            const len = $myLi.children("ul").length;
+
+                            const strId2 = `#${strId}`;
+
+                            if (len > 0)
+                                $(`${strId2} > ul`).remove();
+
                             await $.ajax({
                                 type: "GET",
                                 url: `http://localhost:3000/books/${myId}`,
@@ -112,7 +119,7 @@
 
                                         const strId1 = `#${strId0}`;
 
-                                        data.forEach(arr => $(strId1).append(`<li id="#cat_${arr[0]}"><span class="caret">${arr[1]}</span></li>`));
+                                        data.forEach(arr => $(strId1).append(`<li id="#book_${arr[0]}"><span class="caret">${arr[1]}</span></li>`));
 
                                         $myLi.append(`</ul>`);
                                     }
