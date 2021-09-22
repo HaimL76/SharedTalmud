@@ -46,3 +46,7 @@ canvas {
     left: -200px;
     top: 100px;
 }
+
+.list-container {
+    width: 22ch;
+}

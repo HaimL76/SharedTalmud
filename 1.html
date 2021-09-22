@@ -77,26 +77,44 @@
             const Col = "Col";
             const val = "val";
 
+            const pref_len = "cat_".length;
+
             await $.ajax({
                 type: "GET",
                 url: `http://localhost:3000/categories/`,
                 success: function(data) {
                     if (Array.isArray(data) && data.length > 0) {
-                        data.forEach(arr => $("#ulCategories").append(`<li id="#cat_${arr[0]}"><span class="caret">${arr[1]}</span></li>`));
+                        data.forEach(arr => $("#ulCategories").append(`<li id="cat_${arr[0]}"><span class="caret">${arr[1]}</span></li>`));
 
                         $('#ulCategories > li').each(function() {
                             console.log($(this).attr('id'));
                         });
 
                         $('#ulCategories > li').click(async function() {
-                            console.log($(this).attr('id'));
+                            const $myLi = $(this);
+
+                            const strId = $(this).attr('id');
+
+                            let myId = strId.substring(pref_len);
+
+                            myId = parseInt(myId);
 
                             await $.ajax({
                                 type: "GET",
-                                url: `http://localhost:3000/books/${1}`,
+                                url: `http://localhost:3000/books/${myId}`,
                                 success: function(data) {
                                     if (Array.isArray(data) && data.length > 0) {
                                         data.forEach(arr0 => console.log(arr0));
+
+                                        const strId0 = `catbooks_${strId}`
+
+                                        $myLi.append(`<ul id="${strId0}">`);
+
+                                        const strId1 = `#${strId0}`;
+
+                                        data.forEach(arr => $(strId1).append(`<li id="#cat_${arr[0]}"><span class="caret">${arr[1]}</span></li>`));
+
+                                        $myLi.append(`</ul>`);
                                     }
                                 }
                             });
@@ -367,7 +385,7 @@
 
     </style>
     <div class="super-container">
-        <div>
+        <div class="list-container">
             <ul id="ulCategories">
 
             </ul>
