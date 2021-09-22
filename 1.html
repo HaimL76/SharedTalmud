@@ -77,7 +77,11 @@
             const Col = "Col";
             const val = "val";
 
-            const pref_len = "cat_".length;
+            const pref_cat = "cat_";
+            const pref_cat_len = pref_cat.length;
+
+            const pref_book = "book_";
+            const pref_book_len = pref_book.length;
 
             await $.ajax({
                 type: "GET",
@@ -91,37 +95,66 @@
                         });
 
                         $('ul.cats > li').click(async function() {
-                            const $myLi = $(this);
+                            const $liCat = $(this);
 
-                            const strId = $(this).attr('id');
+                            let idCat = $(this).attr('id');
 
-                            let myId = strId.substring(pref_len);
+                            idCat = idCat.substring(pref_cat_len);
 
-                            myId = parseInt(myId);
+                            idCat = parseInt(idCat);
 
-                            const len = $myLi.children("ul").length;
-
-                            const strId2 = `#${strId}`;
+                            const len = $liCat.children("ul").length;
 
                             if (len > 0)
-                                $(`${strId2} > ul`).remove();
+                                $(`#${pref_cat}${idCat} > ul`).remove();
                             else
                                 await $.ajax({
                                     type: "GET",
-                                    url: `http://localhost:3000/books/${myId}`,
+                                    url: `http://localhost:3000/books/${idCat}`,
                                     success: function(data) {
                                         if (Array.isArray(data) && data.length > 0) {
                                             data.forEach(arr0 => console.log(arr0));
 
-                                            const strId0 = `catbooks_${strId}`
+                                            idCat = `catbooks_${idCat}`
 
-                                            $myLi.append(`<ul class="books" id="${strId0}">`);
+                                            $liCat.append(`<ul class="books" id="${idCat}">`);
 
-                                            const strId1 = `#${strId0}`;
+                                            data.forEach(arr => $(`#${idCat}`).append(`<li id="book_${arr[0]}"><span class="caret">${arr[1]}</span></li>`));
 
-                                            data.forEach(arr => $(strId1).append(`<li id="#book_${arr[0]}"><span class="caret">${arr[1]}</span></li>`));
+                                            $liCat.append(`</ul>`);
 
-                                            $myLi.append(`</ul>`);
+                                            $('ul.books > li').click(async function() {
+                                                const $liBook = $(this);
+
+                                                let idBook = $(this).attr('id');
+
+                                                idBook = idBook.substring(pref_book_len);
+
+                                                idBook = parseInt(idBook);
+
+                                                const len = $liBook.children("ul").length;
+
+                                                if (len > 0)
+                                                    $(`#${pref_book}${idBook} > ul`).remove();
+                                                else
+                                                    await $.ajax({
+                                                        type: "GET",
+                                                        url: `http://localhost:3000/resources/${idBook}`,
+                                                        success: function(data) {
+                                                            if (Array.isArray(data) && data.length > 0) {
+                                                                data.forEach(arr0 => console.log(arr0));
+
+                                                                idBook = `bookres_${idBook}`
+
+                                                                $liBook.append(`<ul class="res" id="${idBook}">`);
+
+                                                                data.forEach(arr => $(`#${idBook}`).append(`<li id="res_${arr[0]}"><span class="caret">${arr[1]}</span></li>`));
+
+                                                                $liBook.append(`</ul>`);
+                                                            }
+                                                        }
+                                                    });
+                                            });
                                         }
                                     }
                                 });

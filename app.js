@@ -18,6 +18,7 @@ const TableComments = `[${Database}].[dbo].[Comments]`;
 const TableAuthors = `[${Database}].[dbo].[Authors]`;
 const TableCategories = `[${Database}].[dbo].[Categories]`;
 const TableBooks = `[${Database}].[dbo].[Books]`;
+const TableResources = `[${Database}].[dbo].[Resources]`;
 
 const Request = require('tedious').Request
 const Connection = require('tedious').Connection;
@@ -64,6 +65,19 @@ app.get('/books/:category', async(req, res) => {
 
     if (cat) {
         const arr = await getBooks(cat);
+
+        if (Array.isArray(arr))
+            utils.log(`arr.length=${arr.length}`);
+
+        res.send(arr);
+    }
+});
+
+app.get('/resources/:book', async(req, res) => {
+    var cat = req.params.book
+
+    if (cat) {
+        const arr = await getResources(cat);
 
         if (Array.isArray(arr))
             utils.log(`arr.length=${arr.length}`);
@@ -216,6 +230,76 @@ const getBooks = (category) => {
 
             if (category)
                 sql += ` where b.[Category] = ${category}`
+
+            utils.log(sql, 1);
+
+            request = new Request(sql, function(err, rowCount) {
+                if (err) {
+                    utils.log(err, 1);
+                } else {
+                    //utils.log(rowCount + ' rows');
+                }
+            });
+
+            const arr = [];
+
+            request.on('row', function(cols) {
+                //if (Array.isArray(cols))
+                //  utils.log(`cols.length = ${cols.length}`);
+
+                const arr0 = [];
+
+                cols.forEach((col) => {
+                    //utils.log(`${strDateTime}, ${col.value}`);
+                    arr0.push(col.value)
+                });
+
+                arr.push(arr0);
+            });
+
+            request.on('requestCompleted', function() {
+                connection.close();
+
+                resolve(arr);
+            });
+
+            request.on('done', function(rowCount, more, rows) {
+                //utils.log(rowCount);
+                const arr = [];
+
+                rows.forEach((row) => {
+                    //utils.log(`${strDateTime}, ${row.value}`);
+                    arr.push(row.value)
+                });
+
+                resolve(arr);
+            });
+
+            connection.execSql(request);
+
+            utils.log(`${strDateTime}, after calling exeSql`);
+        });
+
+        connection.connect();
+
+        utils.log(`${strDateTime}, after calling connect`);
+    });
+}
+
+const getResources = (book) => {
+    return new Promise((resolve, reject) => {
+        const strDateTime = dtu.formatDateTime(new Date());
+
+        const connection = new Connection(config);
+
+        connection.on('connect', (err) => {
+            utils.log(`${strDateTime}, connected `);
+
+            let sql = `select r.[Id], r.[Page] ` +
+                ` from ${TableResources} r`;
+
+            if (book)
+                sql += ` where r.[Book] = ${book}`
 
             utils.log(sql, 1);
 
