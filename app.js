@@ -321,7 +321,14 @@ const getResources = (book) => {
 
                 cols.forEach((col) => {
                     //utils.log(`${strDateTime}, ${col.value}`);
-                    arr0.push(col.value)
+                    utils.log(JSON.stringify(col), 1);
+
+                    let val = col.value;
+
+                    if (col.metadata.colName === "Page")
+                        val = `עמוד ${val}`;
+
+                    arr0.push(val)
                 });
 
                 arr.push(arr0);

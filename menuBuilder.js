@@ -196,24 +196,26 @@ class menuBuilder {
 
         //item.clear();
 
-        const levelData = this.arrLevels[item.level];
+        if (Array.isArray(this.arrLevels) && item.level < this.arrLevels.length) {
+            const levelData = this.arrLevels[item.level];
 
-        const api = levelData.api;
-        const lName = levelData.name;
+            const api = levelData.api;
+            const lName = levelData.name;
 
-        let theUrl = api;
+            let theUrl = api;
 
-        if (item.ident > 0)
-            theUrl += item.ident;
+            if (item.ident > 0)
+                theUrl += item.ident;
 
-        await $.ajax({
-            type: "GET",
-            url: theUrl,
-            success: function(data) {
-                if (Array.isArray(data) && data.length > 0) {
-                    item.buildItems(data, lName, true);
+            await $.ajax({
+                type: "GET",
+                url: theUrl,
+                success: function(data) {
+                    if (Array.isArray(data) && data.length > 0) {
+                        item.buildItems(data, lName, true);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 }
