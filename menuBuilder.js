@@ -70,9 +70,11 @@ class menuItem {
         const myIdent = this.getIdent();
 
         $(`#${myIdent}`).on('click', () => {
-            if (Array.isArray(this.childItems) && this.childItems.length > 0)
-                $(`#ul_${myIdent}`).remove();
-            else
+            if (Array.isArray(this.childItems) && this.childItems.length > 0) {
+                this.childItems = null;
+
+                this.myBuilder.drawAll();
+            } else
                 this.myBuilder.buildMenuItem(this);
         });
     }
@@ -143,17 +145,19 @@ class menuItem {
 
         $me.append(`<span class="caret">${this.name}</span>`);
 
-        $me.append(`<ul id="${this.strUl}_${myIdent}">`); //<span class="caret">${this.name}</span>`);
+        if (Array.isArray(this.childItems) && this.childItems.length > 0) {
+            $me.append(`<ul id="${this.strUl}_${myIdent}">`); //<span class="caret">${this.name}</span>`);
 
-        this.childItems.forEach(child => {
-            child.draw();
+            this.childItems.forEach(child => {
+                child.draw();
 
-            child.addClickEvent();
-        });
+                child.addClickEvent();
+            });
 
-        $me.append(`</ul`);
+            $me.append(`</ul`);
 
-        $parent.append(`</li>`);
+            $parent.append(`</li>`);
+        }
     }
 }
 
