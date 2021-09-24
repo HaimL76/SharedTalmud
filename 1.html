@@ -7,6 +7,7 @@
     <!--<script type='text/javascript' src='utils.js'></script>-->
     <script type='text/javascript' src='hitTest.js'></script>
     <script type='text/javascript' src='sortedList.js'></script>
+    <script type='text/javascript' src='menuBuilder.js'></script>
     <script type='text/javascript' src='timedFunctions.js'></script>
     <script>
         $(document).ready(async function() {
@@ -77,18 +78,31 @@
             const Col = "Col";
             const val = "val";
 
+            const menu = new menuBuilder([{
+                api: 'http://localhost:3000/categories/',
+                name: "cat"
+            }]);
+
+            menu.buildMenuItem(null);
+
             const pref_cat = "cat_";
             const pref_cat_len = pref_cat.length;
 
             const pref_book = "book_";
             const pref_book_len = pref_book.length;
 
+            const Plus = "&#43;"
+            const Minus = "&#8722;"
+
+            const getSign = (plus) =>
+                plus ? Plus : Minus;
+
             await $.ajax({
                 type: "GET",
                 url: `http://localhost:3000/categories/`,
                 success: function(data) {
                     if (Array.isArray(data) && data.length > 0) {
-                        data.forEach(arr => $("#ulCategories").append(`<li id="cat_${arr[0]}"><span class="caret">${arr[1]}</span></li>`));
+                        data.forEach(arr => $("#ulCategories").append(`<li id="cat_${arr[0]} class="close"><span class="beforeCaret">${Plus}</span><span class="caret">${arr[1]}</span></li>`));
 
                         $('ul.cats > li').each(function() {
                             console.log($(this).attr('id'));
@@ -105,9 +119,12 @@
 
                             const len = $liCat.children("ul").length;
 
-                            if (len > 0)
+                            if (len > 0) {
                                 $(`#${pref_cat}${idCat} > ul`).remove();
-                            else
+
+                                $(`#${pref_cat}${idCat}`).removeClass("Open");
+                                $(`#${pref_cat}${idCat}`).addClass("Close");
+                            } else {
                                 await $.ajax({
                                     type: "GET",
                                     url: `http://localhost:3000/books/${idCat}`,
@@ -158,6 +175,7 @@
                                         }
                                     }
                                 });
+                            }
                         });
                     }
                 }
