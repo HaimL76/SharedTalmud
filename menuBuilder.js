@@ -82,7 +82,9 @@ class menuItem {
         $(`#${parentIdent}`).append(`<li id="${myIdent}"><span class="caret">${this.name}</span></li>`);
     }
 
-    getHtml = () => {
+    strLevel = "level";
+
+    getChildrenHtml = () => {
         let myIdent = this.getIdent();
 
         let html = null;
@@ -91,33 +93,34 @@ class menuItem {
             html = `<ul id="${myIdent}"><span class="caret">${this.name}</span>`
 
             this.childItems.forEach(child => {
-                html += `<li id="${myIdent}"><span class="caret">${this.name}</span></li>`
+                const childIdent = child.getIdent();
+
+                const myLevel = `${this.strLevel}_${child.level}`;
+
+                //for (let i = 0; i < child.level; i++)
+                //html += "&emsp;";
+
+                const strStyle = `margin-left: ${child.level}ch;`;
+
+                html += `<li class=${myLevel} id="${childIdent}" style="${strStyle}"><span class="caret">${child.name}</span></li>`
             });
 
             html += "</ul>";
-        } else {
-            html = `<li id="${myIdent}"><span class="caret">${this.name}</span></li>`
         }
 
         return html;
     }
 
-    addToExternal = (externalIdent) => {
-        let myIdent = "myList";
+    addToExternal = async(externalIdent) => {
+        await this.myBuilder.buildMenuItem(this);
 
-        const listHtml = this.getHtml(); // $(`#${myIdent}`).innerHTML;
-
-        let html = `<ul id="${myIdent}"><span class="caret">MyList</span>`;
-
-        html += listHtml;
-
-        html += "</ul>";
+        const html = this.getChildrenHtml(); // $(`#${myIdent}`).innerHTML;
 
         $(`#${externalIdent}`).append(html);
 
-        $(`#${myIdent}`).on("click", () => {
-            this.myBuilder.buildMenuItem(this);
-        });
+        //$(`#${myIdent}`).on("click", () => {
+        //  this.myBuilder.buildMenuItem(this);
+        //});
     }
 }
 
