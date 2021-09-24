@@ -85,6 +85,8 @@
 
             menu.buildMenuItem(null);
 
+            menu.addToExternal("sideMenu");
+
             const pref_cat = "cat_";
             const pref_cat_len = pref_cat.length;
 
@@ -443,7 +445,7 @@
 
     </style>
     <div class="super-container">
-        <div class="list-container">
+        <div id="sideMenu" class="list-container">
             <ul class="cats" id="ulCategories">
 
             </ul>
