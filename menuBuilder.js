@@ -2,12 +2,14 @@
 
 class menuItem {
 
-    constructor(parent, lName, arr, indexId = 0, indexName = 1) {
+    constructor(builder, parent, lName, arr, indexId = 0, indexName = 1) {
         if (arr) {
             this.ident = arr[indexId];
 
             this.name = arr[indexName];
         }
+
+        this.myBuilder = builder;
 
         this.myParent = parent;
 
@@ -15,6 +17,8 @@ class menuItem {
 
         this.level = this.myParent ? this.myParent.level + 1 : 0;
     }
+
+    myBuilder = null;
 
     level = null;
 
@@ -43,15 +47,31 @@ class menuItem {
         return `${this.levelName}_${this.ident}`;
     }
 
-    buildItems(data, lName) {
-        if (Array.isArray(data) && data.length > 0)
-            data.forEach(arr => this.childItems.push(new menuItem(this, lName, arr)));
+    buildItems = (data, lName, add = false) => {
+        if (Array.isArray(data) && data.length > 0) {
+            this.childItems = [];
+
+            data.forEach(arr => this.childItems.push(new menuItem(this.myBuilder, this, lName, arr)));
+
+            if (add)
+                this.addItems();
+        }
+    }
+
+    addItems = () => {
+        this.childItems.forEach(child => child.addToParent());
+    }
+
+    clearParent = () => {
+        const parentIdent = this.myParent.getIdent();
+
+        $(`#${parentIdent}`).remove();
     }
 
     addToParent = () => {
-        const parentIdent = `${parent.levelName}_${parent.ident}`;
+        const parentIdent = this.myParent.getIdent();
 
-        const myIdent = `${this.levelName}_${this.ident}`;
+        const myIdent = this.getIdent();
 
         $(`#${parentIdent}`).append(`<li id="${myIdent}"><span class="caret">${this.name}</span></li>`);
     }
@@ -77,9 +97,21 @@ class menuItem {
     }
 
     addToExternal = (externalIdent) => {
-        const html = this.getHtml(); // $(`#${myIdent}`).innerHTML;
+        let myIdent = "myList";
+
+        const listHtml = this.getHtml(); // $(`#${myIdent}`).innerHTML;
+
+        let html = `<ul id="${myIdent}"><span class="caret">MyList</span>`;
+
+        html += listHtml;
+
+        html += "</ul>";
 
         $(`#${externalIdent}`).append(html);
+
+        $(`#${myIdent}`).on("click", () => {
+            this.myBuilder.buildMenuItem(this);
+        });
     }
 }
 
@@ -102,8 +134,12 @@ class menuBuilder {
             if (this.root)
                 throw "there is already a root element";
 
-            this.root = item = new menuItem(0, null, null, null);
+            this.root = item = new menuItem(this, 0, null, null, null);
         }
+
+        const itemIdent = item.getIdent();
+
+        $(`#${itemIdent}`).remove();
 
         const levelData = this.arrLevels[item.level];
 
@@ -120,9 +156,7 @@ class menuBuilder {
             url: theUrl,
             success: function(data) {
                 if (Array.isArray(data) && data.length > 0) {
-                    item.buildItems(data, lName);
-
-                    item.childItems.forEach(child => child.addToParent());
+                    item.buildItems(data, lName, true);
                 }
             }
         });
