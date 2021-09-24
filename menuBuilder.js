@@ -66,7 +66,7 @@ class menuItem {
         $(`#${parentIdent}`).append(`<li id="${myIdent}"><span class="caret">${this.name}</span></li>`);
     }
 
-    getClickEvent = () => {
+    addClickEvent = () => {
         const myIdent = this.getIdent();
 
         $(`#${myIdent}`).on('click', () => {
@@ -132,6 +132,9 @@ class menuItem {
 
         const $parent = $(`#${this.strUl}_${parentIdent}`);
 
+        if (this.level < 1)
+            $parent.children().remove();
+
         const strStyle = `margin-left: ${this.level}ch;`;
 
         $parent.append(`<li class=${myLevel} id="${myIdent}" style="${strStyle}">`);
@@ -142,7 +145,11 @@ class menuItem {
 
         $me.append(`<ul id="${this.strUl}_${myIdent}">`); //<span class="caret">${this.name}</span>`);
 
-        this.childItems.forEach(child => child.draw());
+        this.childItems.forEach(child => {
+            child.draw();
+
+            child.addClickEvent();
+        });
 
         $me.append(`</ul`);
 
