@@ -62,10 +62,16 @@ class menuItem {
         this.childItems.forEach(child => child.addToParent());
     }
 
+    clear = () => {
+        const myIdent = this.getIdent();
+
+        $(`#${myIdent}`).children().remove();
+    }
+
     clearParent = () => {
         const parentIdent = this.myParent.getIdent();
 
-        $(`#${parentIdent}`).remove();
+        $(`#${parentIdent}`).children().remove();
     }
 
     addToParent = () => {
@@ -139,7 +145,9 @@ class menuBuilder {
 
         const itemIdent = item.getIdent();
 
-        $(`#${itemIdent}`).remove();
+        //item.clearParent();
+
+        item.clear();
 
         const levelData = this.arrLevels[item.level];
 
