@@ -54,24 +54,8 @@ class menuItem {
             data.forEach(arr => this.childItems.push(new menuItem(this.myBuilder, this, lName, arr)));
 
             if (add)
-                this.addItems();
+                this.myBuilder.drawAll();
         }
-    }
-
-    addItems = () => {
-        this.childItems.forEach(child => child.addToParent());
-    }
-
-    clear = () => {
-        const myIdent = this.getIdent();
-
-        $(`#${myIdent}`).children().remove();
-    }
-
-    clearParent = () => {
-        const parentIdent = this.myParent.getIdent();
-
-        $(`#${parentIdent}`).children().remove();
     }
 
     addToParent = () => {
@@ -82,6 +66,17 @@ class menuItem {
         $(`#${parentIdent}`).append(`<li id="${myIdent}"><span class="caret">${this.name}</span></li>`);
     }
 
+    getClickEvent = () => {
+        const myIdent = this.getIdent();
+
+        $(`#${myIdent}`).on('click', () => {
+            if (Array.isArray(this.childItems) && this.childItems.length > 0)
+                $(`#ul_${myIdent}`).remove();
+            else
+                this.myBuilder.buildMenuItem(this);
+        });
+    }
+
     strLevel = "level";
 
     getChildrenHtml = () => {
@@ -90,7 +85,7 @@ class menuItem {
         let html = null;
 
         if (Array.isArray(this.childItems) && this.childItems.length > 0) {
-            html = `<ul id="${myIdent}"><span class="caret">${this.name}</span>`
+            html = `<ul id="ul_${myIdent}"><span class="caret">${this.name}</span>`
 
             this.childItems.forEach(child => {
                 const childIdent = child.getIdent();
@@ -118,25 +113,67 @@ class menuItem {
 
         $(`#${externalIdent}`).append(html);
 
-        //$(`#${myIdent}`).on("click", () => {
-        //  this.myBuilder.buildMenuItem(this);
-        //});
+        //const myIdent = this.getIdent();
+
+        this.childItems.forEach(child => child.getClickEvent());
+    }
+
+    strUl = "ul";
+
+    draw = (external = null) => {
+        let myIdent = this.getIdent();
+
+        const myLevel = `${this.strLevel}_${this.level}`;
+
+        let parentIdent = external;
+
+        if (!parentIdent)
+            parentIdent = this.myParent.getIdent();
+
+        const $parent = $(`#${this.strUl}_${parentIdent}`);
+
+        const strStyle = `margin-left: ${this.level}ch;`;
+
+        $parent.append(`<li class=${myLevel} id="${myIdent}" style="${strStyle}">`);
+
+        const $me = $(`#${myIdent}`);
+
+        $me.append(`<span class="caret">${this.name}</span>`);
+
+        $me.append(`<ul id="${this.strUl}_${myIdent}">`); //<span class="caret">${this.name}</span>`);
+
+        this.childItems.forEach(child => child.draw());
+
+        $me.append(`</ul`);
+
+        $parent.append(`</li>`);
     }
 }
 
 class menuBuilder {
-    constructor(levels) {
+    constructor(external, levels) {
         this.arrLevels = levels;
+
+        this.externalIdent = external;
     }
+
+    externalIdent = null;
 
     arrLevels = null;
 
     root = null;
 
-    addToExternal = (externalIdent) => {
-        if (this.root)
-            this.root.addToExternal(externalIdent);
+    addToExternal = (external) => {
+        //if (this.root)
+        //  this.root.addToExternal(external);
     }
+
+    drawAll = () => {
+        if (this.root && this.externalIdent)
+            this.root.draw(this.externalIdent);
+    }
+
+    build = async() => this.buildMenuItem(null);
 
     async buildMenuItem(item) {
         if (!item) {
@@ -150,7 +187,7 @@ class menuBuilder {
 
         //item.clearParent();
 
-        item.clear();
+        //item.clear();
 
         const levelData = this.arrLevels[item.level];
 

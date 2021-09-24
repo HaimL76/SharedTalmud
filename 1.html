@@ -78,14 +78,15 @@
             const Col = "Col";
             const val = "val";
 
-            const menu = new menuBuilder([{
-                api: 'http://localhost:3000/categories/',
+            const menu = new menuBuilder("sideMenu", [{
+                api: "http://localhost:3000/categories/",
                 name: "cat"
+            }, {
+                api: "http://localhost:3000/books/",
+                name: "book"
             }]);
 
-            menu.buildMenuItem(null);
-
-            menu.addToExternal("sideMenu");
+            menu.build();
 
             const pref_cat = "cat_";
             const pref_cat_len = pref_cat.length;
@@ -446,7 +447,7 @@
     </style>
     <div class="super-container">
         <div id="sideMenu" class="list-container">
-            <ul class="cats" id="ulCategories">
+            <ul class="level_0" id="ul_sideMenu">
 
             </ul>
         </div>
