@@ -69,13 +69,16 @@ class menuItem {
     addClickEvent = () => {
         const myIdent = this.getIdent();
 
-        $(`#${myIdent}`).on('click', () => {
+        $(`#${myIdent}`).on('click', async(event) => {
+            event.stopPropagation();
+
             if (Array.isArray(this.childItems) && this.childItems.length > 0) {
                 this.childItems = null;
 
                 this.myBuilder.drawAll();
-            } else
-                this.myBuilder.buildMenuItem(this);
+            } else {
+                await this.myBuilder.buildMenuItem(this);
+            }
         });
     }
 
