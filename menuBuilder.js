@@ -146,7 +146,14 @@ class menuItem {
 
         const $me = $(`#${myIdent}`);
 
-        $me.append(`<span class="caret">${this.name}</span>`);
+        let str = "o";
+
+        if (!this.myBuilder.isLeaf(this))
+            str = Array.isArray(this.childItems) && this.childItems.length > 0 ?
+            "-" :
+            "+";
+
+        $me.append(`<span class="caret">${str} ${this.name}</span>`);
 
         if (Array.isArray(this.childItems) && this.childItems.length > 0) {
             $me.append(`<ul id="${this.strUl}_${myIdent}">`); //<span class="caret">${this.name}</span>`);
@@ -180,6 +187,10 @@ class menuBuilder {
     addToExternal = (external) => {
         //if (this.root)
         //  this.root.addToExternal(external);
+    }
+
+    isLeaf = (item) => {
+        return item.level === this.arrLevels.length;
     }
 
     drawAll = () => {
