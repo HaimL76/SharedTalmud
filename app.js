@@ -174,17 +174,11 @@ const getCategories = () => {
             const arr = [];
 
             request.on('row', function(cols) {
-                //if (Array.isArray(cols))
-                //  utils.log(`cols.length = ${cols.length}`);
+                const dict = {};
 
-                const arr0 = [];
+                cols.forEach((col) => dict[col.metadata.colName] = col.value);
 
-                cols.forEach((col) => {
-                    //utils.log(`${strDateTime}, ${col.value}`);
-                    arr0.push(col.value)
-                });
-
-                arr.push(arr0);
+                arr.push(dict);
             });
 
             request.on('requestCompleted', function() {
@@ -244,17 +238,11 @@ const getBooks = (category) => {
             const arr = [];
 
             request.on('row', function(cols) {
-                //if (Array.isArray(cols))
-                //  utils.log(`cols.length = ${cols.length}`);
+                const dict = {};
 
-                const arr0 = [];
+                cols.forEach((col) => dict[col.metadata.colName] = col.value);
 
-                cols.forEach((col) => {
-                    //utils.log(`${strDateTime}, ${col.value}`);
-                    arr0.push(col.value)
-                });
-
-                arr.push(arr0);
+                arr.push(dict);
             });
 
             request.on('requestCompleted', function() {
@@ -295,7 +283,7 @@ const getResources = (book) => {
         connection.on('connect', (err) => {
             utils.log(`${strDateTime}, connected `);
 
-            let sql = `select r.[Id], r.[Page] ` +
+            let sql = `select r.[Id], r.[Page], r.[Path] ` +
                 ` from ${TableResources} r`;
 
             if (book)
@@ -317,7 +305,7 @@ const getResources = (book) => {
                 //if (Array.isArray(cols))
                 //  utils.log(`cols.length = ${cols.length}`);
 
-                const arr0 = [];
+                const dict = {};
 
                 cols.forEach((col) => {
                     //utils.log(`${strDateTime}, ${col.value}`);
@@ -328,10 +316,10 @@ const getResources = (book) => {
                     if (col.metadata.colName === "Page")
                         val = `עמוד ${val}`;
 
-                    arr0.push(val)
+                    dict[col.metadata.colName] = val;
                 });
 
-                arr.push(arr0);
+                arr.push(dict);
             });
 
             request.on('requestCompleted', function() {

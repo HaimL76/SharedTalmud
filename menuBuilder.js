@@ -7,6 +7,8 @@ class menuItem {
             this.ident = arr[indexId];
 
             this.name = arr[indexName];
+
+            this.myData = arr;
         }
 
         this.myBuilder = builder;
@@ -17,6 +19,8 @@ class menuItem {
 
         this.level = this.myParent ? this.myParent.level + 1 : 0;
     }
+
+    myData = null;
 
     myBuilder = null;
 
@@ -72,12 +76,19 @@ class menuItem {
         $(`#${myIdent}`).on('click', async(event) => {
             event.stopPropagation();
 
-            if (Array.isArray(this.childItems) && this.childItems.length > 0) {
-                this.childItems = null;
+            if (this.myBuilder.isLeaf(this)) {
+                const cb = this.myBuilder.onClick;
 
-                this.myBuilder.drawAll();
+                if (cb)
+                    cb(this);
             } else {
-                await this.myBuilder.buildMenuItem(this);
+                if (Array.isArray(this.childItems) && this.childItems.length > 0) {
+                    this.childItems = null;
+
+                    this.myBuilder.drawAll();
+                } else {
+                    await this.myBuilder.buildMenuItem(this);
+                }
             }
         });
     }
@@ -172,11 +183,15 @@ class menuItem {
 }
 
 class menuBuilder {
-    constructor(external, levels) {
+    constructor(external, levels, click = null) {
         this.arrLevels = levels;
 
         this.externalIdent = external;
+
+        this.onClick = click;
     }
+
+    onClick = null;
 
     externalIdent = null;
 

@@ -6,6 +6,7 @@
     <script src="jquery-3.6.0.js"></script>
     <!--<script type='text/javascript' src='utils.js'></script>-->
     <script type='text/javascript' src='hitTest.js'></script>
+    <script type='text/javascript' src='speechBubble.js'></script>
     <script type='text/javascript' src='sortedList.js'></script>
     <script type='text/javascript' src='menuBuilder.js'></script>
     <script type='text/javascript' src='timedFunctions.js'></script>
@@ -25,6 +26,8 @@
             let timestamp;
 
             let centerX, centerY, radius = 5;
+
+            const myData = "myData";
 
             const loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
@@ -79,15 +82,19 @@
             const val = "val";
 
             const menu = new menuBuilder("sideMenu", [{
-                api: "http://localhost:3000/categories/",
-                name: "cat"
-            }, {
-                api: "http://localhost:3000/books/",
-                name: "book"
-            }, {
-                api: "http://localhost:3000/resources/",
-                name: "resource"
-            }]);
+                    api: "http://localhost:3000/categories/",
+                    name: "cat"
+                }, {
+                    api: "http://localhost:3000/books/",
+                    name: "book"
+                }, {
+                    api: "http://localhost:3000/resources/",
+                    name: "resource"
+                }],
+                (item) => {
+                    if (item && myData in item && Array.isArray(item.myData) && item.myData.length > 0)
+                        alert(JSON.stringify(item.myData));
+                });
 
             menu.build();
 
@@ -294,6 +301,8 @@
                         //tipCanvas.style.width = textWidth + 10;
 
                         tipCtx.fillText(text, 5, 15);
+
+                        //drawBubble(tipCtx, dispCol, dispRow, 220, 90, 20);
                         //}, 250);
                     }
                 }
