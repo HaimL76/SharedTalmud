@@ -89,7 +89,8 @@
                     name: "book"
                 }, {
                     api: "http://localhost:3000/resources/",
-                    name: "resource"
+                    name: "resource",
+                    colName: "Page",
                 }],
                 (item) => {
                     if (item && myData in item && Array.isArray(item.myData) && item.myData.length > 0)

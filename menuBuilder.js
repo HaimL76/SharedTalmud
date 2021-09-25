@@ -3,9 +3,11 @@
 class menuItem {
 
     constructor(builder, parent, lName, data, nameId = null, nameName = null) {
-        nameId = "Id";
+        if (!nameId)
+            nameId = "Id";
 
-        nameName = "Name";
+        if (!nameName)
+            nameName = "Name";
 
         if (data && nameId in data && nameName in data) {
             this.ident = data[nameId];
@@ -55,11 +57,11 @@ class menuItem {
         return `${this.levelName}_${this.ident}`;
     }
 
-    buildItems = (data, lName, add = false) => {
+    buildItems = (data, lName, nameId, nameName, add = false) => {
         if (Array.isArray(data) && data.length > 0) {
             this.childItems = [];
 
-            data.forEach(arr => this.childItems.push(new menuItem(this.myBuilder, this, lName, arr)));
+            data.forEach(dict => this.childItems.push(new menuItem(this.myBuilder, this, lName, dict, nameId, nameName)));
 
             if (add)
                 this.myBuilder.drawAll();
@@ -219,6 +221,8 @@ class menuBuilder {
 
     build = async() => this.buildMenuItem(null);
 
+    colName = "colName";
+
     async buildMenuItem(item) {
         if (!item) {
             if (this.root)
@@ -239,6 +243,13 @@ class menuBuilder {
             const api = levelData.api;
             const lName = levelData.name;
 
+            let nameId = null;
+
+            let nameName = null;
+
+            if (this.colName in levelData)
+                nameName = levelData.colName;
+
             let theUrl = api;
 
             if (item.ident > 0)
@@ -249,7 +260,7 @@ class menuBuilder {
                 url: theUrl,
                 success: function(data) {
                     if (Array.isArray(data) && data.length > 0) {
-                        item.buildItems(data, lName, true);
+                        item.buildItems(data, lName, nameId, nameName, true);
                     }
                 }
             });
