@@ -16,7 +16,6 @@
 
             let mapRows, mapCols;
 
-            const pageImage = new Image;
             const topOpacity = 0; // 28;
             const interval = 75; //ms
 
@@ -42,47 +41,49 @@
                 return loremIpsum.substr(from, size);
             }
 
-            const drawCircles = function() {
-                const [ts, cd] = intervalFunction(interval, timestamp, countdown, (counter) => {
-                    const canvas = $("#page-image")[0];
-                    const ctx = canvas.getContext('2d');
-
-                    //ctx.globalCompositeOperation = 'destination-over';
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); // clear canvas
-
-                    ctx.drawImage(pageImage, 0, 0); //-12 * countDown, -12);
-
-                    const alpha = topOpacity < 1 ?
-                        1 :
-                        counter / topOpacity;
-
-                    const str_rgba = `rgba(0, 255, 255, ${alpha})`;
-
-                    mapRows.arr.forEach(element => {
-                        ctx.beginPath();
-
-                        ctx.arc(element.getVal(Col), element.getVal(Row), radius, 0, 2 * Math.PI, false);
-
-                        ctx.fillStyle = str_rgba;
-                        ctx.fill();
-                        ctx.lineWidth = 1;
-                        ctx.strokeStyle = 'black';
-                        ctx.stroke();
-                    });
-                });
-
-                countdown = cd;
-                timestamp = ts;
-
-                if (countdown >= 0)
-                    window.requestAnimationFrame(drawCircles);
-            }
-
             const Row = "Row";
             const Col = "Col";
             const val = "val";
 
-            const drawPage = async(resource, image0) => {
+            const drawPage = async(resource) => {
+                const pageImage = new Image();
+
+                const drawCircles = function() {
+                    const [ts, cd] = intervalFunction(interval, timestamp, countdown, (counter) => {
+                        const canvas = $("#page-image")[0];
+                        const ctx = canvas.getContext('2d');
+
+                        //ctx.globalCompositeOperation = 'destination-over';
+                        ctx.clearRect(0, 0, canvas.width, canvas.height); // clear canvas
+
+                        ctx.drawImage(pageImage, 0, 0); //-12 * countDown, -12);
+
+                        const alpha = topOpacity < 1 ?
+                            1 :
+                            counter / topOpacity;
+
+                        const str_rgba = `rgba(0, 255, 255, ${alpha})`;
+
+                        mapRows.arr.forEach(element => {
+                            ctx.beginPath();
+
+                            ctx.arc(element.getVal(Col), element.getVal(Row), radius, 0, 2 * Math.PI, false);
+
+                            ctx.fillStyle = str_rgba;
+                            ctx.fill();
+                            ctx.lineWidth = 1;
+                            ctx.strokeStyle = 'black';
+                            ctx.stroke();
+                        });
+                    });
+
+                    countdown = cd;
+                    timestamp = ts;
+
+                    if (countdown >= 0)
+                        window.requestAnimationFrame(drawCircles);
+                }
+
                 const isValid = resource && myData in resource && resource.myData && Path in resource.myData;
 
                 await $.ajax({
@@ -142,11 +143,12 @@
                 canvas.height = 500; //window.innerHeight;
 
                 var ctx = canvas.getContext("2d");
-                var img = new Image;
-                img.onload = function() {
+
+                pageImage.onload = function() {
                     ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
                 };
-                image0.src = img.src = resource.myData.Path;
+
+                pageImage.src = resource.myData.Path;
 
                 $('#page-image').mousemove(function(e) {
                     var tipCanvas = $("#tip")[0];
@@ -209,6 +211,26 @@
                     if (!hitComment && tipCanvas && "style" in tipCanvas)
                         tipCanvas.style.top = tipCanvas.style.left = -1000;
                 });
+
+                $("#page-image").dblclick(function(e) {
+                    const left = $("#page-image").position().left;
+                    const top = $("#page-image").position().top;
+
+                    row = e.pageY - top;
+                    col = e.pageX - left;
+
+                    //$('#static-status').val(col + ', ' + row);
+
+                    insert(1, 1, row, col);
+
+                    centerX = col;
+                    centerY = row;
+
+                    countdown = topOpacity;
+                    timestamp = Date.now();
+
+                    window.requestAnimationFrame(drawCircles);
+                });
             }
 
             const menu = new menuBuilder("sideMenu", [{
@@ -225,7 +247,7 @@
                 (item) => {
                     if (item && myData in item && item.myData && Path in item.myData)
                     //alert(JSON.stringify(item.myData.Path));
-                        drawPage(item, pageImage);
+                        drawPage(item);
                 });
 
             menu.build();
@@ -277,26 +299,6 @@
 
                 if (!hitComment && tipCanvas && "style" in tipCanvas)
                     tipCanvas.style.top = tipCanvas.style.left = -1000;
-            });
-
-            $("#page-image").dblclick(function(e) {
-                const left = $("#page-image").position().left;
-                const top = $("#page-image").position().top;
-
-                row = e.pageY - top;
-                col = e.pageX - left;
-
-                //$('#static-status').val(col + ', ' + row);
-
-                insert(1, 1, row, col);
-
-                centerX = col;
-                centerY = row;
-
-                countdown = topOpacity;
-                timestamp = Date.now();
-
-                window.requestAnimationFrame(drawCircles);
             });
 
             const insert = function(authorId, resId, row, col) {
