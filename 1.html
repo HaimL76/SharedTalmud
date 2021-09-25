@@ -17,7 +17,6 @@
             let mapRows, mapCols;
 
             const pageImage = new Image;
-            pageImage.src = 'featured-image-backyard-landscaping.jpeg';
             const topOpacity = 0; // 28;
             const interval = 75; //ms
 
@@ -28,6 +27,8 @@
             let centerX, centerY, radius = 5;
 
             const myData = "myData";
+
+            const Path = "Path";
 
             const loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
@@ -81,6 +82,135 @@
             const Col = "Col";
             const val = "val";
 
+            const drawPage = async(resource, image0) => {
+                const isValid = resource && myData in resource && resource.myData && Path in resource.myData;
+
+                await $.ajax({
+                    type: "GET",
+                    url: `http://localhost:3000/comments/`,
+                    success: function(data) {
+                        const width = window.screen.width * window.devicePixelRatio;
+                        const height = window.screen.height * window.devicePixelRatio;
+
+                        $('#resolution').val(`${height}, ${width}`);
+
+                        console.log(data.toString);
+
+                        mapRows = new sortedList(data.length);
+
+                        //comments = new Map();
+
+                        //data.forEach(c => comments.set(c[0], {
+                        //  Id: c[0],
+                        //                        ResId: c[1],
+                        //Row: c[2],
+                        //Col: c[3],
+                        //First: c[4],
+                        //Last: c[5]
+                        //}));
+
+                        data.forEach(c => mapRows.add(new listItem({
+                            Id: c[0],
+                            ResId: c[1],
+                            Row: c[2],
+                            Col: c[3],
+                            First: c[4],
+                            Last: c[5]
+                        }), Row));
+
+                        //comments.forEach(obj => mapCols.add(new listItem(obj.Col, {
+                        //  Row: obj.Row,
+                        //Col: obj.Col,
+                        //Id: obj.Id
+                        //})));
+
+                        countdown = topOpacity;
+                        timestamp = Date.now();
+
+                        //alert(JSON.stringify(data));
+                        window.requestAnimationFrame(drawCircles);
+                    }
+                });
+                //},
+                //1800);
+
+                //var design = $(this).attr('data-design');
+                //var id = $(this).attr('id');
+                var canvas = $("#page-image")[0];
+
+                canvas.width = 1000; // window.innerWidth;
+                canvas.height = 500; //window.innerHeight;
+
+                var ctx = canvas.getContext("2d");
+                var img = new Image;
+                img.onload = function() {
+                    ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+                };
+                image0.src = img.src = resource.myData.Path;
+
+                $('#page-image').mousemove(function(e) {
+                    var tipCanvas = $("#tip")[0];
+
+                    let hitComment = false;
+
+                    const left = $("#page-image").position().left;
+                    const top = $("#page-image").position().top;
+
+                    row = e.pageY - top;
+                    col = e.pageX - left;
+
+                    //$('#dynamic-status').val(col + ', ' + row);
+
+                    mapCols = new sortedList();
+
+                    if (mapRows && mapCols) {
+                        const hit = hitTest(row, col, [mapRows, mapCols]);
+
+                        if (hit && val in hit) { //} && hit.dist < hitTestDistSquare) {
+                            hitComment = true;
+
+                            const c = hit.val;
+
+                            text = `${c.First} ${c.Last}`;
+
+                            var tipCtx = tipCanvas.getContext("2d");
+
+                            tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
+
+                            dispRow = c.Row + top - 35;
+                            dispCol = c.Col + left;
+
+                            tipCanvas.style.left = dispCol + "px";
+                            tipCanvas.style.top = dispRow + "px";
+
+                            tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
+
+                            //tipCtx.fillText('Hello World', 10, 100, tipCanvas.width);
+                            textWidth = tipCtx.measureText(text).width;
+
+                            //tipCanvas.style.width = textWidth + 10;
+
+                            tipCtx.fillText(text, 5, 15);
+
+                            //drawBubble(tipCtx, dispCol, dispRow, 220, 90, 20);
+                            //}, 250);
+                        }
+                    }
+
+                    if (mapRows) {
+                        //const keysRows = mapRows.keys();
+                        mapRows.printConsole();
+                    }
+
+                    if (mapCols) {
+                        //const keysCols = mapCols.keys();
+                    }
+
+                    if (!hitComment && tipCanvas && "style" in tipCanvas)
+                        tipCanvas.style.top = tipCanvas.style.left = -1000;
+                });
+            }
+
             const menu = new menuBuilder("sideMenu", [{
                     api: "http://localhost:3000/categories/",
                     name: "cat"
@@ -93,137 +223,12 @@
                     colName: "Page",
                 }],
                 (item) => {
-                    if (item && myData in item && Array.isArray(item.myData) && item.myData.length > 0)
-                        alert(JSON.stringify(item.myData));
+                    if (item && myData in item && item.myData && Path in item.myData)
+                    //alert(JSON.stringify(item.myData.Path));
+                        drawPage(item, pageImage);
                 });
 
             menu.build();
-
-            //var int0 = setInterval(() => {
-            await $.ajax({
-                type: "GET",
-                url: `http://localhost:3000/comments/`,
-                success: function(data) {
-                    const width = window.screen.width * window.devicePixelRatio;
-                    const height = window.screen.height * window.devicePixelRatio;
-
-                    $('#resolution').val(`${height}, ${width}`);
-
-                    console.log(data.toString);
-
-                    mapRows = new sortedList(data.length);
-
-                    //comments = new Map();
-
-                    //data.forEach(c => comments.set(c[0], {
-                    //  Id: c[0],
-                    //                        ResId: c[1],
-                    //Row: c[2],
-                    //Col: c[3],
-                    //First: c[4],
-                    //Last: c[5]
-                    //}));
-
-                    data.forEach(c => mapRows.add(new listItem({
-                        Id: c[0],
-                        ResId: c[1],
-                        Row: c[2],
-                        Col: c[3],
-                        First: c[4],
-                        Last: c[5]
-                    }), Row));
-
-                    //comments.forEach(obj => mapCols.add(new listItem(obj.Col, {
-                    //  Row: obj.Row,
-                    //Col: obj.Col,
-                    //Id: obj.Id
-                    //})));
-
-                    countdown = topOpacity;
-                    timestamp = Date.now();
-
-                    //alert(JSON.stringify(data));
-                    window.requestAnimationFrame(drawCircles);
-                }
-            });
-            //},
-            //1800);
-
-            //var design = $(this).attr('data-design');
-            //var id = $(this).attr('id');
-            var canvas = $("#page-image")[0];
-
-            canvas.width = 1000; // window.innerWidth;
-            canvas.height = 500; //window.innerHeight;
-
-            var ctx = canvas.getContext("2d");
-            var img = new Image;
-            img.onload = function() {
-                ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
-            };
-            img.src = 'featured-image-backyard-landscaping.jpeg';
-
-            $('#page-image').mousemove(function(e) {
-                var tipCanvas = $("#tip")[0];
-
-                let hitComment = false;
-
-                const left = $("#page-image").position().left;
-                const top = $("#page-image").position().top;
-
-                row = e.pageY - top;
-                col = e.pageX - left;
-
-                //$('#dynamic-status').val(col + ', ' + row);
-
-                mapCols = new sortedList();
-
-                if (mapRows && mapCols) {
-                    const hit = hitTest(row, col, [mapRows, mapCols]);
-
-                    if (hit && val in hit) { //} && hit.dist < hitTestDistSquare) {
-                        hitComment = true;
-
-                        const c = hit.val;
-
-                        text = `${c.First} ${c.Last}`;
-
-                        var tipCtx = tipCanvas.getContext("2d");
-
-                        tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
-
-                        dispRow = c.Row + top - 35;
-                        dispCol = c.Col + left;
-
-                        tipCanvas.style.left = dispCol + "px";
-                        tipCanvas.style.top = dispRow + "px";
-
-                        tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
-
-                        //tipCtx.fillText('Hello World', 10, 100, tipCanvas.width);
-                        textWidth = tipCtx.measureText(text).width;
-
-                        //tipCanvas.style.width = textWidth + 10;
-
-                        tipCtx.fillText(text, 5, 15);
-
-                        //drawBubble(tipCtx, dispCol, dispRow, 220, 90, 20);
-                        //}, 250);
-                    }
-                }
-
-                if (mapRows) {
-                    //const keysRows = mapRows.keys();
-                    mapRows.printConsole();
-                }
-
-                if (mapCols) {
-                    //const keysCols = mapCols.keys();
-                }
-
-                if (!hitComment && tipCanvas && "style" in tipCanvas)
-                    tipCanvas.style.top = tipCanvas.style.left = -1000;
-            });
 
             $('#page-image').click(function(e) {
                 var tipCanvas = $("#tip")[0];
