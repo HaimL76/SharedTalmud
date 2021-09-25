@@ -2,13 +2,17 @@
 
 class menuItem {
 
-    constructor(builder, parent, lName, arr, indexId = 0, indexName = 1) {
-        if (arr) {
-            this.ident = arr[indexId];
+    constructor(builder, parent, lName, data, nameId = null, nameName = null) {
+        nameId = "Id";
 
-            this.name = arr[indexName];
+        nameName = "Name";
 
-            this.myData = arr;
+        if (data && nameId in data && nameName in data) {
+            this.ident = data[nameId];
+
+            this.name = data[nameName];
+
+            this.myData = data;
         }
 
         this.myBuilder = builder;
