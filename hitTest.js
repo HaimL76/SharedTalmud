@@ -1,7 +1,3 @@
-//import * as sl from './sortedList.js';
-
-const distance10 = (x1, y1, x2, y2) => Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-
 const val = "val";
 const Id = "Id";
 const Row = "Row";
@@ -20,7 +16,7 @@ const hitTest = (row, col, arrayOfArrays, threshold = 4) => {
         if (arrRows && Array.isArray(arrRows.arr) && arrRows.arr.length > 0 &&
             arrCols && Array.isArray(arrCols.arr)) {
 
-            searchArray(arrCols, arrRows, obj, 0, arrRows.getLength() - 1, (obj, obj0, threshold) => distanceRow(obj, obj0));
+            searchArray(arrCols, arrRows, obj, 0, arrRows.getLength() - 1); //, (obj, obj0, threshold) => distanceRow(obj, obj0));
 
             let found = false;
             let index = 0;
@@ -46,75 +42,40 @@ const hitTest = (row, col, arrayOfArrays, threshold = 4) => {
                     }
                 }
 
-            /*
-            let distRow;
-            let distCol;
-
-            if (clRow && val in clRow && clRow.val && Col in clRow.val) {
-                const dy = Math.abs(row - clRow.key);
-
-                if (dy < threshold) {
-                    const dx = Math.abs(col - clRow.val.Col);
-
-                    if (dx > threshold)
-                        distRow = dx * dx + dy * dy;
-                }
-            }
-
-            if (clCol && val in clCol && clCol.val && Row in clCol.val) {
-                const dx = Math.abs(col - clCol.key);
-
-                if (dx < threshold) {
-                    const dy = Math.abs(row - clCol.val.Row);
-
-                    if (dy < threshold)
-                        distCol = dx * dx + dy * dy;
-                }
-            }
-
-            return distCol < distRow ? { val: clCol, dist: distCol } : { val: clRow, dist: distRow };
-            */
             return obj0;
         }
     }
 }
 
-const hitTestDistSquare = 16;
+const pointDistance = (p1, p2) => {
+    const dx = p1.Col - p2.val.Col;
+    const dy = p1.Row - p2.val.Row;
 
-const distance1 = (obj, obj0) => Math.pow(obj.Col - obj0.Col, 2) + Math.pow(obj.Row - obj0.Row, 2);
-
-const distanceRow = (obj, listObject) => {
-    let dy;
-
-    if (obj && Row in obj && listObject) {
-        const row1 = obj.Row;
-        const row2 = listObject.getVal(Row);
-
-        dy = Math.abs(row1 - row2);
-    }
-
-    return dy;
+    return dx * dx + dy * dy;
 }
 
-const searchArray = (arrCols, list, obj, b, e, distance, threshold = 4, maxList = 1) => {
+const rowDistance = (p1, p2) => Math.abs(p1.Row - p2.val.Row);
+
+const searchArray = (arrCols, list, obj, b, e, threshold = {
+    Distance: 4,
+    Squared: 16
+}, maxList = 1) => {
     let distBefore;
     let distAfter;
-    //if (typeof arr === )
+
     let middle = (b + e) / 2;
 
     middle = Math.floor(middle);
 
     const objMiddle = list.arr[middle];
 
-    const distMiddle = distance(obj, objMiddle);
+    const rowDistMiddle = rowDistance(obj, objMiddle);
 
-    if (distMiddle < threshold) {
-        arrCols.add(objMiddle, Col);
+    if (rowDistMiddle < threshold.Distance) {
+        const pointDistMiddle = pointDistance(obj, objMiddle);
 
-        //let minDist = distMiddle;
-
-        let distBeforeLowerThanThreashold = false;
-        let distAfterLowerThanThreashold = false;
+        if (pointDistMiddle < threshold.Squared)
+            arrCols.add(objMiddle, Col);
 
         let foundHigher = false;
 
@@ -125,12 +86,16 @@ const searchArray = (arrCols, list, obj, b, e, distance, threshold = 4, maxList 
 
             objBefore = list.arr[index];
 
-            distBefore = distance(obj, objBefore);
+            rowDistBefore = rowDistance(obj, objBefore);
 
-            if (distBefore > threshold)
+            if (rowDistBefore > threshold.Distance) {
                 foundHigher = true;
-            else
-                arrCols.add(objBefore, Col);
+            } else {
+                pointDistBefore = pointDistance(obj, objBefore);
+
+                if (pointDistBefore < threshold.Squared)
+                    arrCols.add(objBefore, Col);
+            }
         }
 
         index = middle;
@@ -142,38 +107,36 @@ const searchArray = (arrCols, list, obj, b, e, distance, threshold = 4, maxList 
 
             objAfter = list.arr[index];
 
-            distAfter = distance(obj, objAfter);
+            rowDistAfter = rowDistance(obj, objAfter);
 
-            if (distAfter > threshold)
+            if (rowDistAfter > threshold.Distance) {
                 foundHigher = true;
-            else
-                arrCols.add(objAfter, Col);
+            } else {
+                pointDistAfter = pointDistance(obj, objAfter);
+
+                if (pointDistAfter < threshold.Squared)
+                    arrCols.add(objAfter, Col);
+            }
         }
     } else {
         if (b < e) {
             if (middle < list.arr.length - 1) {
                 objAfter = list.arr[middle + 1];
 
-                distAfter = distance(obj, objAfter);
+                rowDistAfter = rowDistance(obj, objAfter);
             }
 
             if (middle > 0) {
                 objBefore = list.arr[middle - 1];
 
-                distBefore = distance(obj, objBefore);
+                rowDistBefore = rowDistance(obj, objBefore);
             }
 
-            //if (distBefore < distMiddle)
-            //return
-            if (distBefore <= distAfter)
-                searchArray(arrCols, list, obj, b, middle - 1, distance);
-            //else
-            //else if (distAfter < distMiddle)
-            //return
-            if (distBefore >= distAfter)
-                searchArray(arrCols, list, obj, middle + 1, e, distance);
-            //else
-            //  return objMiddle;
+            if (rowDistBefore <= rowDistAfter)
+                searchArray(arrCols, list, obj, b, middle - 1);
+
+            if (rowDistBefore >= rowDistAfter)
+                searchArray(arrCols, list, obj, middle + 1, e);
         }
     }
 }
