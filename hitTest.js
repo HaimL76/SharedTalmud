@@ -96,7 +96,7 @@ const distanceRow = (obj, listObject) => {
     return dy;
 }
 
-const searchArray = (arrCols, list, obj, b, e, distance, threshold = 4) => {
+const searchArray = (arrCols, list, obj, b, e, distance, threshold = 4, maxList = 1) => {
     let distBefore;
     let distAfter;
     //if (typeof arr === )
@@ -120,7 +120,7 @@ const searchArray = (arrCols, list, obj, b, e, distance, threshold = 4) => {
 
         let index = middle;
 
-        while (!foundHigher && index > 0) {
+        while (!foundHigher && index > 0 && arrCols.arr.length < maxList) {
             index--;
 
             objBefore = list.arr[index];
@@ -137,7 +137,7 @@ const searchArray = (arrCols, list, obj, b, e, distance, threshold = 4) => {
 
         foundHigher = false;
 
-        while (!foundHigher && middle < list.arr.length - 1) {
+        while (!foundHigher && middle < list.arr.length - 1 && arrCols.arr.length < maxList) {
             index++;
 
             objAfter = list.arr[index];
@@ -165,12 +165,12 @@ const searchArray = (arrCols, list, obj, b, e, distance, threshold = 4) => {
 
             //if (distBefore < distMiddle)
             //return
-            if (distBefore < distAfter)
-                searchArray(arrCols, list, obj, b, middle - 1, distance);
-            else
+            //if (distBefore < distAfter)
+            searchArray(arrCols, list, obj, b, middle - 1, distance);
+            //else
             //else if (distAfter < distMiddle)
             //return
-                searchArray(arrCols, list, obj, middle + 1, e, distance);
+            searchArray(arrCols, list, obj, middle + 1, e, distance);
             //else
             //  return objMiddle;
         }
