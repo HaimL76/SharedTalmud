@@ -165,12 +165,13 @@ const searchArray = (arrCols, list, obj, b, e, distance, threshold = 4, maxList 
 
             //if (distBefore < distMiddle)
             //return
-            //if (distBefore < distAfter)
-            searchArray(arrCols, list, obj, b, middle - 1, distance);
+            if (distBefore <= distAfter)
+                searchArray(arrCols, list, obj, b, middle - 1, distance);
             //else
             //else if (distAfter < distMiddle)
             //return
-            searchArray(arrCols, list, obj, middle + 1, e, distance);
+            if (distBefore >= distAfter)
+                searchArray(arrCols, list, obj, middle + 1, e, distance);
             //else
             //  return objMiddle;
         }
