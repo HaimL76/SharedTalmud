@@ -62,9 +62,13 @@
                             1 :
                             counter / topOpacity;
 
-                        const str_rgba = `rgba(0, 255, 255, ${alpha})`;
-
                         mapRows.arr.forEach(element => {
+                            const r = Math.floor(Math.random() * 255);
+                            const g = Math.floor(Math.random() * 255);
+                            const b = Math.floor(Math.random() * 255);
+
+                            const str_rgba = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+
                             ctx.beginPath();
 
                             ctx.arc(element.getVal(Col), element.getVal(Row), radius, 0, 2 * Math.PI, false);

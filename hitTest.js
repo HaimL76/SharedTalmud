@@ -102,7 +102,7 @@ const searchArray = (arrCols, list, obj, b, e, threshold = {
 
         foundHigher = false;
 
-        while (!foundHigher && middle < list.arr.length - 1 && arrCols.arr.length < maxList) {
+        while (!foundHigher && index < list.arr.length - 1 && arrCols.arr.length < maxList) {
             index++;
 
             objAfter = list.arr[index];

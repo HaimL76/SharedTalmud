@@ -30,17 +30,49 @@ BEGIN
 	declare @col int;
 	declare @row int;
 
+	declare @authorsLength int;
+
+	declare @index int;
+
+	declare @author int;
+
+	declare @myTableVariable table (Id int identity(1, 1), AuthorId int)
+
+	insert into @myTableVariable(AuthorId)
+	select [Authors].Id from [Authors]
+
+	select @authorsLength = count(*) from @myTableVariable
+
+	print convert([nvarchar](50), @authorsLength)
+
 	set @counter = @count;
 
 	while @counter > 0
 	begin
+		print convert([nvarchar](50), @counter)
+
 		set @counter = @counter - 1;
 
 		set @col = floor(rand() * @Width);
 		set @row = floor(rand() * @Height);
 
+		set @index = floor(rand() * @authorsLength) + 1;
+
+		print 'index = ' + convert([nvarchar](50), @index)
+
+		set @author = @AuthorId;
+
+		if @author < 1
+		begin
+			set @author = @counter % @authorsLength + 1;
+		end
+
+		--begin
+		--	select @AuthorId = [@myTableVariable].AuthorId from @myTableVariable where [@myTableVariable].Id = @AuthorId;
+		--end
+
     -- Insert statements for procedure here
-		insert into [Comments] (Author, [Resource], [Col], [Row], [Text], [Headline]) values (@AuthorId, @ResourceId, @col, @row, 'Text', 'Headline')
+		insert into [Comments] (Author, [Resource], [Col], [Row], [Text], [Headline]) values (@author, @ResourceId, @col, @row, 'Text', 'Headline')
 	end
 END
 GO
