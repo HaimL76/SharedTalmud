@@ -121,22 +121,26 @@ const searchArray = (arrCols, list, obj, b, e, threshold = {
     } else {
         if (b < e) {
             if (middle < list.arr.length - 1) {
-                objAfter = list.arr[middle + 1];
+                const indexAfter = middle + 1;
+
+                objAfter = list.arr[indexAfter];
 
                 rowDistAfter = rowDistance(obj, objAfter);
+
+                if (rowDistAfter <= rowDistMiddle)
+                    searchArray(arrCols, list, obj, indexAfter, e);
             }
 
             if (middle > 0) {
-                objBefore = list.arr[middle - 1];
+                const indexBefore = middle - 1;
+
+                objBefore = list.arr[indexBefore];
 
                 rowDistBefore = rowDistance(obj, objBefore);
+
+                if (rowDistBefore <= rowDistMiddle)
+                    searchArray(arrCols, list, obj, b, indexBefore);
             }
-
-            if (rowDistBefore <= rowDistAfter)
-                searchArray(arrCols, list, obj, b, middle - 1);
-
-            if (rowDistBefore >= rowDistAfter)
-                searchArray(arrCols, list, obj, middle + 1, e);
         }
     }
 }
