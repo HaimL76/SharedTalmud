@@ -4,7 +4,7 @@ const Row = "Row";
 const Col = "Col";
 const Comment0 = "Comment";
 
-const hitTest = (row, col, arrayOfArrays, threshold = 4) => {
+const hitTest = (row, col, arrayOfArrays, threshold = 4, maxList = 1) => {
     let obj0;
 
     if (Array.isArray(arrayOfArrays) && arrayOfArrays.length == 2) {
@@ -16,7 +16,9 @@ const hitTest = (row, col, arrayOfArrays, threshold = 4) => {
         if (arrRows && Array.isArray(arrRows.arr) && arrRows.arr.length > 0 &&
             arrCols && Array.isArray(arrCols.arr)) {
 
-            searchArray(arrCols, arrRows, obj, 0, arrRows.getLength() - 1); //, (obj, obj0, threshold) => distanceRow(obj, obj0));
+            let numSearches = 0;
+
+            numSearches = searchArray(arrCols, arrRows, obj, 0, arrRows.getLength() - 1, threshold, maxList, numSearches); //, (obj, obj0, threshold) => distanceRow(obj, obj0));
 
             let found = false;
             let index = 0;
@@ -59,9 +61,12 @@ const rowDistance = (p1, p2) => Math.abs(p1.Row - p2.val.Row);
 const searchArray = (arrCols, list, obj, b, e, threshold = {
     Distance: 4,
     Squared: 16
-}, maxList = 1) => {
+}, maxList = 1, numSearches = 0) => {
     let distBefore;
     let distAfter;
+
+    if (e < b)
+        return numSearches;
 
     let middle = (b + e) / 2;
 
@@ -128,7 +133,7 @@ const searchArray = (arrCols, list, obj, b, e, threshold = {
                 rowDistAfter = rowDistance(obj, objAfter);
 
                 if (rowDistAfter <= rowDistMiddle)
-                    searchArray(arrCols, list, obj, indexAfter, e);
+                    numSearches = searchArray(arrCols, list, obj, indexAfter, e, threshold, maxList, numSearches + 1);
             }
 
             if (middle > 0) {
@@ -139,10 +144,12 @@ const searchArray = (arrCols, list, obj, b, e, threshold = {
                 rowDistBefore = rowDistance(obj, objBefore);
 
                 if (rowDistBefore <= rowDistMiddle)
-                    searchArray(arrCols, list, obj, b, indexBefore);
+                    numSearches = searchArray(arrCols, list, obj, b, indexBefore, threshold, maxList, numSearches + 1);
             }
         }
     }
+
+    return numSearches;
 }
 
 // Naive method, to be replaced with a proper one.
