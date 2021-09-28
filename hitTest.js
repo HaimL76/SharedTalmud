@@ -149,7 +149,7 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
                 prevMiddleDistance = prevMiddle.Distance;
 
             if (rowDistMiddle > prevMiddleDistance) {
-                if (middle > prevMiddle)
+                if (middle > prevMiddle.Location)
                     numSearches = searchArray(arrCols, list, obj, b, middle - 1, newPrevMiddle, threshold, maxList, numSearches + 1);
                 else
                     numSearches = searchArray(arrCols, list, obj, middle + 1, e, newPrevMiddle, threshold, maxList, numSearches + 1);
