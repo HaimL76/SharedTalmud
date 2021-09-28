@@ -4,7 +4,10 @@ const Row = "Row";
 const Col = "Col";
 const Comment0 = "Comment";
 
-const hitTest = (row, col, arrayOfArrays, threshold = 4, maxList = 1) => {
+const hitTest = (row, col, arrayOfArrays, threshold = {
+    Distance: 4,
+    Squared: 16
+}, maxList = 1) => {
     let obj0;
 
     if (Array.isArray(arrayOfArrays) && arrayOfArrays.length == 2) {
@@ -33,11 +36,11 @@ const hitTest = (row, col, arrayOfArrays, threshold = 4, maxList = 1) => {
 
                     const dx = Math.abs(obj1.getVal(Col) - obj.Col);
 
-                    if (dx < threshold) {
+                    if (dx < threshold.Distance) {
                         const dy = obj1.getVal(Row) - obj.Row;
 
                         square = dx * dx + dy * dy;
-                        tSquare = threshold * threshold;
+                        tSquare = threshold.Squared;
 
                         if (square < tSquare)
                             obj0 = obj1;
@@ -138,10 +141,10 @@ const searchArray = (arrCols, list, obj, b, e, threshold = {
             }
 
             if (rowDistBefore <= rowDistAfter)
-                searchArray(arrCols, list, obj, b, middle - 1);
+                numSearches = searchArray(arrCols, list, obj, b, middle - 1, threshold, maxList, numSearches + 1);
 
             if (rowDistBefore >= rowDistAfter)
-                searchArray(arrCols, list, obj, middle + 1, e);
+                numSearches = searchArray(arrCols, list, obj, middle + 1, e, threshold, maxList, numSearches + 1);
         }
     }
 
