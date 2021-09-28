@@ -127,25 +127,23 @@ const searchArray = (arrCols, list, obj, b, e, threshold = {
             }
         }
     } else {
-        if (b < e) {
-            if (middle < list.arr.length - 1) {
-                objAfter = list.arr[middle + 1];
+        if (middle < list.arr.length - 1) {
+            objAfter = list.arr[middle + 1];
 
-                rowDistAfter = rowDistance(obj, objAfter);
-            }
-
-            if (middle > 0) {
-                objBefore = list.arr[middle - 1];
-
-                rowDistBefore = rowDistance(obj, objBefore);
-            }
-
-            if (rowDistBefore <= rowDistAfter)
-                numSearches = searchArray(arrCols, list, obj, b, middle - 1, threshold, maxList, numSearches + 1);
-
-            if (rowDistBefore >= rowDistAfter)
-                numSearches = searchArray(arrCols, list, obj, middle + 1, e, threshold, maxList, numSearches + 1);
+            rowDistAfter = rowDistance(obj, objAfter);
         }
+
+        if (middle > 0) {
+            objBefore = list.arr[middle - 1];
+
+            rowDistBefore = rowDistance(obj, objBefore);
+        }
+
+        if (rowDistBefore <= rowDistAfter)
+            numSearches = searchArray(arrCols, list, obj, b, middle - 1, threshold, maxList, numSearches + 1);
+
+        if (rowDistBefore >= rowDistAfter)
+            numSearches = searchArray(arrCols, list, obj, middle + 1, e, threshold, maxList, numSearches + 1);
     }
 
     return numSearches;
