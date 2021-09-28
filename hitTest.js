@@ -152,14 +152,15 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
                 else
                     numSearches = searchArray(arrCols, list, obj, middle + 1, e, newPrevMiddle, threshold, maxList, numSearches + 1);
             } else {
+                let rowDistMiddleLower;
+                let rowDistMiddleUpper;
+
                 if (middle > 0) {
                     const middleLower = Math.floor((b + middle - 1) / 2);
 
                     const objMiddleLower = list.arr[middleLower];
 
-                    const rowDistMiddleLower = rowDistance(obj, objMiddleLower);
-
-                    numSearches = searchArray(arrCols, list, obj, b, middle - 1, null, threshold, maxList, numSearches + 1);
+                    rowDistMiddleLower = rowDistance(obj, objMiddleLower);
                 }
 
                 if (middle < list.arr.length - 1) {
@@ -167,10 +168,14 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
 
                     const objMiddleUpper = list.arr[middleUpper];
 
-                    const rowDistMiddleUpper = rowDistance(obj, objMiddleUpper);
-
-                    numSearches = searchArray(arrCols, list, obj, middle + 1, e, null, threshold, maxList, numSearches + 1);
+                    rowDistMiddleUpper = rowDistance(obj, objMiddleUpper);
                 }
+
+                if (middle > 0 && rowDistMiddleLower <= rowDistMiddleUpper)
+                    numSearches = searchArray(arrCols, list, obj, b, middle - 1, null, threshold, maxList, numSearches + 1);
+
+                if (middle < list.arr.length - 1 && rowDistMiddleUpper <= rowDistMiddleLower)
+                    numSearches = searchArray(arrCols, list, obj, middle + 1, e, null, threshold, maxList, numSearches + 1);
             }
         }
     }
