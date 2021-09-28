@@ -126,26 +126,22 @@ const searchArray = (arrCols, list, obj, b, e, threshold = {
     } else {
         if (b < e) {
             if (middle < list.arr.length - 1) {
-                const indexAfter = middle + 1;
-
-                objAfter = list.arr[indexAfter];
+                objAfter = list.arr[middle + 1];
 
                 rowDistAfter = rowDistance(obj, objAfter);
-
-                if (rowDistAfter <= rowDistMiddle)
-                    numSearches = searchArray(arrCols, list, obj, indexAfter, e, threshold, maxList, numSearches + 1);
             }
 
             if (middle > 0) {
-                const indexBefore = middle - 1;
-
-                objBefore = list.arr[indexBefore];
+                objBefore = list.arr[middle - 1];
 
                 rowDistBefore = rowDistance(obj, objBefore);
-
-                if (rowDistBefore <= rowDistMiddle)
-                    numSearches = searchArray(arrCols, list, obj, b, indexBefore, threshold, maxList, numSearches + 1);
             }
+
+            if (rowDistBefore <= rowDistAfter)
+                searchArray(arrCols, list, obj, b, middle - 1);
+
+            if (rowDistBefore >= rowDistAfter)
+                searchArray(arrCols, list, obj, middle + 1, e);
         }
     }
 
