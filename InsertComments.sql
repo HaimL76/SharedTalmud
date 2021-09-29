@@ -1,30 +1,39 @@
--- ================================================
--- Template generated from Template Explorer using:
--- Create Procedure (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the procedure.
--- ================================================
+USE [SharedTalmud]
+GO
+
+/****** Object:  StoredProcedure [dbo].[InsertComments]    Script Date: 29/09/2021 1:07:27 am ******/
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
+
 -- =============================================
 -- Author:		<Author,,Name>
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-CREATE or alter PROCEDURE InsertComments @Count int, @AuthorId int, @ResourceId int, @Width int, @Height int
+CREATE OR ALTER   PROCEDURE [dbo].[InsertComments] @Count int, @AuthorId int, @ResourceId int, @Width int, @Height int, @Distinct bit
 	-- Add the parameters for the stored procedure here
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
+
+	declare @minVal int;
+
+	set @minVal = @Width;
+	
+	if @Height < @minVal
+	begin
+		set @minVal = @Height;
+	end
+
+	if @Distinct = 1 and @Count > @minVal
+	begin
+		return;
+	end
 
 	declare @counter int;
 	declare @col int;
@@ -76,3 +85,5 @@ BEGIN
 	end
 END
 GO
+
+

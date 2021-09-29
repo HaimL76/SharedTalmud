@@ -45,7 +45,36 @@
             const Col = "Col";
             const val = "val";
 
-            const drawPage = async(resource) => {
+            let resource;
+
+            $("#page-image").on("dblclick", function(e) {
+                if (resource && myData in resource && resource.myData && Id in resource.myData && resource.myData.Id > 0) {
+                    const left = $("#page-image").position().left;
+                    const top = $("#page-image").position().top;
+
+                    row = e.pageY - top;
+                    col = e.pageX - left;
+
+                    for (let i = 0; i < 100; i++)
+                        insert(1, resource.myData.Id, row, col);
+
+                    //centerX = col;
+                    //centerY = row;
+
+                    //countdown = topOpacity;
+                    //timestamp = Date.now();
+
+                    //window.requestAnimationFrame(drawCircles);
+                }
+            });
+
+            const drawPage = async() => {
+                const isValid = resource && myData in resource && resource.myData && Path in resource.myData &&
+                    Id in resource.myData && resource.myData.Id > 0;
+
+                if (!isValid)
+                    return;
+
                 const pageImage = new Image();
 
                 const drawCircles = function() {
@@ -86,9 +115,6 @@
                     if (countdown >= 0)
                         window.requestAnimationFrame(drawCircles);
                 }
-
-                const isValid = resource && myData in resource && resource.myData && Path in resource.myData &&
-                    Id in resource.myData && resource.myData.Id > 0;
 
                 await $.ajax({
                     type: "GET",
@@ -180,24 +206,6 @@
                     if (!hitComment && tipCanvas && "style" in tipCanvas)
                         tipCanvas.style.top = tipCanvas.style.left = -1000;
                 });
-
-                $("#page-image").dblclick(function(e) {
-                    const left = $("#page-image").position().left;
-                    const top = $("#page-image").position().top;
-
-                    row = e.pageY - top;
-                    col = e.pageX - left;
-
-                    insert(1, 1, row, col);
-
-                    centerX = col;
-                    centerY = row;
-
-                    countdown = topOpacity;
-                    timestamp = Date.now();
-
-                    window.requestAnimationFrame(drawCircles);
-                });
             }
 
             const menu = new menuBuilder("sideMenu", [{
@@ -212,8 +220,11 @@
                     colName: "Page",
                 }],
                 (item) => {
-                    if (item && myData in item && item.myData && Path in item.myData)
-                        drawPage(item);
+                    if (item && myData in item && item.myData && Path in item.myData) {
+                        resource = item;
+
+                        drawPage();
+                    }
                 });
 
             menu.build();
