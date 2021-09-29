@@ -55,8 +55,10 @@
                     row = e.pageY - top;
                     col = e.pageX - left;
 
-                    for (let i = 0; i < 100; i++)
-                        insert(1, resource.myData.Id, row, col);
+                    const author = Math.random() * 3 + 1;
+
+                    //for (let i = 0; i < 100; i++)
+                    insert(author, resource.myData.Id, row, col);
 
                     //centerX = col;
                     //centerY = row;
