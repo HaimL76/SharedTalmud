@@ -53,10 +53,9 @@
                         const canvas = $("#page-image")[0];
                         const ctx = canvas.getContext('2d');
 
-                        //ctx.globalCompositeOperation = 'destination-over';
-                        ctx.clearRect(0, 0, canvas.width, canvas.height); // clear canvas
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                        ctx.drawImage(pageImage, 0, 0); //-12 * countDown, -12);
+                        ctx.drawImage(pageImage, 0, 0);
 
                         const alpha = topOpacity < 1 ?
                             1 :
@@ -104,17 +103,6 @@
 
                         mapRows = new sortedList(data.length);
 
-                        //comments = new Map();
-
-                        //data.forEach(c => comments.set(c[0], {
-                        //  Id: c[0],
-                        //                        ResId: c[1],
-                        //Row: c[2],
-                        //Col: c[3],
-                        //First: c[4],
-                        //Last: c[5]
-                        //}));
-
                         data.forEach(c => mapRows.add(new listItem({
                             Id: c[0],
                             ResId: c[1],
@@ -124,28 +112,14 @@
                             Last: c[5]
                         }), Row));
 
-                        //comments.forEach(obj => mapCols.add(new listItem(obj.Col, {
-                        //  Row: obj.Row,
-                        //Col: obj.Col,
-                        //Id: obj.Id
-                        //})));
-
                         countdown = topOpacity;
                         timestamp = Date.now();
 
-                        //alert(JSON.stringify(data));
                         window.requestAnimationFrame(drawCircles);
                     }
                 });
-                //},
-                //1800);
 
-                //var design = $(this).attr('data-design');
-                //var id = $(this).attr('id');
                 var canvas = $("#page-image")[0];
-
-                //canvas.width = 1000; // window.innerWidth;
-                //canvas.height = 500; //window.innerHeight;
 
                 var ctx = canvas.getContext("2d");
 
@@ -168,8 +142,6 @@
 
                     row = e.pageY - top;
                     col = e.pageX - left;
-
-                    //$('#dynamic-status').val(col + ', ' + row);
 
                     mapCols = new sortedList();
 
@@ -195,25 +167,14 @@
 
                             tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
 
-                            //tipCtx.fillText('Hello World', 10, 100, tipCanvas.width);
                             textWidth = tipCtx.measureText(text).width;
 
-                            //tipCanvas.style.width = textWidth + 10;
-
                             tipCtx.fillText(text, 5, 15);
-
-                            //drawBubble(tipCtx, dispCol, dispRow, 220, 90, 20);
-                            //}, 250);
                         }
                     }
 
                     if (mapRows) {
-                        //const keysRows = mapRows.keys();
                         mapRows.printConsole();
-                    }
-
-                    if (mapCols) {
-                        //const keysCols = mapCols.keys();
                     }
 
                     if (!hitComment && tipCanvas && "style" in tipCanvas)
@@ -226,8 +187,6 @@
 
                     row = e.pageY - top;
                     col = e.pageX - left;
-
-                    //$('#static-status').val(col + ', ' + row);
 
                     insert(1, 1, row, col);
 
@@ -254,7 +213,6 @@
                 }],
                 (item) => {
                     if (item && myData in item && item.myData && Path in item.myData)
-                    //alert(JSON.stringify(item.myData.Path));
                         drawPage(item);
                 });
 
@@ -290,19 +248,11 @@
                         div0.innerHTML = text;
 
                         let a = 0;
-
-                        //.innerHTML(text);
-                        //}, 250);
                     }
                 }
 
                 if (mapRows) {
-                    //const keysRows = mapRows.keys();
                     mapRows.printConsole();
-                }
-
-                if (mapCols) {
-                    //const keysCols = mapCols.keys();
                 }
 
                 if (!hitComment && tipCanvas && "style" in tipCanvas)
@@ -329,48 +279,14 @@
                     url: `http://localhost:3000/comments/`,
                     success: function(data) {
                         console.log(data.toString);
-
-                        //alert(JSON.stringify(data));
                     }
                 });
             };
-            /*
-                        const canvas = $('#canvi')[0]; // 
-
-                        //canvas.width = 800;
-                        //canvas.height = 600;
-
-                        //const canvas = document.getElementById("canvi");
-
-                        const context = canvas.getContext('2d');
-
-                        const image = new Image();
-
-                        image.src = "featured-image-backyard-landscaping.jpeg"; // can also be a remote URL e.g. http://
-
-                        image.onload = function() {
-                            canvas.height = image.height;
-                            canvas.width = image.width;
-
-                            context.drawImage(image, 0, 0);
-                        };
-                        */
         })
     </script>
 </head>
 <style>
-    /*
-    #page-image {
-        position: absolute;
-        top: 0px;
-        left: 0px;
-    }
-    
-    input[type=text] {
-        position: absolute;
-        top: 500px;
-    }
-    */
+
 </style>
 
 <body>
