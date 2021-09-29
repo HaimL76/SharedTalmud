@@ -42,13 +42,15 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.get('/comments', async(req, res) => {
-    const arr = await getComments();
+app.get('/comments/:resource', async(req, res) => {
+    if (req && "params" in req && req.params && "resource" in req.params && req.params.resource > 0) {
+        const arr = await getComments(req.params.resource);
 
-    if (Array.isArray(arr))
-        utils.log(`arr.length=${arr.length}`);
+        if (Array.isArray(arr))
+            utils.log(`arr.length=${arr.length}`);
 
-    res.send(arr);
+        res.send(arr);
+    }
 });
 
 app.get('/categories', async(req, res) => {
@@ -86,69 +88,71 @@ app.get('/resources/:book', async(req, res) => {
     }
 });
 
-const getComments = () => {
-    return new Promise((resolve, reject) => {
-        const strDateTime = dtu.formatDateTime(new Date());
+const getComments = (resource) => {
+    if (resource > 0)
+        return new Promise((resolve, reject) => {
+            const strDateTime = dtu.formatDateTime(new Date());
 
-        const connection = new Connection(config);
+            const connection = new Connection(config);
 
-        connection.on('connect', (err) => {
-            utils.log(`${strDateTime}, connected `);
+            connection.on('connect', (err) => {
+                utils.log(`${strDateTime}, connected `);
 
-            const sql = `select c.[Id], c.[Resource], c.[Row], c.[Col], a.[First], a.[Last] ` +
-                ` from ${TableComments} c inner join ${TableAuthors} a on a.[Id] = c.[Author]`
+                const sql = `select c.[Id], c.[Resource], c.[Row], c.[Col], a.[First], a.[Last] ` +
+                    ` from ${TableComments} c inner join ${TableAuthors} a on a.[Id] = c.[Author] ` +
+                    ` where resource = ${resource}`
 
-            request = new Request(sql, function(err, rowCount) {
-                if (err) {
-                    utils.log(err, 1);
-                } else {
-                    //utils.log(rowCount + ' rows');
-                }
-            });
-
-            const arr = [];
-
-            request.on('row', function(cols) {
-                //if (Array.isArray(cols))
-                //  utils.log(`cols.length = ${cols.length}`);
-
-                const arr0 = [];
-
-                cols.forEach((col) => {
-                    //utils.log(`${strDateTime}, ${col.value}`);
-                    arr0.push(col.value)
+                request = new Request(sql, function(err, rowCount) {
+                    if (err) {
+                        utils.log(err, 1);
+                    } else {
+                        //utils.log(rowCount + ' rows');
+                    }
                 });
 
-                arr.push(arr0);
-            });
-
-            request.on('requestCompleted', function() {
-                connection.close();
-
-                resolve(arr);
-            });
-
-            request.on('done', function(rowCount, more, rows) {
-                //utils.log(rowCount);
                 const arr = [];
 
-                rows.forEach((row) => {
-                    //utils.log(`${strDateTime}, ${row.value}`);
-                    arr.push(row.value)
+                request.on('row', function(cols) {
+                    //if (Array.isArray(cols))
+                    //  utils.log(`cols.length = ${cols.length}`);
+
+                    const arr0 = [];
+
+                    cols.forEach((col) => {
+                        //utils.log(`${strDateTime}, ${col.value}`);
+                        arr0.push(col.value)
+                    });
+
+                    arr.push(arr0);
                 });
 
-                resolve(arr);
+                request.on('requestCompleted', function() {
+                    connection.close();
+
+                    resolve(arr);
+                });
+
+                request.on('done', function(rowCount, more, rows) {
+                    //utils.log(rowCount);
+                    const arr = [];
+
+                    rows.forEach((row) => {
+                        //utils.log(`${strDateTime}, ${row.value}`);
+                        arr.push(row.value)
+                    });
+
+                    resolve(arr);
+                });
+
+                connection.execSql(request);
+
+                utils.log(`${strDateTime}, after calling exeSql`);
             });
 
-            connection.execSql(request);
+            connection.connect();
 
-            utils.log(`${strDateTime}, after calling exeSql`);
+            utils.log(`${strDateTime}, after calling connect`);
         });
-
-        connection.connect();
-
-        utils.log(`${strDateTime}, after calling connect`);
-    });
 }
 
 const getCategories = () => {

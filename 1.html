@@ -88,11 +88,12 @@
                         window.requestAnimationFrame(drawCircles);
                 }
 
-                const isValid = resource && myData in resource && resource.myData && Path in resource.myData;
+                const isValid = resource && myData in resource && resource.myData && Path in resource.myData &&
+                    Id in resource.myData && resource.myData.Id > 0;
 
                 await $.ajax({
                     type: "GET",
-                    url: `http://localhost:3000/comments/`,
+                    url: `http://localhost:3000/comments/${resource.myData.Id}`,
                     success: function(data) {
                         const width = window.screen.width * window.devicePixelRatio;
                         const height = window.screen.height * window.devicePixelRatio;
@@ -143,12 +144,15 @@
                 //var id = $(this).attr('id');
                 var canvas = $("#page-image")[0];
 
-                canvas.width = 1000; // window.innerWidth;
-                canvas.height = 500; //window.innerHeight;
+                //canvas.width = 1000; // window.innerWidth;
+                //canvas.height = 500; //window.innerHeight;
 
                 var ctx = canvas.getContext("2d");
 
                 pageImage.onload = function() {
+                    canvas.width = pageImage.width;
+                    canvas.height = pageImage.height;
+
                     ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
                 };
 
