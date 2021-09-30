@@ -156,6 +156,7 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
         } else {
             let prevMiddleDistance;
             let prevMiddleLocation;
+            let minDistance;
 
             if ("Location" in prevMiddle)
                 prevMiddleLocation = prevMiddle.Location;
@@ -163,7 +164,10 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
             if ("Distance" in prevMiddle)
                 prevMiddleDistance = prevMiddle.Distance;
 
-            if (rowDistMiddle > prevMiddleDistance) {
+            if ("MinDistance" in prevMiddle)
+                minDistance = prevMiddle.MinDistance;
+
+            if (rowDistMiddle > prevMiddleDistance || rowDistMiddle > minDistance) {
                 if (middle > prevMiddle.Location)
                     searchArray(arrCols, list, obj, b, middle - 1, newPrevMiddle, threshold, maxList, checkedObjects);
                 else
