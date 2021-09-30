@@ -133,9 +133,18 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
             }
         }
     } else {
+        let minDistance = null;
+
+        if (prevMiddle && "MinDistance" in prevMiddle)
+            minDistance = prevMiddle.MinDistance;
+
+        if (minDistance == null || rowDistMiddle < minDistance)
+            minDistance = rowDistMiddle;
+
         const newPrevMiddle = {
             Location: middle,
-            Distance: rowDistMiddle
+            Distance: rowDistMiddle,
+            MinDistance: minDistance
         };
 
         if (!prevMiddle) {
