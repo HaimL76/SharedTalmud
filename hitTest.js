@@ -160,6 +160,12 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
                 else
                     searchArray(arrCols, list, obj, middle + 1, e, newPrevMiddle, threshold, maxList, checkedObjects);
             } else {
+                if (middle > b)
+                    searchArray(arrCols, list, obj, b, middle - 1, newPrevMiddle, threshold, maxList, checkedObjects);
+
+                if (middle < e)
+                    searchArray(arrCols, list, obj, middle + 1, e, newPrevMiddle, threshold, maxList, checkedObjects);
+                /*
                 let rowDistMiddleLower;
                 let rowDistMiddleUpper;
 
@@ -187,6 +193,7 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
 
                 if (middle < list.arr.length - 1 && rowDistMiddleUpper <= rowDistMiddleLower)
                     searchArray(arrCols, list, obj, middleLower + 1, e, null, threshold, maxList, checkedObjects);
+                    */
             }
         }
     }
