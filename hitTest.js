@@ -19,9 +19,9 @@ const hitTest = (row, col, arrayOfArrays, threshold = {
         if (arrRows && Array.isArray(arrRows.arr) && arrRows.arr.length > 0 &&
             arrCols && Array.isArray(arrCols.arr)) {
 
-            let numSearches = 0;
+            const checkedObjects = [];
 
-            numSearches = searchArray(arrCols, arrRows, obj, 0, arrRows.getLength() - 1, null, threshold, maxList, numSearches); //, (obj, obj0, threshold) => distanceRow(obj, obj0));
+            searchArray(arrCols, arrRows, obj, 0, arrRows.getLength() - 1, null, threshold, maxList, checkedObjects); //, (obj, obj0, threshold) => distanceRow(obj, obj0));
 
             let found = false;
             let index = 0;
@@ -64,18 +64,26 @@ const rowDistance = (p1, p2) => Math.abs(p1.Row - p2.val.Row);
 const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
     Distance: 4,
     Squared: 16
-}, maxList = 1, numSearches = 0) => {
+}, maxList = 1, checkedObjects = null) => {
     let distBefore;
     let distAfter;
 
     if (e < b)
-        return numSearches;
+        return;
 
     const middle = Math.floor((b + e) / 2);
 
     const objMiddle = list.arr[middle];
 
     const rowDistMiddle = rowDistance(obj, objMiddle);
+
+    if (Array.isArray(checkedObjects))
+        checkedObjects.push({
+            index: middle,
+            row: objMiddle.val.Row,
+            col: objMiddle.val.Col,
+            dist: rowDistMiddle
+        });
 
     if (rowDistMiddle < threshold.Distance) {
         const pointDistMiddle = pointDistance(obj, objMiddle);
@@ -132,10 +140,10 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
 
         if (!prevMiddle) {
             if (middle > 0)
-                numSearches = searchArray(arrCols, list, obj, b, middle - 1, newPrevMiddle, threshold, maxList, numSearches + 1);
+                searchArray(arrCols, list, obj, b, middle - 1, newPrevMiddle, threshold, maxList, checkedObjects);
 
             if (middle < list.arr.length - 1)
-                numSearches = searchArray(arrCols, list, obj, middle + 1, e, newPrevMiddle, threshold, maxList, numSearches + 1);
+                searchArray(arrCols, list, obj, middle + 1, e, newPrevMiddle, threshold, maxList, checkedObjects);
         } else {
             let prevMiddleDistance;
             let prevMiddleLocation;
@@ -148,9 +156,9 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
 
             if (rowDistMiddle > prevMiddleDistance) {
                 if (middle > prevMiddle.Location)
-                    numSearches = searchArray(arrCols, list, obj, b, middle - 1, newPrevMiddle, threshold, maxList, numSearches + 1);
+                    searchArray(arrCols, list, obj, b, middle - 1, newPrevMiddle, threshold, maxList, checkedObjects);
                 else
-                    numSearches = searchArray(arrCols, list, obj, middle + 1, e, newPrevMiddle, threshold, maxList, numSearches + 1);
+                    searchArray(arrCols, list, obj, middle + 1, e, newPrevMiddle, threshold, maxList, checkedObjects);
             } else {
                 let rowDistMiddleLower;
                 let rowDistMiddleUpper;
@@ -172,15 +180,13 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
                 }
 
                 if (middle > 0 && rowDistMiddleLower <= rowDistMiddleUpper)
-                    numSearches = searchArray(arrCols, list, obj, b, middle - 1, null, threshold, maxList, numSearches + 1);
+                    searchArray(arrCols, list, obj, b, middle - 1, null, threshold, maxList, checkedObjects);
 
                 if (middle < list.arr.length - 1 && rowDistMiddleUpper <= rowDistMiddleLower)
-                    numSearches = searchArray(arrCols, list, obj, middle + 1, e, null, threshold, maxList, numSearches + 1);
+                    searchArray(arrCols, list, obj, middle + 1, e, null, threshold, maxList, checkedObjects);
             }
         }
     }
-
-    return numSearches;
 }
 
 // Naive method, to be replaced with a proper one.
