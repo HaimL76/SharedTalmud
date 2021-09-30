@@ -139,10 +139,10 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
         };
 
         if (!prevMiddle) {
-            if (middle > 0)
+            if (middle > b)
                 searchArray(arrCols, list, obj, b, middle - 1, newPrevMiddle, threshold, maxList, checkedObjects);
 
-            if (middle < list.arr.length - 1)
+            if (middle < e)
                 searchArray(arrCols, list, obj, middle + 1, e, newPrevMiddle, threshold, maxList, checkedObjects);
         } else {
             let prevMiddleDistance;
@@ -163,16 +163,19 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
                 let rowDistMiddleLower;
                 let rowDistMiddleUpper;
 
-                if (middle > 0) {
-                    const middleLower = Math.floor((b + middle - 1) / 2);
+                let middleLower;
+                let middleUpper;
+
+                if (middle > b) {
+                    middleLower = Math.floor((b + middle - 1) / 2);
 
                     const objMiddleLower = list.arr[middleLower];
 
                     rowDistMiddleLower = rowDistance(obj, objMiddleLower);
                 }
 
-                if (middle < list.arr.length - 1) {
-                    const middleUpper = Math.floor((middle + 1 + e) / 2);
+                if (middle < e) {
+                    middleUpper = Math.floor((middle + 1 + e) / 2);
 
                     const objMiddleUpper = list.arr[middleUpper];
 
@@ -180,10 +183,10 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, threshold = {
                 }
 
                 if (middle > 0 && rowDistMiddleLower <= rowDistMiddleUpper)
-                    searchArray(arrCols, list, obj, b, middle - 1, null, threshold, maxList, checkedObjects);
+                    searchArray(arrCols, list, obj, b, middleUpper - 1, null, threshold, maxList, checkedObjects);
 
                 if (middle < list.arr.length - 1 && rowDistMiddleUpper <= rowDistMiddleLower)
-                    searchArray(arrCols, list, obj, middle + 1, e, null, threshold, maxList, checkedObjects);
+                    searchArray(arrCols, list, obj, middleLower + 1, e, null, threshold, maxList, checkedObjects);
             }
         }
     }
