@@ -135,36 +135,16 @@ const searchArray = (arrCols, list, obj, b, e, prevPoint = null, minPoint = null
 
             return;
         }
-    }
 
-    if (Math.abs(rowDistMiddle) < Math.abs(threshold.Distance)) {
-        //let arr0 = list.arr.slice(b, e);
+        prevPoint = setPoint(middle, rowDistMiddle);
 
-        //arr0 = arr0.splice(middle, 1);
-        /*
-                for (let i = b; i < e; i++) {
-                    const objMiddle = list.arr[i];
+        minPoint = setDoubleIndexPoint(minPoint, prevPoint.index, prevPoint.distance, threshold.Distance);
 
-                    const rowDistMiddle = rowDistance(obj, objMiddle);
+        if (middle > b)
+            searchArray(arrCols, list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
 
-                    if (Array.isArray(checkedObjects))
-                        checkedObjects.push({
-                            index: middle,
-                            row: objMiddle.val.Row,
-                            col: objMiddle.val.Col,
-                            dist: rowDistMiddle
-                        });
-
-                    if (Math.abs(rowDistMiddle) < Math.abs(threshold.Distance)) {
-                        const pointDistMiddle = pointDistance(obj, objMiddle);
-
-                        if (pointDistMiddle < threshold.Squared) {
-                            arrCols.add(objMiddle, Col);
-
-                            return;
-                        }
-                    }
-                }*/
+        if (middle < e)
+            searchArray(arrCols, list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
     } else {
         if (prevPoint === null) {
             prevPoint = setPoint(middle, rowDistMiddle);
