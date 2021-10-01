@@ -66,13 +66,21 @@ const threshold = {
     Squared: 16
 };
 
-const setPoint = (point, index, distance) => {
-    point.index = index;
-
-    point.distance = distance;
+const setPoint = (index, distance) => {
+    return {
+        index: index,
+        distance: distance
+    };
 };
 
-const searchArray = (arrCols, list, obj, b, e, upperHalf = null, prevPoint = null, minPoint = null, checkedObjects = null) => {
+const copyPoint = (point) => {
+    return {
+        index: point.index,
+        distance: point.distance
+    };
+};
+
+const searchArray = (arrCols, list, obj, b, e, prevPoint = null, minPoint = null, checkedObjects = null) => {
     if (e < b)
         return;
 
@@ -100,13 +108,10 @@ const searchArray = (arrCols, list, obj, b, e, upperHalf = null, prevPoint = nul
         }
     } else {
         if (prevPoint === null) {
-            prevPoint = {
-                index: middle,
-                distance: rowDistMiddle
-            };
+            prevPoint = setPoint(middle, rowDistMiddle);
 
             if (minPoint === null || rowDistMiddle < minPoint.distance)
-                minPoint = prevPoint;
+                minPoint = copyPoint(prevPoint);
 
             if (middle > b)
                 searchArray(arrCols, list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
@@ -117,10 +122,10 @@ const searchArray = (arrCols, list, obj, b, e, upperHalf = null, prevPoint = nul
             const prevPointTemp = prevPoint;
             const minPointTemp = minPoint;
 
-            setPoint(prevPoint, middle, rowDistMiddle);
+            prevPoint = setPoint(middle, rowDistMiddle);
 
             if (minPoint === null || rowDistMiddle < minPoint.distance)
-                minPoint = prevPoint;
+                minPoint = copyPoint(prevPoint);
 
             if (rowDistMiddle > prevPointTemp.distance) {
                 if (middle > b && middle > prevPointTemp.index)
