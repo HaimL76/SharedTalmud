@@ -88,7 +88,7 @@ const setDoubleIndexPoint = (point, index, distance, threshold = null) => {
             distance: distance
         };
 
-    if (distance < threshold) {
+    if (Math.abs(distance) < Math.abs(threshold)) {
         if (index < point.min)
             point.min = index;
 
@@ -97,10 +97,10 @@ const setDoubleIndexPoint = (point, index, distance, threshold = null) => {
 
         distance = 0;
     } else {
-        if (distance < point.distance || index < point.min)
+        if (Math.abs(distance) < Math.abs(point.distance) || index < point.min)
             point.min = index;
 
-        if (distance < point.distance || index > point.max)
+        if (Math.abs(distance) < Math.abs(point.distance) || index > point.max)
             point.max = index;
 
         point.distance = distance;
@@ -169,8 +169,7 @@ const searchArray = (arrCols, list, obj, b, e, prevPoint = null, minPoint = null
         if (prevPoint === null) {
             prevPoint = setPoint(middle, rowDistMiddle);
 
-            if (minPoint === null || Math.abs(rowDistMiddle) <= Math.abs(minPoint.distance))
-                minPoint = setDoubleIndexPoint(minPoint, prevPoint.index, prevPoint.distance);
+            minPoint = setDoubleIndexPoint(minPoint, prevPoint.index, prevPoint.distance, threshold.Distance);
 
             if (middle > b)
                 searchArray(arrCols, list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
@@ -183,9 +182,18 @@ const searchArray = (arrCols, list, obj, b, e, prevPoint = null, minPoint = null
 
             prevPoint = setPoint(middle, rowDistMiddle);
 
-            if (minPoint === null || Math.abs(rowDistMiddle) <= Math.abs(minPoint.distance)) {
-                minPoint = setDoubleIndexPoint(minPoint, prevPoint.index, prevPoint.distance);
+            let prevMin = null;
+            let currMin = null;
 
+            if (minPoint && "min" in minPoint)
+                prevMin = minPoint.min;
+
+            minPoint = setDoubleIndexPoint(minPoint, prevPoint.index, prevPoint.distance);
+
+            if (minPoint && "min" in minPoint)
+                currMin = minPoint.min;
+
+            if (Math.abs(currMin) && Math.abs(prevMin)) {
                 if (middle > b) // && middle > prevPointTemp.index)
                     searchArray(arrCols, list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
 
