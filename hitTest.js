@@ -21,7 +21,7 @@ const hitTest = (row, col, arrayOfArrays, threshold = {
 
             const checkedObjects = [];
 
-            searchArray(arrCols, arrRows, obj, 0, arrRows.getLength() - 1, null, checkedObjects); //, (obj, obj0, threshold) => distanceRow(obj, obj0));
+            searchArray(arrCols, arrRows, obj, 0, arrRows.getLength() - 1, null, null, checkedObjects); //, (obj, obj0, threshold) => distanceRow(obj, obj0));
 
             let found = false;
             let index = 0;
@@ -66,15 +66,20 @@ const threshold = {
     Squared: 16
 };
 
-const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, checkedObjects = null) => {
+const searchArray = (arrCols, list, obj, b, e, upperHalf = null, minDistance = null, checkedObjects = null) => {
     if (e < b)
         return;
+
+    //const prevMinDistance = minDistance;
 
     const middle = Math.floor((b + e) / 2);
 
     const objMiddle = list.arr[middle];
 
     const rowDistMiddle = rowDistance(obj, objMiddle);
+
+    if (minDistance === null || rowDistMiddle < minDistance)
+        minDistance = rowDistMiddle;
 
     if (Array.isArray(checkedObjects))
         checkedObjects.push({
@@ -93,51 +98,25 @@ const searchArray = (arrCols, list, obj, b, e, prevMiddle = null, checkedObjects
             return;
         }
     } else {
-        let minDistance = null;
-
-        if (prevMiddle && "MinDistance" in prevMiddle)
-            minDistance = prevMiddle.MinDistance;
-
-        if (minDistance == null || rowDistMiddle < minDistance)
-            minDistance = rowDistMiddle;
-
-        const newPrevMiddle = {
-            Location: middle,
-            Distance: rowDistMiddle,
-            MinDistance: minDistance
-        };
-
-        if (!prevMiddle) {
+        if (upperHalf === null || minDistance === null) {
             if (middle > b)
-                searchArray(arrCols, list, obj, b, middle - 1, newPrevMiddle, checkedObjects);
+                searchArray(arrCols, list, obj, b, middle - 1, false, minDistance, checkedObjects);
 
             if (middle < e)
-                searchArray(arrCols, list, obj, middle + 1, e, newPrevMiddle, checkedObjects);
+                searchArray(arrCols, list, obj, middle + 1, e, true, minDistance, checkedObjects);
         } else {
-            let prevMiddleDistance;
-            let prevMiddleLocation;
-            let minDistance;
+            if (rowDistMiddle > minDistance) {
+                if (middle > b)
+                    searchArray(arrCols, list, obj, b, middle - 1, false, minDistance, checkedObjects);
 
-            if ("Location" in prevMiddle)
-                prevMiddleLocation = prevMiddle.Location;
-
-            if ("Distance" in prevMiddle)
-                prevMiddleDistance = prevMiddle.Distance;
-
-            if ("MinDistance" in prevMiddle)
-                minDistance = prevMiddle.MinDistance;
-
-            if (rowDistMiddle > prevMiddleDistance || rowDistMiddle > minDistance) {
-                if (middle > prevMiddle.Location)
-                    searchArray(arrCols, list, obj, b, middle - 1, newPrevMiddle, checkedObjects);
-                else
-                    searchArray(arrCols, list, obj, middle + 1, e, newPrevMiddle, checkedObjects);
+                if (e < middle)
+                    searchArray(arrCols, list, obj, middle + 1, e, true, minDistance, checkedObjects);
             } else {
                 if (middle > b)
-                    searchArray(arrCols, list, obj, b, middle - 1, newPrevMiddle, checkedObjects);
+                    searchArray(arrCols, list, obj, b, middle - 1, null, minDistance, checkedObjects);
 
                 if (middle < e)
-                    searchArray(arrCols, list, obj, middle + 1, e, newPrevMiddle, checkedObjects);
+                    searchArray(arrCols, list, obj, middle + 1, e, null, minDistance, checkedObjects);
             }
         }
     }
