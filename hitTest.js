@@ -66,7 +66,7 @@ const threshold = {
     Squared: 16
 };
 
-const searchArray = (arrCols, list, obj, b, e, upperHalf = null, minDistance = null, checkedObjects = null) => {
+const searchArray = (arrCols, list, obj, b, e, upperHalf = null, prevDistance = null, checkedObjects = null) => {
     if (e < b)
         return;
 
@@ -77,9 +77,6 @@ const searchArray = (arrCols, list, obj, b, e, upperHalf = null, minDistance = n
     const objMiddle = list.arr[middle];
 
     const rowDistMiddle = rowDistance(obj, objMiddle);
-
-    if (minDistance === null || rowDistMiddle < minDistance)
-        minDistance = rowDistMiddle;
 
     if (Array.isArray(checkedObjects))
         checkedObjects.push({
@@ -98,25 +95,25 @@ const searchArray = (arrCols, list, obj, b, e, upperHalf = null, minDistance = n
             return;
         }
     } else {
-        if (upperHalf === null || minDistance === null) {
+        if (upperHalf === null || prevDistance === null) {
             if (middle > b)
-                searchArray(arrCols, list, obj, b, middle - 1, false, minDistance, checkedObjects);
+                searchArray(arrCols, list, obj, b, middle - 1, false, prevDistance, checkedObjects);
 
             if (middle < e)
-                searchArray(arrCols, list, obj, middle + 1, e, true, minDistance, checkedObjects);
+                searchArray(arrCols, list, obj, middle + 1, e, true, prevDistance, checkedObjects);
         } else {
-            if (rowDistMiddle > minDistance) {
-                if (middle > b)
-                    searchArray(arrCols, list, obj, b, middle - 1, false, minDistance, checkedObjects);
+            if (rowDistMiddle > prevDistance) {
+                if (middle > b && upperHalf === true)
+                    searchArray(arrCols, list, obj, b, middle - 1, null, prevDistance, checkedObjects);
 
-                if (e < middle)
-                    searchArray(arrCols, list, obj, middle + 1, e, true, minDistance, checkedObjects);
+                if (middle < e && upperHalf === false)
+                    searchArray(arrCols, list, obj, middle + 1, e, null, prevDistance, checkedObjects);
             } else {
                 if (middle > b)
-                    searchArray(arrCols, list, obj, b, middle - 1, null, minDistance, checkedObjects);
+                    searchArray(arrCols, list, obj, b, middle - 1, null, prevDistance, checkedObjects);
 
                 if (middle < e)
-                    searchArray(arrCols, list, obj, middle + 1, e, null, minDistance, checkedObjects);
+                    searchArray(arrCols, list, obj, middle + 1, e, null, prevDistance, checkedObjects);
             }
         }
     }
