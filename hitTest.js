@@ -80,7 +80,7 @@ const copyPoint = (point) => {
     };
 };
 
-const setDoubleIndexPoint = (point, index, distance) => {
+const setDoubleIndexPoint = (point, index, distance, threshold = null) => {
     if (point === null)
         point = {
             min: index,
@@ -88,13 +88,23 @@ const setDoubleIndexPoint = (point, index, distance) => {
             distance: distance
         };
 
-    if (distance < point.distance || index < point.min)
-        point.min = index;
+    if (distance < threshold) {
+        if (index < point.min)
+            point.min = index;
 
-    if (distance < point.distance || index > point.max)
-        point.max = index;
+        if (index > point.max)
+            point.max = index;
 
-    point.distance = distance;
+        distance = 0;
+    } else {
+        if (distance < point.distance || index < point.min)
+            point.min = index;
+
+        if (distance < point.distance || index > point.max)
+            point.max = index;
+
+        point.distance = distance;
+    }
 
     return point;
 }
@@ -131,30 +141,30 @@ const searchArray = (arrCols, list, obj, b, e, prevPoint = null, minPoint = null
         //let arr0 = list.arr.slice(b, e);
 
         //arr0 = arr0.splice(middle, 1);
+        /*
+                for (let i = b; i < e; i++) {
+                    const objMiddle = list.arr[i];
 
-        for (let i = b; i < e; i++) {
-            const objMiddle = list.arr[i];
+                    const rowDistMiddle = rowDistance(obj, objMiddle);
 
-            const rowDistMiddle = rowDistance(obj, objMiddle);
+                    if (Array.isArray(checkedObjects))
+                        checkedObjects.push({
+                            index: middle,
+                            row: objMiddle.val.Row,
+                            col: objMiddle.val.Col,
+                            dist: rowDistMiddle
+                        });
 
-            if (Array.isArray(checkedObjects))
-                checkedObjects.push({
-                    index: middle,
-                    row: objMiddle.val.Row,
-                    col: objMiddle.val.Col,
-                    dist: rowDistMiddle
-                });
+                    if (Math.abs(rowDistMiddle) < Math.abs(threshold.Distance)) {
+                        const pointDistMiddle = pointDistance(obj, objMiddle);
 
-            if (Math.abs(rowDistMiddle) < Math.abs(threshold.Distance)) {
-                const pointDistMiddle = pointDistance(obj, objMiddle);
+                        if (pointDistMiddle < threshold.Squared) {
+                            arrCols.add(objMiddle, Col);
 
-                if (pointDistMiddle < threshold.Squared) {
-                    arrCols.add(objMiddle, Col);
-
-                    return;
-                }
-            }
-        }
+                            return;
+                        }
+                    }
+                }*/
     } else {
         if (prevPoint === null) {
             prevPoint = setPoint(middle, rowDistMiddle);
