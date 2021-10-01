@@ -115,8 +115,12 @@ const searchArray = (arrCols, list, obj, b, e, upperHalf = null, prevPoint = nul
                 searchArray(arrCols, list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
         } else {
             const prevPointTemp = prevPoint;
+            const minPointTemp = minPoint;
 
             setPoint(prevPoint, middle, rowDistMiddle);
+
+            if (minPoint === null || rowDistMiddle < minPoint.distance)
+                minPoint = prevPoint;
 
             if (rowDistMiddle > prevPointTemp.distance) {
                 if (middle > b && middle > prevPointTemp.index)
