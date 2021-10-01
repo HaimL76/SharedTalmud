@@ -128,11 +128,11 @@ const searchArray = (arrCols, list, obj, b, e, prevPoint = null, minPoint = null
     }
 
     if (Math.abs(rowDistMiddle) < Math.abs(threshold.Distance)) {
-        let arr0 = list.arr.slice(b, e);
+        //let arr0 = list.arr.slice(b, e);
 
-        arr0 = arr0.splice(middle, 1);
+        //arr0 = arr0.splice(middle, 1);
 
-        for (let i = 0; i < arr0.length; i++) {
+        for (let i = b; i < e; i++) {
             const objMiddle = list.arr[i];
 
             const rowDistMiddle = rowDistance(obj, objMiddle);
@@ -189,19 +189,45 @@ const searchArray = (arrCols, list, obj, b, e, prevPoint = null, minPoint = null
                     if (middle < e && middle < prevPointTemp.index)
                         searchArray(arrCols, list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
                 } else {
-                    if (middle < e && middle > prevPointTemp.index) {
-                        if (middle < minPointTemp.min)
-                            searchArray(arrCols, list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
-                        else if (middle > b)
+                    if (minPoint.distance > 0 && rowDistMiddle > minPoint.distance) {
+                        const a = 0;
+                    } else if (minPoint.distance < 0 && rowDistMiddle < minPoint.distance) {
+                        const a = 0;
+                    } else {
+                        if (middle > b)
                             searchArray(arrCols, list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
+
+                        if (middle < e)
+                            searchArray(arrCols, list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
                     }
 
-                    if (middle > b && middle < prevPointTemp.index) {
-                        if (middle > minPointTemp.max)
-                            searchArray(arrCols, list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
-                        else if (e < middle)
-                            searchArray(arrCols, list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
-                    }
+
+
+
+
+
+
+
+
+
+
+
+
+                    /*
+                                        if (middle < e && middle > prevPointTemp.index) {
+                                            if (middle < minPointTemp.min)
+                                                searchArray(arrCols, list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
+                                            else if (middle > b)
+                                                searchArray(arrCols, list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
+                                        }
+
+                                        if (middle > b && middle < prevPointTemp.index) {
+                                            if (middle > minPointTemp.max)
+                                                searchArray(arrCols, list, obj, b, middle - 1, prevPoint, minPoint, checkedObjects);
+                                            else if (e < middle)
+                                                searchArray(arrCols, list, obj, middle + 1, e, prevPoint, minPoint, checkedObjects);
+                                        }
+                                        */
                 }
             }
         }
