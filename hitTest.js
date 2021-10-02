@@ -109,12 +109,20 @@ const sequentialBypass = (list, obj, point, checkedObjects = null) => {
 
     let distance = 0;
 
-    while (result === null && i < list.arr.length) {
+    while (result === null && distance < threshold.Distance && i < list.arr.length) {
         let obj0 = list.arr[i];
 
-        i++;
-
         distance = rowDistance(obj, obj0);
+
+        if (Array.isArray(checkedObjects))
+            checkedObjects.push({
+                index: i,
+                row: obj0.val.Row,
+                col: obj0.val.Col,
+                dist: distance
+            });
+
+        i++;
 
         if (Math.abs(distance) < Math.abs(threshold.Distance)) {
             const squared = pointDistance(obj, obj0);
@@ -126,12 +134,20 @@ const sequentialBypass = (list, obj, point, checkedObjects = null) => {
 
     i = point.index - 1;
 
-    while (result === null && i >= 0) {
+    while (result === null && distance < threshold.Distance && i >= 0) {
         let obj0 = list.arr[i];
 
-        i--;
-
         distance = rowDistance(obj, obj0);
+
+        if (Array.isArray(checkedObjects))
+            checkedObjects.push({
+                index: i,
+                row: obj0.val.Row,
+                col: obj0.val.Col,
+                dist: distance
+            });
+
+        i--;
 
         if (Math.abs(distance) < Math.abs(threshold.Distance)) {
             const squared = pointDistance(obj, obj0);
