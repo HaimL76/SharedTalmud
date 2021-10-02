@@ -23,7 +23,19 @@ const hitTest = (row, col, arrayOfArrays, threshold = {
         if (arrRows && Array.isArray(arrRows.arr) && arrRows.arr.length > 0 &&
             arrCols && Array.isArray(arrCols.arr)) {
 
-            result = searchArray(arrRows, obj, 0, arrRows.getLength() - 1, null, null, checkedObjects); //, (obj, obj0, threshold) => distanceRow(obj, obj0));
+            //result = searchArray(arrRows, obj, 0, arrRows.getLength() - 1, null, null, checkedObjects); //, (obj, obj0, threshold) => distanceRow(obj, obj0));
+
+            const pointBegin = {
+                index: 0,
+                distance: null
+            };
+
+            const pointEnd = {
+                index: arrRows.arr.length - 1,
+                distance: null
+            };
+
+            result = searchArray(arrRows, obj, pointBegin, pointEnd, checkedObjects); //, (obj, obj0, threshold) => distanceRow(obj, obj0));
         }
 
         return result;
@@ -87,7 +99,126 @@ const setDoubleIndexPoint = (point, index, distance, threshold = null) => {
     return point;
 }
 
-const searchArray = (list, obj, b, e, prevPoint = null, minPoint = null, checkedObjects = null) => {
+
+
+
+
+
+
+
+
+
+const searchArray = (list, obj, pointBegin, pointEnd, checkedObjects = null) => {
+    let result = null;
+
+    if (pointEnd.index < pointBegin.index)
+        return null;
+
+    const pointMiddle = {
+        index: null,
+        distance: null
+    };
+
+    pointMiddle.index = Math.floor((pointBegin.index + pointEnd.index) / 2);
+
+    const objMiddle = list.arr[pointMiddle.index];
+
+    pointMiddle.distance = rowDistance(obj, objMiddle);
+
+    if (Array.isArray(checkedObjects))
+        checkedObjects.push({
+            index: pointMiddle.index,
+            row: objMiddle.val.Row,
+            col: objMiddle.val.Col,
+            dist: pointMiddle.distance
+        });
+
+    if (Math.abs(pointMiddle.distance) < Math.abs(threshold.Distance)) {
+        const pointDistMiddle = pointDistance(obj, objMiddle);
+
+        if (pointDistMiddle < threshold.Squared)
+            return objMiddle;
+    }
+
+    let objBegin = null;
+
+    if (pointBegin.distance === null) {
+        objBegin = list.arr[pointBegin.index];
+
+        pointBegin.distance = rowDistance(obj, objBegin);
+    }
+
+    if (Math.abs(pointBegin.distance) < Math.abs(threshold.Distance)) {
+        if (!objBegin)
+            objBegin = list.arr[pointBegin.index];
+
+        const pointDistBegin = pointDistance(obj, objBegin);
+
+        if (pointDistBegin < threshold.Squared)
+            return objBegin;
+    }
+
+    let objEnd = null;
+
+    if (pointEnd.distance === null) {
+        objEnd = list.arr[pointEnd.index];
+
+        pointEnd.distance = rowDistance(obj, objEnd);
+    }
+
+    if (Math.abs(pointEnd.distance) < Math.abs(threshold.Distance)) {
+        if (!objEnd)
+            objEnd = list.arr[pointEnd.index];
+
+        const pointDistEnd = pointDistance(obj, objEnd);
+
+        if (pointDistEnd < threshold.Squared)
+            return objEnd;
+    }
+
+    if (pointMiddle.index < pointEnd.index) {
+        const productUpper = pointMiddle.distance * pointEnd.distance;
+
+        if (productUpper < 0) {
+            pointBeginNew = {
+                index: pointMiddle.index + 1,
+                distance: null
+            };
+
+            result = searchArray(list, obj, pointBeginNew, pointEnd, checkedObjects);
+
+            if (result)
+                return result;
+        }
+    }
+
+    if (pointMiddle.index > pointBegin.index) {
+        const productLower = pointBegin.distance * pointMiddle.distance;
+
+        if (productLower < 0) {
+            pointEndNew = {
+                index: pointMiddle.index - 1,
+                distance: null
+            };
+
+            result = searchArray(list, obj, pointBegin, pointEndNew, checkedObjects);
+
+            if (result)
+                return result;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+const searchArray0 = (list, obj, b, e, prevPoint = null, minPoint = null, checkedObjects = null) => {
     let result = null;
 
     if (e < b)
