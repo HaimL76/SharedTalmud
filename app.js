@@ -98,7 +98,7 @@ const getComments = (resource) => {
             connection.on('connect', (err) => {
                 utils.log(`${strDateTime}, connected `);
 
-                const sql = `select c.[Id], c.[Resource], c.[Row], c.[Col], a.[First], a.[Last] ` +
+                const sql = `select c.[Id], c.[Resource], c.[Row], c.[Col], a.[AuthorKind], a.[First], a.[Last] ` +
                     ` from ${TableComments} c inner join ${TableAuthors} a on a.[Id] = c.[Author] ` +
                     ` where resource = ${resource}`
 

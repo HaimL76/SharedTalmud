@@ -97,9 +97,9 @@
                         const alpha = 0.5;
 
                         mapRows.arr.forEach(element => {
-                            const r = Math.floor(Math.random() * 255);
-                            const g = Math.floor(Math.random() * 255);
-                            const b = Math.floor(Math.random() * 255);
+                            const r = 125; //Math.floor(Math.random() * 255);
+                            const g = 125; //Math.floor(Math.random() * 255);
+                            const b = (255 / 6) * element.getVal("AuthorKind"); // Math.floor(Math.random() * 255);
 
                             const str_rgba = `rgba(${r}, ${g}, ${b}, ${alpha})`;
 
@@ -140,8 +140,9 @@
                             ResId: c[1],
                             Row: c[2],
                             Col: c[3],
-                            First: c[4],
-                            Last: c[5]
+                            AuthorKind: c[4],
+                            First: c[5],
+                            Last: c[6]
                         }), Row));
 
                         countdown = topOpacity;
@@ -202,9 +203,9 @@
 
                             var ctx = canvas0.getContext("2d");
 
-                            const r = Math.floor(Math.random() * 255);
-                            const g = Math.floor(Math.random() * 255);
-                            const b = Math.floor(Math.random() * 255);
+                            const r = 255; //125; //Math.floor(Math.random() * 255);
+                            const g = 255; //125; //Math.floor(Math.random() * 255);
+                            const b = 255; //(255 / 6) * c.AuthorKind; // Math.floor(Math.random() * 255);
 
                             const alpha = 1;
 
