@@ -1,7 +1,7 @@
 USE [SharedTalmud]
 GO
 
-/****** Object:  StoredProcedure [dbo].[InsertComments]    Script Date: 29/09/2021 1:07:27 am ******/
+/****** Object:  StoredProcedure [dbo].[InsertComments]    Script Date: 02/10/2021 11:54:33 pm ******/
 SET ANSI_NULLS ON
 GO
 
@@ -13,27 +13,13 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-CREATE OR ALTER   PROCEDURE [dbo].[InsertComments] @Count int, @AuthorId int, @ResourceId int, @Width int, @Height int, @Distinct bit
+CREATE OR ALTER PROCEDURE [dbo].[InsertComments] @Count int, @AuthorId int, @ResourceId int, @Width int, @Height int
 	-- Add the parameters for the stored procedure here
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-
-	declare @minVal int;
-
-	set @minVal = @Width;
-	
-	if @Height < @minVal
-	begin
-		set @minVal = @Height;
-	end
-
-	if @Distinct = 1 and @Count > @minVal
-	begin
-		return;
-	end
 
 	declare @counter int;
 	declare @col int;
@@ -45,12 +31,16 @@ BEGIN
 
 	declare @author int;
 
+	declare @minAuthorId int;
+
 	declare @myTableVariable table (Id int identity(1, 1), AuthorId int)
 
 	insert into @myTableVariable(AuthorId)
 	select [Authors].Id from [Authors]
 
-	select @authorsLength = count(*) from @myTableVariable
+	select @authorsLength = count(*) from [Authors]
+
+	select @minAuthorId = min(Id) from [Authors]
 
 	print convert([nvarchar](50), @authorsLength)
 
@@ -73,8 +63,10 @@ BEGIN
 
 		if @author < 1
 		begin
-			set @author = @counter % @authorsLength + 1;
+			set @author = @counter % @authorsLength + @minAuthorId;
 		end
+
+		print 'author = ' + convert([nvarchar](50), @author)
 
 		--begin
 		--	select @AuthorId = [@myTableVariable].AuthorId from @myTableVariable where [@myTableVariable].Id = @AuthorId;
