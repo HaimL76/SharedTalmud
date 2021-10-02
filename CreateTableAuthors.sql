@@ -19,11 +19,16 @@ CREATE TABLE [dbo].[Authors](
 	[First] [nvarchar](50) NOT NULL,
 	[Last] [nvarchar](50) NOT NULL,
 	[Timestamp] [datetime] NOT NULL,
+	[AuthorKind] [int] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Authors]  WITH CHECK ADD FOREIGN KEY([AuthorKind])
+REFERENCES [dbo].[AuthorKinds] ([Id])
 GO
 
 ALTER TABLE [dbo].[Authors] ADD  DEFAULT (getdate()) FOR [Timestamp]
