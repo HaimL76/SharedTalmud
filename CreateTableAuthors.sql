@@ -19,7 +19,7 @@ CREATE TABLE [dbo].[Authors](
 	[First] [nvarchar](50) NOT NULL,
 	[Last] [nvarchar](50) NOT NULL,
 	[Timestamp] [datetime] NOT NULL,
-	[AuthorKind] [int] NULL,
+	[AuthorKind] [int] NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
