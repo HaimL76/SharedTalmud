@@ -102,7 +102,47 @@ const setDoubleIndexPoint = (point, index, distance, threshold = null) => {
 
 
 
+const sequentialBypass = (list, obj, point, checkedObjects = null) => {
+    let result = null;
 
+    let i = point.index + 1;
+
+    let distance = 0;
+
+    while (result === null && i < list.arr.length) {
+        let obj0 = list.arr[i];
+
+        i++;
+
+        distance = rowDistance(obj, obj0);
+
+        if (Math.abs(distance) < Math.abs(threshold.Distance)) {
+            const squared = pointDistance(obj, obj0);
+
+            if (squared < threshold.Squared)
+                result = obj0;
+        }
+    }
+
+    i = point.index - 1;
+
+    while (result === null && i >= 0) {
+        let obj0 = list.arr[i];
+
+        i--;
+
+        distance = rowDistance(obj, obj0);
+
+        if (Math.abs(distance) < Math.abs(threshold.Distance)) {
+            const squared = pointDistance(obj, obj0);
+
+            if (squared < threshold.Squared)
+                result = obj0;
+        }
+    }
+
+    return result;
+}
 
 
 
@@ -138,6 +178,11 @@ const searchArray = (list, obj, pointBegin, pointEnd, checkedObjects = null) => 
 
         if (pointDistMiddle < threshold.Squared)
             return objMiddle;
+
+        result = sequentialBypass(list, obj, pointMiddle, checkedObjects);
+
+        if (result)
+            return result;
     }
 
     let objBegin = null;
@@ -156,6 +201,11 @@ const searchArray = (list, obj, pointBegin, pointEnd, checkedObjects = null) => 
 
         if (pointDistBegin < threshold.Squared)
             return objBegin;
+
+        result = sequentialBypass(list, obj, pointBegin, checkedObjects);
+
+        if (result)
+            return result;
     }
 
     let objEnd = null;
@@ -174,6 +224,11 @@ const searchArray = (list, obj, pointBegin, pointEnd, checkedObjects = null) => 
 
         if (pointDistEnd < threshold.Squared)
             return objEnd;
+
+        result = sequentialBypass(list, obj, pointEnd, checkedObjects);
+
+        if (result)
+            return result;
     }
 
     if (pointMiddle.index < pointEnd.index) {
