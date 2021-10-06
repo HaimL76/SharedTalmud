@@ -64,7 +64,7 @@ class legend {
             str += pair.getCheckbox();
 
 
-            str += `<input type="color" id="color_${pair.itemId}" onchange="clickColor(0, -1, -1, 5)" value="#ff0000" style="width:85%;"></input>`
+            str += `<input type="color" id="color_${pair.itemId}" onchange="clickColor(0, -1, -1, 5)" value="#ff0000"></input>`
 
 
             str += "</li>";

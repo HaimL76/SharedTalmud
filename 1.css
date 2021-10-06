@@ -54,3 +54,8 @@ canvas {
 .list-container {
     width: 40ch;
 }
+
+input[type=color] {
+    width: 25px;
+    height: 25px;
+}
