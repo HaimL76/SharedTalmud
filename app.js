@@ -16,6 +16,7 @@ const port = 3000
 const Database = "SharedTalmud";
 const TableComments = `[${Database}].[dbo].[Comments]`;
 const TableAuthors = `[${Database}].[dbo].[Authors]`;
+const TableAuthorKinds = `[${Database}].[dbo].[AuthorKinds]`;
 const TableCategories = `[${Database}].[dbo].[Categories]`;
 const TableBooks = `[${Database}].[dbo].[Books]`;
 const TableResources = `[${Database}].[dbo].[Resources]`;
@@ -86,6 +87,15 @@ app.get('/resources/:book', async(req, res) => {
 
         res.send(arr);
     }
+});
+
+app.get('/authorkinds', async(req, res) => {
+    const arr = await getAuthorKinds();
+
+    if (Array.isArray(arr))
+        utils.log(`arr.length=${arr.length}`);
+
+    res.send(arr);
 });
 
 const getComments = (resource) => {
@@ -166,6 +176,67 @@ const getCategories = () => {
 
             const sql = `select cat.[Id], cat.[Name] ` +
                 ` from ${TableCategories} cat`
+
+            request = new Request(sql, function(err, rowCount) {
+                if (err) {
+                    utils.log(err, 1);
+                } else {
+                    //utils.log(rowCount + ' rows');
+                }
+            });
+
+            const arr = [];
+
+            request.on('row', function(cols) {
+                const dict = {};
+
+                cols.forEach((col) => dict[col.metadata.colName] = col.value);
+
+                arr.push(dict);
+            });
+
+            request.on('requestCompleted', function() {
+                connection.close();
+
+                resolve(arr);
+            });
+
+            request.on('done', function(rowCount, more, rows) {
+                //utils.log(rowCount);
+                const arr = [];
+
+                rows.forEach((row) => {
+                    //utils.log(`${strDateTime}, ${row.value}`);
+                    arr.push(row.value)
+                });
+
+                resolve(arr);
+            });
+
+            connection.execSql(request);
+
+            utils.log(`${strDateTime}, after calling exeSql`);
+        });
+
+        connection.connect();
+
+        utils.log(`${strDateTime}, after calling connect`);
+    });
+}
+
+const getAuthorKinds = () => {
+    return new Promise((resolve, reject) => {
+        const strDateTime = dtu.formatDateTime(new Date());
+
+        const connection = new Connection(config);
+
+        connection.on('connect', (err) => {
+            utils.log(`${strDateTime}, connected `);
+
+            let sql = `select ak.[Id], ak.[Name] ` +
+                ` from ${TableAuthorKinds} ak`;
+
+            utils.log(sql, 1);
 
             request = new Request(sql, function(err, rowCount) {
                 if (err) {

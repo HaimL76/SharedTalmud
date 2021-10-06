@@ -9,6 +9,7 @@
     <script type='text/javascript' src='speechBubble.js'></script>
     <script type='text/javascript' src='sortedList.js'></script>
     <script type='text/javascript' src='menuBuilder.js'></script>
+    <script type='text/javascript' src='legend.js'></script>
     <script type='text/javascript' src='timedFunctions.js'></script>
     <script>
         $(document).ready(async function() {
@@ -283,6 +284,10 @@
                 });
 
             menu.build();
+
+            const legend0 = new legend("sideMenu", "http://localhost:3000/authorkinds/");
+
+            legend0.build();
 
             $('#page-image').click(function(e) {
                 var tipCanvas = $("#tip")[0];
