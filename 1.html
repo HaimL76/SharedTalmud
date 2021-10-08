@@ -311,7 +311,12 @@
             const legend0 = new legend(async(color) => {
                 const str0 = legend0.getCookie();
 
-                document.cookie = str0;
+                //document.cookie = str0;
+
+                //$.cookie('the_cookie', 'the_value', {
+                //  expires: 7,
+                //path: '/'
+                //});
 
                 console.log(`color = ${color}`);
 
@@ -324,7 +329,7 @@
 
             legend0.build();
 
-            document.cookie = legend0.getCookie();
+            //document.cookie = legend0.getCookie();
 
             $('#page-image').click(function(e) {
                 var tipCanvas = $("#tip")[0];

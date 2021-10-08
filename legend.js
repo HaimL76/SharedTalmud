@@ -105,10 +105,9 @@ class legend {
 
         const myItems = this.items;
 
-        myItems.forEach(item => {
-            let str = "";
+        let str = "<ul class=aks>";
 
-            str += "<ul class=aks>";
+        myItems.forEach(item => {
             str += "<li>";
             str += item.getCheckbox();
 
@@ -119,74 +118,80 @@ class legend {
             str += item.itemName;
 
             str += "</li>";
-            str += "</ul>";
-
-            $(`#${this.myElement}`).append(str);
 
             const cbId = `cb_${item.itemId}`;
 
             //set initial state.
+        });
 
-            $(`#${cbId}`).on("change", (e) => {
-                if (e && "target" in e) {
-                    const elem0 = e.target;
+        str += "</ul>";
 
-                    if (elem0 && "checked" in elem0 && "id" in elem0) {
-                        const isChecked = elem0.checked;
+        $(`#${this.myElement}`).append(str);
 
-                        const itemId = elem0.id;
+        this.onAppend();
+    }
 
-                        if (itemId) {
-                            const arr = itemId.split("_");
+    onAppend = () => {
+        //$(`#${cbId}`).on("change", (e) => {
+        $('input[type=checkbox]').on('change', (e) => {
+            if (e && "target" in e) {
+                const elem0 = e.target;
 
-                            if (Array.isArray(arr) && arr.length == 2 && arr[1]) {
-                                const id = parseInt(arr[1]);
+                if (elem0 && "checked" in elem0 && "id" in elem0) {
+                    const isChecked = elem0.checked;
 
-                                if (this.items.has(id)) {
-                                    const item0 = this.items.get(id);
+                    const itemId = elem0.id;
 
-                                    if (item0) {
-                                        item0.setIsVisible(isChecked);
+                    if (itemId) {
+                        const arr = itemId.split("_");
 
-                                        if (cb)
-                                            cb(isChecked);
-                                    }
+                        if (Array.isArray(arr) && arr.length == 2 && arr[1]) {
+                            const id = parseInt(arr[1]);
+
+                            if (this.items.has(id)) {
+                                const item0 = this.items.get(id);
+
+                                if (item0) {
+                                    item0.setIsVisible(isChecked);
+
+                                    if (this.callback)
+                                        this.callback(isChecked);
                                 }
                             }
                         }
                     }
                 }
-            });
+            }
+        });
 
-            //$('input[type=color]').on('input',
-            $(`#${itemId}`).on('input', (e) => {
-                const elem0 = e.target;
+        $('input[type=color]').on('input', (e) => {
+            //$(`#${itemId}`).on('input', (e) => {
+            const elem0 = e.target;
 
-                const color0 = elem0.value;
+            const color0 = elem0.value;
 
-                const itemId = elem0.id;
+            const itemId = elem0.id;
 
-                if (itemId) {
-                    const arr = itemId.split("_");
+            if (itemId) {
+                const arr = itemId.split("_");
 
-                    if (Array.isArray(arr) && arr.length == 2 && arr[1]) {
-                        const id = parseInt(arr[1]);
+                if (Array.isArray(arr) && arr.length == 2 && arr[1]) {
+                    const id = parseInt(arr[1]);
 
-                        if (this.items.has(id)) {
-                            const item0 = this.items.get(id);
+                    if (this.items.has(id)) {
+                        const item0 = this.items.get(id);
 
-                            if (item0) {
-                                item0.setColor(color0);
+                        if (item0) {
+                            item0.setColor(color0);
 
-                                console.log(color0);
+                            console.log(color0);
 
-                                if (cb)
-                                    cb(color0);
-                            }
+                            if (this.callback)
+                                this.callback(color0);
                         }
                     }
                 }
-            });
+            }
         });
     }
 }
