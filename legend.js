@@ -13,7 +13,7 @@ class legendItem {
 
     itemStyle = null;
 
-    isVisible = true;
+    isVisible = false;
 
     setIsVisible = (visible) => this.isVisible = visible;
 
