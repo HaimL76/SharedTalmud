@@ -7,6 +7,7 @@
     <!--<script type='text/javascript' src='utils.js'></script>-->
     <script type='text/javascript' src='hitTest.js'></script>
     <script type='text/javascript' src='speechBubble.js'></script>
+    <script type='text/javascript' src='speechBubble1.js'></script>
     <script type='text/javascript' src='sortedList.js'></script>
     <script type='text/javascript' src='menuBuilder.js'></script>
     <script type='text/javascript' src='legend.js'></script>
@@ -331,7 +332,13 @@
 
             //document.cookie = legend0.getCookie();
 
-            $('#page-image').click(function(e) {
+            $('#page-image').click((e) => itemClick(e));
+
+            $('#page-image0').click((e) => itemClick(e));
+
+            const itemClick = (e) => {
+                var bubbleCanvas = $('#page-image1')[0];
+
                 var tipCanvas = $("#tip")[0];
 
                 let hitComment = false;
@@ -339,8 +346,13 @@
                 const left = $("#page-image").position().left;
                 const top = $("#page-image").position().top;
 
+                const left1 = $("#page-image1").position().left;
+                const top1 = $("#page-image1").position().top;
+
                 row = e.pageY - top;
                 col = e.pageX - left;
+
+                drawBubble1(bubbleCanvas, left1, top1, col, row);
 
                 $('#dynamic-status').val(col + ', ' + row);
 
@@ -370,7 +382,7 @@
 
                 if (!hitComment && tipCanvas && "style" in tipCanvas)
                     tipCanvas.style.top = tipCanvas.style.left = -1000;
-            });
+            }
 
             const insert = function(authorId, resId, row, col) {
                 //var text = prompt("כתוב את חידושך", "");
@@ -421,6 +433,8 @@
             <canvas id="page-image0">
             </canvas>
             <canvas id="tip" width=100 height=25>
+            </canvas>
+            <canvas id="page-image1" width=500 height=350>
             </canvas>
             <div class="comment-text">
             </div>

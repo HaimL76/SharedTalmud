@@ -51,6 +51,10 @@ canvas {
     position: absolute;
 }
 
+#page-image1 {
+    position: absolute;
+}
+
 .list-container {
     width: 40ch;
 }
