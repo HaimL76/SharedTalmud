@@ -13,6 +13,64 @@
     <script type='text/javascript' src='timedFunctions.js'></script>
     <script>
         $(document).ready(async function() {
+            countdown = 1; //topOpacity;
+            timestamp = Date.now();
+
+            const drawCircles = () => {
+                const [ts, cd] = intervalFunction(interval, timestamp, countdown, (counter) => {
+                    const canvas = $("#page-image")[0];
+                    const ctx = canvas.getContext('2d');
+
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    ctx.drawImage(pageImage, 0, 0);
+
+                    const alpha0 = topOpacity < 1 ?
+                        1 :
+                        counter / topOpacity;
+
+                    const alpha = 0.5;
+
+                    mapRows.arr.forEach(element => {
+                        let color = null;
+
+                        if (legend0 && element && "val" in element && "AuthorKind" in element.val) {
+                            const colorItem = legend0.getColorItem(element.val.AuthorKind);
+
+                            if (colorItem && "itemStyle" in colorItem && colorItem.itemStyle && "color" in colorItem.itemStyle) {
+                                color = colorItem.itemStyle.color;
+                            }
+                        }
+
+                        const r = 125; //Math.floor(Math.random() * 255);
+                        const g = 125; //Math.floor(Math.random() * 255);
+                        const b = (255 / 6) * element.getVal("AuthorKind"); // Math.floor(Math.random() * 255);
+
+                        const str_rgba = color ?
+                            color :
+                            `rgba(${r}, ${g}, ${b}, ${alpha})`;
+
+                        ctx.beginPath();
+
+                        ctx.arc(element.getVal(Col), element.getVal(Row), radius, 0, 2 * Math.PI, false);
+
+                        ctx.fillStyle = str_rgba; //(pal[2] & 0xffffff).toString(16); // str_rgba;
+                        ctx.fill();
+                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = 'black';
+                        ctx.stroke();
+                    });
+                });
+
+                countdown = cd;
+                timestamp = ts;
+
+                if (countdown >= 0)
+                    window.requestAnimationFrame(drawCircles);
+            }
+
+            const pageImage = new Image();
+
             const Id = "Id";
 
             let comments;
@@ -21,10 +79,6 @@
 
             const topOpacity = 0; // 28;
             const interval = 75; //ms
-
-            let countdown;
-
-            let timestamp;
 
             let centerX, centerY, radius = 5;
 
@@ -80,49 +134,6 @@
                 if (!isValid)
                     return;
 
-                const pageImage = new Image();
-
-                const drawCircles = function() {
-                    const [ts, cd] = intervalFunction(interval, timestamp, countdown, (counter) => {
-                        const canvas = $("#page-image")[0];
-                        const ctx = canvas.getContext('2d');
-
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                        ctx.drawImage(pageImage, 0, 0);
-
-                        const alpha0 = topOpacity < 1 ?
-                            1 :
-                            counter / topOpacity;
-
-                        const alpha = 0.5;
-
-                        mapRows.arr.forEach(element => {
-                            const r = 125; //Math.floor(Math.random() * 255);
-                            const g = 125; //Math.floor(Math.random() * 255);
-                            const b = (255 / 6) * element.getVal("AuthorKind"); // Math.floor(Math.random() * 255);
-
-                            const str_rgba = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-
-                            ctx.beginPath();
-
-                            ctx.arc(element.getVal(Col), element.getVal(Row), radius, 0, 2 * Math.PI, false);
-
-                            ctx.fillStyle = str_rgba;
-                            ctx.fill();
-                            ctx.lineWidth = 1;
-                            ctx.strokeStyle = 'black';
-                            ctx.stroke();
-                        });
-                    });
-
-                    countdown = cd;
-                    timestamp = ts;
-
-                    if (countdown >= 0)
-                        window.requestAnimationFrame(drawCircles);
-                }
-
                 await $.ajax({
                     type: "GET",
                     url: `http://localhost:3000/comments/${resource.myData.Id}`,
@@ -145,9 +156,6 @@
                             First: c[5],
                             Last: c[6]
                         }), Row));
-
-                        countdown = topOpacity;
-                        timestamp = Date.now();
 
                         window.requestAnimationFrame(drawCircles);
                     }
@@ -275,17 +283,25 @@
                     name: "resource",
                     colName: "Page",
                 }],
-                (item) => {
+                async(item) => {
                     if (item && myData in item && item.myData && Path in item.myData) {
                         resource = item;
 
-                        drawPage();
+                        await drawPage();
                     }
                 });
 
             menu.build();
 
-            const legend0 = new legend("sideMenu", "http://localhost:3000/authorkinds/");
+            const legend0 = new legend(async(color) => {
+                console.log(`color = ${color}`);
+
+                countdown = 1;
+                timestamp = Date.now();
+
+                if (countdown >= 0)
+                    window.requestAnimationFrame(drawCircles);
+            }, "sideMenu", "http://localhost:3000/authorkinds/");
 
             legend0.build();
 
