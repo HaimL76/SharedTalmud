@@ -336,8 +336,53 @@
 
             $('#page-image0').click((e) => itemClick(e));
 
+            const drawBubble = (e) => {
+                const left = $("#page-image").position().left;
+                const top = $("#page-image").position().top;
+
+                var tipCanvas = $("#page-image1")[0];
+
+                let hitComment = false;
+
+                row = e.pageY - top;
+                col = e.pageX - left;
+
+                mapCols = new sortedList();
+
+                if (mapRows && mapCols) {
+                    const hit = hitTest(row, col, [mapRows, mapCols]);
+
+                    if (hit && val in hit) { //} && hit.dist < hitTestDistSquare) {
+                        hitComment = true;
+
+                        const c = hit.val;
+
+                        drawBubble1(tipCanvas, 0, 0, col, row);
+
+                        dispRow = c.Row + top - tipCanvas.height;
+                        dispCol = c.Col + left;
+
+                        tipCanvas.style.left = dispCol + "px";
+                        tipCanvas.style.top = dispRow + "px";
+
+                        //tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
+
+                        //textWidth = tipCtx.measureText(text).width;
+
+                        //tipCtx.fillText(text, 5, 15);
+                    }
+                }
+
+                if (mapRows) {
+                    mapRows.printConsole();
+                }
+
+                if (!hitComment && tipCanvas && "style" in tipCanvas)
+                    tipCanvas.style.top = tipCanvas.style.left = -1000;
+            }
+
             const itemClick = (e) => {
-                var bubbleCanvas = $('#page-image1')[0];
+                drawBubble(e);
 
                 var tipCanvas = $("#tip")[0];
 
@@ -351,8 +396,6 @@
 
                 row = e.pageY - top;
                 col = e.pageX - left;
-
-                drawBubble1(bubbleCanvas, left1, top1, col, row);
 
                 $('#dynamic-status').val(col + ', ' + row);
 
