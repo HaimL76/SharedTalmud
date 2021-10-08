@@ -13,6 +13,10 @@ class legendItem {
 
     itemStyle = null;
 
+    isVisible = true;
+
+    setIsVisible = (visible) => this.isVisible = visible;
+
     setColor = (color) => {
         if (!this.itemStyle)
             this.itemStyle = {
@@ -24,7 +28,7 @@ class legendItem {
 
     itemChecked = false;
 
-    getCheckbox = () => `<input type="checkbox" id=${this.itemId} name="${this.itemName}" />`;
+    getCheckbox = () => `<input type="checkbox" id=cb_${this.itemId} name="${this.itemName}" />`;
 }
 
 class legend {
@@ -74,6 +78,26 @@ class legend {
             return this.items.get(itemId);
     }
 
+    getCookie = () => {
+        if (this.items) {
+            const vals = this.items.values();
+
+            if (vals) {
+                const arr = Array.from(vals);
+
+                if (Array.isArray(arr) && arr.length > 0) {
+                    const obj = {
+                        items: arr
+                    };
+
+                    const str = JSON.stringify(arr);
+
+                    return str;
+                }
+            }
+        }
+    }
+
     build = async() => {
         const cb = this.callback;
 
@@ -98,6 +122,41 @@ class legend {
             str += "</ul>";
 
             $(`#${this.myElement}`).append(str);
+
+            const cbId = `cb_${item.itemId}`;
+
+            //set initial state.
+
+            $(`#${cbId}`).on("change", (e) => {
+                if (e && "target" in e) {
+                    const elem0 = e.target;
+
+                    if (elem0 && "checked" in elem0 && "id" in elem0) {
+                        const isChecked = elem0.checked;
+
+                        const itemId = elem0.id;
+
+                        if (itemId) {
+                            const arr = itemId.split("_");
+
+                            if (Array.isArray(arr) && arr.length == 2 && arr[1]) {
+                                const id = parseInt(arr[1]);
+
+                                if (this.items.has(id)) {
+                                    const item0 = this.items.get(id);
+
+                                    if (item0) {
+                                        item0.setIsVisible(isChecked);
+
+                                        if (cb)
+                                            cb(isChecked);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
 
             //$('input[type=color]').on('input',
             $(`#${itemId}`).on('input', (e) => {

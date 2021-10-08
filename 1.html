@@ -29,36 +29,51 @@
                         1 :
                         counter / topOpacity;
 
-                    const alpha = 0.5;
+                    const alpha = 0.25;
 
                     mapRows.arr.forEach(element => {
                         let color = null;
 
+                        let visible = false;
+
                         if (legend0 && element && "val" in element && "AuthorKind" in element.val) {
                             const colorItem = legend0.getColorItem(element.val.AuthorKind);
 
-                            if (colorItem && "itemStyle" in colorItem && colorItem.itemStyle && "color" in colorItem.itemStyle) {
-                                color = colorItem.itemStyle.color;
+                            if (colorItem) {
+                                if ("isVisible" in colorItem)
+                                    visible = colorItem.isVisible;
+
+                                if ("itemStyle" in colorItem && colorItem.itemStyle && "color" in colorItem.itemStyle) {
+                                    color = colorItem.itemStyle.color;
+
+                                    let a = alpha * 255;
+
+                                    a = Math.floor(a);
+
+                                    color = `${color}${a.toString(16)}`;
+                                }
                             }
                         }
 
-                        const r = 125; //Math.floor(Math.random() * 255);
-                        const g = 125; //Math.floor(Math.random() * 255);
-                        const b = (255 / 6) * element.getVal("AuthorKind"); // Math.floor(Math.random() * 255);
+                        if (visible) {
+                            const r = 125; //Math.floor(Math.random() * 255);
+                            const g = 125; //Math.floor(Math.random() * 255);
+                            const b = (255 / 6) * element.getVal("AuthorKind"); // Math.floor(Math.random() * 255);
 
-                        const str_rgba = color ?
-                            color :
-                            `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                            const str_rgba = color ?
+                                color :
+                                `rgba(${r}, ${g}, ${b}, ${alpha})`;
 
-                        ctx.beginPath();
+                            ctx.beginPath();
 
-                        ctx.arc(element.getVal(Col), element.getVal(Row), radius, 0, 2 * Math.PI, false);
+                            ctx.arc(element.getVal(Col), element.getVal(Row), radius, 0, 2 * Math.PI, false);
 
-                        ctx.fillStyle = str_rgba; //(pal[2] & 0xffffff).toString(16); // str_rgba;
-                        ctx.fill();
-                        ctx.lineWidth = 1;
-                        ctx.strokeStyle = 'black';
-                        ctx.stroke();
+                            ctx.fillStyle = str_rgba; //(pal[2] & 0xffffff).toString(16); // str_rgba;
+                            ctx.fill();
+                            ctx.lineWidth = 1;
+                            ctx.strokeStyle = 'black';
+                            ctx.stroke();
+                        }
                     });
                 });
 
@@ -294,6 +309,10 @@
             menu.build();
 
             const legend0 = new legend(async(color) => {
+                const str0 = legend0.getCookie();
+
+                document.cookie = str0;
+
                 console.log(`color = ${color}`);
 
                 countdown = 1;
@@ -304,6 +323,8 @@
             }, "sideMenu", "http://localhost:3000/authorkinds/");
 
             legend0.build();
+
+            document.cookie = legend0.getCookie();
 
             $('#page-image').click(function(e) {
                 var tipCanvas = $("#tip")[0];
