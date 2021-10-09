@@ -198,6 +198,8 @@
 
                 $('#page-image0').mousemove((e) => move(e));
 
+                $('#page-image1').mousemove((e) => move(e));
+
                 const move = (e) => {
 
                     var tipCanvas = $("#tip")[0];
@@ -216,66 +218,68 @@
                     mapCols = new sortedList();
 
                     if (mapRows && mapCols) {
+                        var canvas0 = $("#page-image0")[0];
+
+                        var ctx = canvas0.getContext("2d");
+
+                        ctx.clearRect(0, 0, canvas0.width, canvas0.height);
+
                         const hit = hitTest(row, col, [mapRows, mapCols]);
 
-                        if (hit && val in hit) { //} && hit.dist < hitTestDistSquare) {
-                            hitComment = true;
+                        if (legend0 && hit && val in hit && hit.val && "AuthorKind" in hit.val && hit.val.AuthorKind > 0) { //} && hit.dist < hitTestDistSquare) {
+                            const colorItem = legend0.getColorItem(hit.val.AuthorKind);
 
-                            const c = hit.val;
+                            if (colorItem && "isVisible" in colorItem && colorItem.isVisible) {
+                                hitComment = true;
 
-                            var canvas = $("#page-image")[0];
-                            var canvas0 = $("#page-image0")[0];
+                                const c = hit.val;
 
-                            var ctx = canvas0.getContext("2d");
+                                var canvas = $("#page-image")[0];
 
-                            const r = 255; //125; //Math.floor(Math.random() * 255);
-                            const g = 255; //125; //Math.floor(Math.random() * 255);
-                            const b = 255; //(255 / 6) * c.AuthorKind; // Math.floor(Math.random() * 255);
+                                const r = 255; //125; //Math.floor(Math.random() * 255);
+                                const g = 255; //125; //Math.floor(Math.random() * 255);
+                                const b = 255; //(255 / 6) * c.AuthorKind; // Math.floor(Math.random() * 255);
 
-                            const alpha = 1;
+                                const alpha = 1;
 
-                            const str_rgba = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                                const str_rgba = `rgba(${r}, ${g}, ${b}, ${alpha})`;
 
-                            //canvas0.style.left = left0 * -1 - 10;
-                            //canvas0.style.top = top0 * -1 - 10;
+                                canvas0.style.left = left;
+                                canvas0.style.top = top;
 
-                            canvas0.style.left = left;
-                            canvas0.style.top = top;
+                                canvas0.width = canvas.width;
+                                canvas0.height = canvas.height;
 
-                            canvas0.width = canvas.width;
-                            canvas0.height = canvas.height;
+                                //canvas0.style.left = left;
 
-                            ctx.clearRect(0, 0, canvas0.width, canvas0.height);
+                                ctx.beginPath();
 
-                            //canvas0.style.left = left;
+                                ctx.arc(c.Col, c.Row, radius, 0, 2 * Math.PI, false);
 
-                            ctx.beginPath();
+                                ctx.fillStyle = str_rgba;
+                                ctx.fill();
+                                ctx.lineWidth = 1;
+                                ctx.strokeStyle = 'black';
+                                ctx.stroke();
 
-                            ctx.arc(c.Col, c.Row, radius, 0, 2 * Math.PI, false);
+                                text = `${c.Id}, ${c.First} ${c.Last}`;
 
-                            ctx.fillStyle = str_rgba;
-                            ctx.fill();
-                            ctx.lineWidth = 1;
-                            ctx.strokeStyle = 'black';
-                            ctx.stroke();
+                                var tipCtx = tipCanvas.getContext("2d");
 
-                            text = `${c.Id}, ${c.First} ${c.Last}`;
+                                tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
 
-                            var tipCtx = tipCanvas.getContext("2d");
+                                dispRow = c.Row + top - 35;
+                                dispCol = c.Col + left;
 
-                            tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
+                                tipCanvas.style.left = dispCol + "px";
+                                tipCanvas.style.top = dispRow + "px";
 
-                            dispRow = c.Row + top - 35;
-                            dispCol = c.Col + left;
+                                tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
 
-                            tipCanvas.style.left = dispCol + "px";
-                            tipCanvas.style.top = dispRow + "px";
+                                textWidth = tipCtx.measureText(text).width;
 
-                            tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
-
-                            textWidth = tipCtx.measureText(text).width;
-
-                            tipCtx.fillText(text, 5, 15);
+                                tipCtx.fillText(text, 5, 15);
+                            }
                         }
                     }
 
@@ -335,6 +339,8 @@
             $('#page-image').click((e) => itemClick(e));
 
             $('#page-image0').click((e) => itemClick(e));
+
+            $('#page-image1').click((e) => itemClick(e));
 
             const drawBubble = (e) => {
                 const left = $("#page-image").position().left;
