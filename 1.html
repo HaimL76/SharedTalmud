@@ -363,13 +363,15 @@
 
                         const c = hit.val;
 
-                        drawBubble1(tipCanvas, 0, 0, col, row);
+                        const radius = 28;
 
-                        dispRow = c.Row + top - tipCanvas.height;
-                        dispCol = c.Col + left;
+                        drawBubble1(JSON.stringify(hit.val), tipCanvas, radius, 25);
 
-                        tipCanvas.style.left = dispCol + "px";
-                        tipCanvas.style.top = dispRow + "px";
+                        dispRow = c.Row + top - tipCanvas.height - 8;
+                        dispCol = c.Col + left - radius;
+
+                        tipCanvas.style.left = `${dispCol}px`;
+                        tipCanvas.style.top = `${dispRow}px`;
 
                         //tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
 
@@ -388,6 +390,10 @@
             }
 
             const itemClick = (e) => {
+                var tipCanvas = $("#tip")[0];
+
+                tipCanvas.style.left = -200;
+
                 drawBubble(e);
 
                 var tipCanvas = $("#tip")[0];
@@ -483,7 +489,7 @@
             </canvas>
             <canvas id="tip" width=100 height=25>
             </canvas>
-            <canvas id="page-image1" width=500 height=350>
+            <canvas id="page-image1" width=280 height=220>
             </canvas>
             <div class="comment-text">
             </div>
