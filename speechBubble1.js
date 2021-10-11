@@ -62,7 +62,7 @@ const drawBubble1 = (text, canvas, radius, shpitzPercent = null) => {
     //context.lineTo(90, 69); //Point 2    (x, y)
     context.closePath();
     context.fillStyle = '#00FFFF';
-    context.strokeStyle = '#00FFFF';
+    context.strokeStyle = '#000000';
     context.lineJoin = "bevel";
     context.lineWidth = 1;
     context.stroke();
@@ -86,7 +86,50 @@ const drawBubble1 = (text, canvas, radius, shpitzPercent = null) => {
     //context.stroke();
     //context.fill();
 
+    const measure = context.measureText(text);
+
+    const textWidth = measure.width;
+
+    let fontHeight = measure.fontBoundingBoxAscent + measure.fontBoundingBoxDescent;
+    let actualHeight = measure.actualBoundingBoxAscent + measure.actualBoundingBoxDescent;
+
+    const arr = wrapText(text, textWidth, actualHeight, rectWidth, rectHeight, radius);
+
     context.fillStyle = "#000000"; //<======= and here
 
-    context.fillText(text, 5, 15);
+    let index = 0;
+
+    const height = rectHeight - 2 * radius;
+
+    let h = radius;
+
+    while (index < arr.length && h < height) {
+        let line = arr[index];
+
+        index++;
+
+        context.fillText(line, radius, h);
+
+        h += (actualHeight + 5);
+    }
+}
+
+const wrapText = (text, textWidth, textHeight, rectWidth, rectHeight, radius) => {
+    let arr = [];
+
+    const width = rectWidth - 2 * radius;
+
+    const div = textWidth / width;
+
+    const len = text.length / div;
+
+    let index = 0;
+
+    while (index < text.length) {
+        arr.push(text.substr(index, len));
+
+        index += len;
+    }
+
+    return arr;
 }
