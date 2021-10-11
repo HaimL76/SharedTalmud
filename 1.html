@@ -342,7 +342,7 @@
 
             $('#page-image1').click((e) => itemClick(e));
 
-            const drawBubble = (e) => {
+            const drawBubble = (e, text) => {
                 const left = $("#page-image").position().left;
                 const top = $("#page-image").position().top;
 
@@ -365,7 +365,7 @@
 
                         const radius = 28;
 
-                        drawBubble1(JSON.stringify(hit.val), tipCanvas, radius, 25);
+                        drawBubble1(text, tipCanvas, radius, 25);
 
                         dispRow = c.Row + top - tipCanvas.height - 8;
                         dispCol = c.Col + left - radius;
@@ -389,12 +389,37 @@
                     tipCanvas.style.top = tipCanvas.style.left = -1000;
             }
 
-            const itemClick = (e) => {
+            const itemClick = async(e) => {
                 var tipCanvas = $("#tip")[0];
 
                 tipCanvas.style.left = -200;
 
-                drawBubble(e);
+                mapCols = new sortedList();
+
+                let text = "";
+
+                if (mapRows && mapCols) {
+                    const hit = hitTest(row, col, [mapRows, mapCols]);
+
+                    if (hit && val in hit && hit.val && "Id" in hit.val && hit.val.Id > 0) { //} && hit.dist < hitTestDistSquare) {
+                        await $.ajax({
+                            type: "GET",
+                            url: `http://localhost:3000/comments/byid/${hit.val.Id}`,
+                            success: function(data) {
+                                if (Array.isArray(data) && data.length == 1) {
+
+                                    const arr = data[0];
+
+                                    if (Array.isArray(arr) && arr.length > 0) {
+                                        text = arr[0];
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+
+                drawBubble(e, text);
 
                 var tipCanvas = $("#tip")[0];
 
