@@ -21,6 +21,7 @@ const TableAuthorKinds = `[${Database}].[dbo].[AuthorKinds]`;
 const TableCategories = `[${Database}].[dbo].[Categories]`;
 const TableBooks = `[${Database}].[dbo].[Books]`;
 const TableResources = `[${Database}].[dbo].[Resources]`;
+const TableUsers = `[${Database}].[dbo].[Users]`;
 
 const Request = require('tedious').Request
 const Connection = require('tedious').Connection;
@@ -538,7 +539,8 @@ const doLogin = (user, pass) => {
         connection.on('connect', function(err) {
             //const sql = `select * from users where username = '${user}' and password = '${hashed}')`;
 
-            const sql = `insert into users (username, password) values ('${user}', '${hashed}')`;
+            const sql = `IF NOT EXISTS (SELECT * FROM ${TableUsers} WHERE username = '${user}')
+                insert into ${TableUsers} (username, password) values ('${user}', '${hashed}')`;
 
             utils.log(sql, 1);
 
