@@ -11,6 +11,9 @@ GO
 IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Comments')
 	drop table [dbo].[Comments]
 
+IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Users')
+	update [dbo].[Users] set [AuthorId] = null
+
 IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Authors')
 	drop table [dbo].[Authors]
 

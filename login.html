@@ -1,0 +1,82 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="1.css">
+    <link rel="stylesheet" href="list.css">
+    <script src="jquery-3.6.0.js"></script>
+    <!--<script type='text/javascript' src='utils.js'></script>-->
+    <script type='text/javascript' src='hitTest.js'></script>
+    <script type='text/javascript' src='speechBubble.js'></script>
+    <script type='text/javascript' src='speechBubble1.js'></script>
+    <script type='text/javascript' src='sortedList.js'></script>
+    <script type='text/javascript' src='menuBuilder.js'></script>
+    <script type='text/javascript' src='legend.js'></script>
+    <script type='text/javascript' src='timedFunctions.js'></script>
+    <script type='text/javascript' src='sha256.js'></script>
+    <script>
+        const username = "username";
+        const password = "password";
+
+        $(document).ready(async function() {})
+
+        const doLogin = () => {
+            const user = $(`#${username}`).val();
+            const pass = $(`#${password}`).val();
+
+            //const saltedPassword = `${pass}${mySalt}`;
+
+            //let hashed = sha256FromUtf16(saltedPassword);
+
+            //hashed += "-";
+
+            //const saltedTimestamp = `${Date()}${mySalt}`;
+
+            //hashed += sha256FromUtf16(saltedTimestamp)
+
+            //alert(hashed);
+
+            const data = {
+                user: user,
+                pass: pass
+            };
+
+            const strData = JSON.stringify(data);
+
+            $.ajax({
+                type: "POST",
+                data: strData,
+                url: `http://localhost:3000/login/`,
+                success: function(data) {
+                    console.log(data.toString);
+                }
+            });
+        }
+    </script>
+</head>
+<style>
+
+</style>
+
+<body>
+    <style>
+
+    </style>
+    <div class="super-container">
+        <div id="sideMenu" class="list-container">
+            <ul class="level_0" id="ul_sideMenu">
+
+            </ul>
+        </div>
+
+        <!--<div class="inner-container">-->
+        <div class="container">
+            <input type="text" id="username" />
+            <input type="text" id="password" />
+            <input type="button" value="כניסה" onclick="doLogin()">
+        </div>
+    </div>
+    <!--</div>-->
+    <!--<canvas id="canvi" />-->
+</body>
+
+</html>

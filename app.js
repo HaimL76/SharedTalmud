@@ -1,6 +1,7 @@
 const express = require('express')
 const dtu = require('./dateTimeUtils.js')
 const utils = require('./Utils.js')
+const sha256Module = require('./sha256.js')
 const app = express()
 
 const bodyParser = require("body-parser");
@@ -499,6 +500,63 @@ const getResources = (book) => {
         connection.connect();
 
         utils.log(`${strDateTime}, after calling connect`);
+    });
+}
+
+app.post('/login', async(req, res) => {
+    if (req) {
+        //let isValid = utils.validateObject(req, ["body"]);
+
+        //utils.log(`isValid = ${isValid}`, 1);
+
+        //isValid = isValid && utils.validateObject(req.body, ["resId", "row", "col"]);
+
+        //utils.log(`isValid = ${isValid}`, 1);
+
+        const user = req.body.user;
+        const pass = req.body.pass;
+
+        utils.log(`user = ${user}`);
+        utils.log(`pass = ${pass}`);
+
+        var result = await doLogin(user, pass);
+    }
+
+    res.send(result);
+});
+
+const doLogin = (user, pass) => {
+    hashed = sha256Module.sha256Hash(pass);
+
+    return new Promise((resolve, reject) => {
+        var sql = require("mssql");
+
+        const Connection = require('tedious').Connection;
+
+        var connection = new Connection(config);
+
+        connection.on('connect', function(err) {
+            //const sql = `select * from users where username = '${user}' and password = '${hashed}')`;
+
+            const sql = `insert into users (username, password) values ('${user}', '${hashed}')`;
+
+            utils.log(sql, 1);
+
+            request = new Request(sql, function(err) {
+                if (err)
+                    utils.log(JSON.stringify(err), 1);
+            });
+
+            request.on("requestCompleted", function(rowCount, more) {
+                connection.close();
+
+                resolve(more);
+            });
+
+            connection.execSql(request);
+        });
+
+        connection.connect();
     });
 }
 
