@@ -49,8 +49,14 @@
                 success: function(data) {
                     console.log(data.toString);
 
-                    if (typeof data === 'string' || data instanceof String)
-                        window.location.href = "1.html";
+                    if (data && "userId" in data) {
+                        var url = '1.html';
+                        var form = $(`<form action="${url}" method="post">
+                            <input type="text" name="userData" value="${JSON.stringify(data)}" />
+                            </form>`);
+                        $('body').append(form);
+                        form.submit();
+                    }
                 }
             });
         }
