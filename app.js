@@ -547,6 +547,8 @@ const doLogin = (user, pass) => {
 
     token = sha256Module.sha256Hash(`${user}${pass}${Date.now()}`);
 
+    userId = null;
+
     return new Promise((resolve, reject) => {
         var sql = require("mssql");
 
@@ -558,7 +560,9 @@ const doLogin = (user, pass) => {
             //const sql = `select * from users where username = '${user}' and password = '${hashed}')`;
 
             const sql = `IF NOT EXISTS (SELECT * FROM ${TableUsers} WHERE username = '${user}')
-                insert into ${TableUsers} (username, password) values ('${user}', '${hashed}')`;
+                insert into ${TableUsers} (username, password) 
+                output inserted.Id
+                values ('${user}', '${hashed}')`;
 
             utils.log(sql, 1);
 
@@ -567,10 +571,31 @@ const doLogin = (user, pass) => {
                     utils.log(JSON.stringify(err), 1);
             });
 
+            request.on('row', function(cols) {
+                //if (Array.isArray(cols))
+                //  utils.log(`cols.length = ${cols.length}`);
+                if (Array.isArray(cols) && cols.length == 1) {
+                    console.log(`cols = ${JSON.stringify(cols)}`);
+
+                    const id = cols[0].value;
+
+                    if (id > 0)
+                        userId = id;
+                }
+            });
+
             request.on("requestCompleted", function(rowCount, more) {
+                //console.log(`more = ${JSON.stringify(more)}`);
+                const response = {
+                    token: token,
+                    userId: userId
+                };
+
+                console.log(JSON.stringify(response));
+
                 connection.close();
 
-                resolve(token);
+                resolve(response);
             });
 
             connection.execSql(request);
