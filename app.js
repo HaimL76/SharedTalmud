@@ -505,6 +505,8 @@ const getResources = (book) => {
 }
 
 app.post('/login', async(req, res) => {
+    let result = null;
+
     if (req) {
         //let isValid = utils.validateObject(req, ["body"]);
 
@@ -520,14 +522,30 @@ app.post('/login', async(req, res) => {
         utils.log(`user = ${user}`);
         utils.log(`pass = ${pass}`);
 
-        var result = await doLogin(user, pass);
+        try {
+            result = await doLogin(user, pass);
+        } catch (e) {
+            console.log(e);
+
+            result = {
+                error: e
+            };
+        }
     }
 
     res.send(result);
 });
 
 const doLogin = (user, pass) => {
-    hashed = sha256Module.sha256Hash(pass);
+    if (!user)
+        throw "user";
+
+    if (!pass)
+        throw "pass";
+
+    hashed = sha256Module.sha256Hash(`${user}${pass}`);
+
+    token = sha256Module.sha256Hash(`${user}${pass}${Date.now()}`);
 
     return new Promise((resolve, reject) => {
         var sql = require("mssql");
@@ -552,7 +570,7 @@ const doLogin = (user, pass) => {
             request.on("requestCompleted", function(rowCount, more) {
                 connection.close();
 
-                resolve(more);
+                resolve(token);
             });
 
             connection.execSql(request);

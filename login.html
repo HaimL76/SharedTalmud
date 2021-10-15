@@ -48,6 +48,9 @@
                 url: `http://localhost:3000/login/`,
                 success: function(data) {
                     console.log(data.toString);
+
+                    if (typeof data === 'string' || data instanceof String)
+                        window.location.href = "1.html";
                 }
             });
         }
