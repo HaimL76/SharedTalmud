@@ -50,12 +50,9 @@
                     console.log(data.toString);
 
                     if (data && "userId" in data) {
-                        var url = '1.html';
-                        var form = $(`<form action="${url}" method="post">
-                            <input type="text" name="userData" value="${JSON.stringify(data)}" />
-                            </form>`);
-                        $('body').append(form);
-                        form.submit();
+                        const base64 = btoa(data);
+
+                        window.location.replace(`1.html?userInfo=${base64}`);
                     }
                 }
             });

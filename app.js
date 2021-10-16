@@ -557,35 +557,7 @@ const doLogin = (user, pass) => {
         var connection = new Connection(config);
 
         connection.on('connect', function(err) {
-            //const sql = `select * from users where username = '${user}' and password = '${hashed}')`;
-
-            const sql = `IF NOT EXISTS (SELECT * FROM ${TableUsers} WHERE username = '${user}')
-                insert into ${TableUsers} (username, password) 
-                output inserted.Id
-                values ('${user}', '${hashed}')`;
-
-            utils.log(sql, 1);
-
-            request = new Request(sql, function(err) {
-                if (err)
-                    utils.log(JSON.stringify(err), 1);
-            });
-
-            request.on('row', function(cols) {
-                //if (Array.isArray(cols))
-                //  utils.log(`cols.length = ${cols.length}`);
-                if (Array.isArray(cols) && cols.length == 1) {
-                    console.log(`cols = ${JSON.stringify(cols)}`);
-
-                    const id = cols[0].value;
-
-                    if (id > 0)
-                        userId = id;
-                }
-            });
-
-            request.on("requestCompleted", function(rowCount, more) {
-                //console.log(`more = ${JSON.stringify(more)}`);
+            const finishAndResolve = () => {
                 const response = {
                     token: token,
                     userId: userId
@@ -596,9 +568,72 @@ const doLogin = (user, pass) => {
                 connection.close();
 
                 resolve(response);
+            };
+
+            const checkCols = (cols) => {
+                utils.log("checkCols", 1);
+
+                if (Array.isArray(cols) && cols.length > 0) {
+                    if (cols.length == 2) {
+                        const p = cols[1].value;
+
+                        if (p !== hashed)
+                            throw new "invalid password";
+                    }
+
+                    console.log(`cols = ${JSON.stringify(cols)}`);
+
+                    const id = cols[0].value;
+
+                    if (id > 0)
+                        userId = id;
+                }
+
+                return userId;
+            };
+
+            //const sql = `select * from users where username = '${user}' and password = '${hashed}')`;
+            const sql1 = `SELECT [Id], [password] FROM ${TableUsers} WHERE [username] = '${user}'`; // and password = ${hashed}`;
+
+            utils.log(sql1, 1);
+
+            const request1 = new Request(sql, function(err) {
+                if (err)
+                    utils.log(JSON.stringify(err), 1);
             });
 
-            connection.execSql(request);
+            const sql2 = `IF NOT EXISTS(SELECT * FROM ${TableUsers} WHERE [username] = '${user}')
+                                    insert into ${TableUsers} ([username], [password])
+                                    output inserted.Id
+                                    values('${user}', '${hashed}')`;
+
+            utils.log(sql2, 1);
+
+            const request2 = new Request(sql2, function(err) {
+                if (err)
+                    utils.log(JSON.stringify(err), 1);
+            });
+
+            request1.on('row', (cols) => checkCols(cols));
+
+            request2.on('row', (cols) => checkCols(cols));
+
+            request1.on("requestCompleted", function(rowCount, more) {
+                console.log("on request1 completed");
+
+                if (userId > 0)
+                    return finishAndResolve();
+                else
+                    connection.execSql(request2);
+            });
+
+            request2.on("requestCompleted", function(rowCount, more) {
+                console.log("on request2 completed");
+
+                return finishAndResolve();
+            });
+
+            connection.execSql(request1);
         });
 
         connection.connect();
