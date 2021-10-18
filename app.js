@@ -197,7 +197,7 @@ const getUser = (userId) => {
             connection.on('connect', (err) => {
                 utils.log(`${strDateTime}, connected `);
 
-                const sql = `select u.[First], u.[Last] 
+                const sql = `select u.[Username]
                      from ${TableUsers} u left outer join ${TableAuthors} a on a.[Id] = u.[AuthorId] 
                      where u.[Id] = ${userId}`
 
@@ -225,10 +225,15 @@ const getUser = (userId) => {
                     arr.push(arr0);
                 });
 
+                let user = null;
+
                 request.on('requestCompleted', function() {
                     connection.close();
 
-                    resolve(arr);
+                    if (Array.isArray(arr) && arr.length == 1)
+                        user = arr[0];
+
+                    resolve(user);
                 });
 
                 request.on('done', function(rowCount, more, rows) {
@@ -240,7 +245,10 @@ const getUser = (userId) => {
                         arr.push(row.value)
                     });
 
-                    resolve(arr);
+                    if (Array.isArray(arr) && arr.length == 1)
+                        user = arr[0];
+
+                    resolve(user);
                 });
 
                 connection.execSql(request);

@@ -14,19 +14,34 @@
     <script type='text/javascript' src='timedFunctions.js'></script>
     <script>
         $(document).ready(async function() {
+            const user = {
+                Username: null
+            };
+
             const urlSearchParams = new URLSearchParams(window.location.search);
             const params = Object.fromEntries(urlSearchParams.entries());
-
-            let userData = null;
 
             if (params && "userData" in params && params.userData) {
                 const strUserData = atob(params.userData);
 
-                if (strUserData)
-                    userData = JSON.parse(strUserData);
+                if (strUserData) {
+                    const userData = JSON.parse(strUserData);
+
+                    if (userData && "UserId" in userData && userData.UserId > 0)
+                        await $.ajax({
+                            type: "GET",
+                            url: `http://localhost:3000/users/${userData.UserId}`,
+                            success: function(data) {
+                                console.log(JSON.stringify(data));
+
+                                if (Array.isArray(data) && data.length > 0)
+                                    user.Username = data[0];
+                            }
+                        });
+                }
             }
 
-            if (userData && "UserId" in userData && userData.UserId > 0) {
+            if (user && "Username" in user && user.Username) {
                 countdown = 1; //topOpacity;
                 timestamp = Date.now();
 
