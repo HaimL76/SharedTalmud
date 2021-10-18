@@ -14,205 +14,354 @@
     <script type='text/javascript' src='timedFunctions.js'></script>
     <script>
         $(document).ready(async function() {
-            const elem = document.getElementById("userData");
+            const urlSearchParams = new URLSearchParams(window.location.search);
+            const params = Object.fromEntries(urlSearchParams.entries());
 
-            countdown = 1; //topOpacity;
-            timestamp = Date.now();
+            let userData = null;
 
-            const drawCircles = () => {
-                const [ts, cd] = intervalFunction(interval, timestamp, countdown, (counter) => {
-                    const canvas = $("#page-image")[0];
-                    const ctx = canvas.getContext('2d');
+            if (params && "userData" in params && params.userData) {
+                const strUserData = atob(params.userData);
 
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (strUserData)
+                    userData = JSON.parse(strUserData);
+            }
 
-                    ctx.drawImage(pageImage, 0, 0);
+            if (userData && "UserId" in userData && userData.UserId > 0) {
+                countdown = 1; //topOpacity;
+                timestamp = Date.now();
 
-                    const alpha0 = topOpacity < 1 ?
-                        1 :
-                        counter / topOpacity;
+                const drawCircles = () => {
+                    const [ts, cd] = intervalFunction(interval, timestamp, countdown, (counter) => {
+                        const canvas = $("#page-image")[0];
+                        const ctx = canvas.getContext('2d');
 
-                    const alpha = 0.25;
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                    mapRows.arr.forEach(element => {
-                        let color = null;
+                        ctx.drawImage(pageImage, 0, 0);
 
-                        let visible = false;
+                        const alpha0 = topOpacity < 1 ?
+                            1 :
+                            counter / topOpacity;
 
-                        if (legend0 && element && "val" in element && "AuthorKind" in element.val) {
-                            const colorItem = legend0.getColorItem(element.val.AuthorKind);
+                        const alpha = 0.25;
 
-                            if (colorItem) {
-                                if ("isVisible" in colorItem)
-                                    visible = colorItem.isVisible;
+                        mapRows.arr.forEach(element => {
+                            let color = null;
 
-                                if ("itemStyle" in colorItem && colorItem.itemStyle && "color" in colorItem.itemStyle) {
-                                    color = colorItem.itemStyle.color;
+                            let visible = false;
 
-                                    let a = alpha * 255;
+                            if (legend0 && element && "val" in element && "AuthorKind" in element.val) {
+                                const colorItem = legend0.getColorItem(element.val.AuthorKind);
 
-                                    a = Math.floor(a);
+                                if (colorItem) {
+                                    if ("isVisible" in colorItem)
+                                        visible = colorItem.isVisible;
 
-                                    color = `${color}${a.toString(16)}`;
+                                    if ("itemStyle" in colorItem && colorItem.itemStyle && "color" in colorItem.itemStyle) {
+                                        color = colorItem.itemStyle.color;
+
+                                        let a = alpha * 255;
+
+                                        a = Math.floor(a);
+
+                                        color = `${color}${a.toString(16)}`;
+                                    }
+                                }
+                            }
+
+                            if (visible) {
+                                const r = 125; //Math.floor(Math.random() * 255);
+                                const g = 125; //Math.floor(Math.random() * 255);
+                                const b = (255 / 6) * element.getVal("AuthorKind"); // Math.floor(Math.random() * 255);
+
+                                const str_rgba = color ?
+                                    color :
+                                    `rgba(${r}, ${g}, ${b}, ${alpha})`;
+
+                                ctx.beginPath();
+
+                                ctx.arc(element.getVal(Col), element.getVal(Row), radius, 0, 2 * Math.PI, false);
+
+                                ctx.fillStyle = str_rgba; //(pal[2] & 0xffffff).toString(16); // str_rgba;
+                                ctx.fill();
+                                ctx.lineWidth = 1;
+                                ctx.strokeStyle = 'black';
+                                ctx.stroke();
+                            }
+                        });
+                    });
+
+                    countdown = cd;
+                    timestamp = ts;
+
+                    if (countdown >= 0)
+                        window.requestAnimationFrame(drawCircles);
+                }
+
+                const pageImage = new Image();
+
+                const Id = "Id";
+
+                let comments;
+
+                let mapRows, mapCols;
+
+                const topOpacity = 0; // 28;
+                const interval = 75; //ms
+
+                let centerX, centerY, radius = 5;
+
+                const myData = "myData";
+
+                const Path = "Path";
+
+                const loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+                const loremIpsumLength = loremIpsum.length;
+
+                const randomString = (size) => {
+                    from = loremIpsumLength * Math.random();
+
+                    size %= (loremIpsumLength - from);
+
+                    return loremIpsum.substr(from, size);
+                }
+
+                const Row = "Row";
+                const Col = "Col";
+                const val = "val";
+
+                let resource;
+
+                $("#page-image").on("dblclick", function(e) {
+                    if (resource && myData in resource && resource.myData && Id in resource.myData && resource.myData.Id > 0) {
+                        const left = $("#page-image").position().left;
+                        const top = $("#page-image").position().top;
+
+                        row = e.pageY - top;
+                        col = e.pageX - left;
+
+                        const author = Math.random() * 3 + 1;
+
+                        //for (let i = 0; i < 100; i++)
+                        insert(author, resource.myData.Id, row, col);
+
+                        //centerX = col;
+                        //centerY = row;
+
+                        //countdown = topOpacity;
+                        //timestamp = Date.now();
+
+                        //window.requestAnimationFrame(drawCircles);
+                    }
+                });
+
+                const drawPage = async() => {
+                    const isValid = resource && myData in resource && resource.myData && Path in resource.myData &&
+                        Id in resource.myData && resource.myData.Id > 0;
+
+                    if (!isValid)
+                        return;
+
+                    await $.ajax({
+                        type: "GET",
+                        url: `http://localhost:3000/comments/${resource.myData.Id}`,
+                        success: function(data) {
+                            const width = window.screen.width * window.devicePixelRatio;
+                            const height = window.screen.height * window.devicePixelRatio;
+
+                            $('#resolution').val(`${height}, ${width}`);
+
+                            console.log(data.toString);
+
+                            mapRows = new sortedList(data.length);
+
+                            data.forEach(c => mapRows.add(new listItem({
+                                Id: c[0],
+                                ResId: c[1],
+                                Row: c[2],
+                                Col: c[3],
+                                AuthorKind: c[4],
+                                First: c[5],
+                                Last: c[6]
+                            }), Row));
+
+                            window.requestAnimationFrame(drawCircles);
+                        }
+                    });
+
+                    var canvas = $("#page-image")[0];
+                    var canvas0 = $("#page-image0")[0];
+
+                    var ctx = canvas.getContext("2d");
+
+                    pageImage.onload = function() {
+                        canvas0.width = canvas.width = pageImage.width;
+                        canvas0.height = canvas.height = pageImage.height;
+
+                        //canvas.width = pageImage.width;
+                        //canvas.height = pageImage.height;
+
+                        ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+                    };
+
+                    pageImage.src = resource.myData.Path;
+
+                    $('#page-image').mousemove((e) => move(e));
+
+                    $('#page-image0').mousemove((e) => move(e));
+
+                    $('#page-image1').mousemove((e) => move(e));
+
+                    const move = (e) => {
+
+                        var tipCanvas = $("#tip")[0];
+
+                        let hitComment = false;
+
+                        const left = $("#page-image").position().left;
+                        const top = $("#page-image").position().top;
+
+                        const left0 = $("#page-image0").position().left;
+                        const top0 = $("#page-image0").position().top;
+
+                        row = e.pageY - top;
+                        col = e.pageX - left;
+
+                        mapCols = new sortedList();
+
+                        if (mapRows && mapCols) {
+                            var canvas0 = $("#page-image0")[0];
+
+                            var ctx = canvas0.getContext("2d");
+
+                            ctx.clearRect(0, 0, canvas0.width, canvas0.height);
+
+                            const hit = hitTest(row, col, [mapRows, mapCols]);
+
+                            if (legend0 && hit && val in hit && hit.val && "AuthorKind" in hit.val && hit.val.AuthorKind > 0) { //} && hit.dist < hitTestDistSquare) {
+                                const colorItem = legend0.getColorItem(hit.val.AuthorKind);
+
+                                if (colorItem && "isVisible" in colorItem && colorItem.isVisible) {
+                                    hitComment = true;
+
+                                    const c = hit.val;
+
+                                    var canvas = $("#page-image")[0];
+
+                                    const r = 255; //125; //Math.floor(Math.random() * 255);
+                                    const g = 255; //125; //Math.floor(Math.random() * 255);
+                                    const b = 255; //(255 / 6) * c.AuthorKind; // Math.floor(Math.random() * 255);
+
+                                    const alpha = 1;
+
+                                    const str_rgba = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+
+                                    canvas0.style.left = left;
+                                    canvas0.style.top = top;
+
+                                    canvas0.width = canvas.width;
+                                    canvas0.height = canvas.height;
+
+                                    //canvas0.style.left = left;
+
+                                    ctx.beginPath();
+
+                                    ctx.arc(c.Col, c.Row, radius, 0, 2 * Math.PI, false);
+
+                                    ctx.fillStyle = str_rgba;
+                                    ctx.fill();
+                                    ctx.lineWidth = 1;
+                                    ctx.strokeStyle = 'black';
+                                    ctx.stroke();
+
+                                    text = `${c.Id}, ${c.First} ${c.Last}`;
+
+                                    var tipCtx = tipCanvas.getContext("2d");
+
+                                    tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
+
+                                    dispRow = c.Row + top - 35;
+                                    dispCol = c.Col + left;
+
+                                    tipCanvas.style.left = dispCol + "px";
+                                    tipCanvas.style.top = dispRow + "px";
+
+                                    tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
+
+                                    textWidth = tipCtx.measureText(text).width;
+
+                                    tipCtx.fillText(text, 5, 15);
                                 }
                             }
                         }
 
-                        if (visible) {
-                            const r = 125; //Math.floor(Math.random() * 255);
-                            const g = 125; //Math.floor(Math.random() * 255);
-                            const b = (255 / 6) * element.getVal("AuthorKind"); // Math.floor(Math.random() * 255);
+                        if (mapRows) {
+                            mapRows.printConsole();
+                        }
 
-                            const str_rgba = color ?
-                                color :
-                                `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                        if (!hitComment && tipCanvas && "style" in tipCanvas)
+                            tipCanvas.style.top = tipCanvas.style.left = -1000;
+                    }
+                }
 
-                            ctx.beginPath();
+                const menu = new menuBuilder("sideMenu", [{
+                        api: "http://localhost:3000/categories/",
+                        name: "cat"
+                    }, {
+                        api: "http://localhost:3000/books/",
+                        name: "book"
+                    }, {
+                        api: "http://localhost:3000/resources/",
+                        name: "resource",
+                        colName: "Page",
+                    }],
+                    async(item) => {
+                        if (item && myData in item && item.myData && Path in item.myData) {
+                            resource = item;
 
-                            ctx.arc(element.getVal(Col), element.getVal(Row), radius, 0, 2 * Math.PI, false);
-
-                            ctx.fillStyle = str_rgba; //(pal[2] & 0xffffff).toString(16); // str_rgba;
-                            ctx.fill();
-                            ctx.lineWidth = 1;
-                            ctx.strokeStyle = 'black';
-                            ctx.stroke();
+                            await drawPage();
                         }
                     });
-                });
 
-                countdown = cd;
-                timestamp = ts;
+                menu.build();
 
-                if (countdown >= 0)
-                    window.requestAnimationFrame(drawCircles);
-            }
+                const legend0 = new legend(async(color) => {
+                    const str0 = legend0.getCookie();
 
-            const pageImage = new Image();
+                    //document.cookie = str0;
 
-            const Id = "Id";
+                    //$.cookie('the_cookie', 'the_value', {
+                    //  expires: 7,
+                    //path: '/'
+                    //});
 
-            let comments;
+                    console.log(`color = ${color}`);
 
-            let mapRows, mapCols;
+                    countdown = 1;
+                    timestamp = Date.now();
 
-            const topOpacity = 0; // 28;
-            const interval = 75; //ms
+                    if (countdown >= 0)
+                        window.requestAnimationFrame(drawCircles);
+                }, "sideMenu", "http://localhost:3000/authorkinds/");
 
-            let centerX, centerY, radius = 5;
+                legend0.build();
 
-            const myData = "myData";
+                //document.cookie = legend0.getCookie();
 
-            const Path = "Path";
+                $('#page-image').click((e) => itemClick(e));
 
-            const loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+                $('#page-image0').click((e) => itemClick(e));
 
-            const loremIpsumLength = loremIpsum.length;
+                $('#page-image1').click((e) => itemClick(e));
 
-            const randomString = (size) => {
-                from = loremIpsumLength * Math.random();
-
-                size %= (loremIpsumLength - from);
-
-                return loremIpsum.substr(from, size);
-            }
-
-            const Row = "Row";
-            const Col = "Col";
-            const val = "val";
-
-            let resource;
-
-            $("#page-image").on("dblclick", function(e) {
-                if (resource && myData in resource && resource.myData && Id in resource.myData && resource.myData.Id > 0) {
+                const drawBubble = (e, text) => {
                     const left = $("#page-image").position().left;
                     const top = $("#page-image").position().top;
 
-                    row = e.pageY - top;
-                    col = e.pageX - left;
-
-                    const author = Math.random() * 3 + 1;
-
-                    //for (let i = 0; i < 100; i++)
-                    insert(author, resource.myData.Id, row, col);
-
-                    //centerX = col;
-                    //centerY = row;
-
-                    //countdown = topOpacity;
-                    //timestamp = Date.now();
-
-                    //window.requestAnimationFrame(drawCircles);
-                }
-            });
-
-            const drawPage = async() => {
-                const isValid = resource && myData in resource && resource.myData && Path in resource.myData &&
-                    Id in resource.myData && resource.myData.Id > 0;
-
-                if (!isValid)
-                    return;
-
-                await $.ajax({
-                    type: "GET",
-                    url: `http://localhost:3000/comments/${resource.myData.Id}`,
-                    success: function(data) {
-                        const width = window.screen.width * window.devicePixelRatio;
-                        const height = window.screen.height * window.devicePixelRatio;
-
-                        $('#resolution').val(`${height}, ${width}`);
-
-                        console.log(data.toString);
-
-                        mapRows = new sortedList(data.length);
-
-                        data.forEach(c => mapRows.add(new listItem({
-                            Id: c[0],
-                            ResId: c[1],
-                            Row: c[2],
-                            Col: c[3],
-                            AuthorKind: c[4],
-                            First: c[5],
-                            Last: c[6]
-                        }), Row));
-
-                        window.requestAnimationFrame(drawCircles);
-                    }
-                });
-
-                var canvas = $("#page-image")[0];
-                var canvas0 = $("#page-image0")[0];
-
-                var ctx = canvas.getContext("2d");
-
-                pageImage.onload = function() {
-                    canvas0.width = canvas.width = pageImage.width;
-                    canvas0.height = canvas.height = pageImage.height;
-
-                    //canvas.width = pageImage.width;
-                    //canvas.height = pageImage.height;
-
-                    ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
-                };
-
-                pageImage.src = resource.myData.Path;
-
-                $('#page-image').mousemove((e) => move(e));
-
-                $('#page-image0').mousemove((e) => move(e));
-
-                $('#page-image1').mousemove((e) => move(e));
-
-                const move = (e) => {
-
-                    var tipCanvas = $("#tip")[0];
+                    var tipCanvas = $("#page-image1")[0];
 
                     let hitComment = false;
-
-                    const left = $("#page-image").position().left;
-                    const top = $("#page-image").position().top;
-
-                    const left0 = $("#page-image0").position().left;
-                    const top0 = $("#page-image0").position().top;
 
                     row = e.pageY - top;
                     col = e.pageX - left;
@@ -220,68 +369,28 @@
                     mapCols = new sortedList();
 
                     if (mapRows && mapCols) {
-                        var canvas0 = $("#page-image0")[0];
-
-                        var ctx = canvas0.getContext("2d");
-
-                        ctx.clearRect(0, 0, canvas0.width, canvas0.height);
-
                         const hit = hitTest(row, col, [mapRows, mapCols]);
 
-                        if (legend0 && hit && val in hit && hit.val && "AuthorKind" in hit.val && hit.val.AuthorKind > 0) { //} && hit.dist < hitTestDistSquare) {
-                            const colorItem = legend0.getColorItem(hit.val.AuthorKind);
+                        if (hit && val in hit) { //} && hit.dist < hitTestDistSquare) {
+                            hitComment = true;
 
-                            if (colorItem && "isVisible" in colorItem && colorItem.isVisible) {
-                                hitComment = true;
+                            const c = hit.val;
 
-                                const c = hit.val;
+                            const radius = 28;
 
-                                var canvas = $("#page-image")[0];
+                            drawBubble1(text, tipCanvas, radius, 25);
 
-                                const r = 255; //125; //Math.floor(Math.random() * 255);
-                                const g = 255; //125; //Math.floor(Math.random() * 255);
-                                const b = 255; //(255 / 6) * c.AuthorKind; // Math.floor(Math.random() * 255);
+                            dispRow = c.Row + top - tipCanvas.height - 8;
+                            dispCol = c.Col + left - radius;
 
-                                const alpha = 1;
+                            tipCanvas.style.left = `${dispCol}px`;
+                            tipCanvas.style.top = `${dispRow}px`;
 
-                                const str_rgba = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                            //tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
 
-                                canvas0.style.left = left;
-                                canvas0.style.top = top;
+                            //textWidth = tipCtx.measureText(text).width;
 
-                                canvas0.width = canvas.width;
-                                canvas0.height = canvas.height;
-
-                                //canvas0.style.left = left;
-
-                                ctx.beginPath();
-
-                                ctx.arc(c.Col, c.Row, radius, 0, 2 * Math.PI, false);
-
-                                ctx.fillStyle = str_rgba;
-                                ctx.fill();
-                                ctx.lineWidth = 1;
-                                ctx.strokeStyle = 'black';
-                                ctx.stroke();
-
-                                text = `${c.Id}, ${c.First} ${c.Last}`;
-
-                                var tipCtx = tipCanvas.getContext("2d");
-
-                                tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
-
-                                dispRow = c.Row + top - 35;
-                                dispCol = c.Col + left;
-
-                                tipCanvas.style.left = dispCol + "px";
-                                tipCanvas.style.top = dispRow + "px";
-
-                                tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
-
-                                textWidth = tipCtx.measureText(text).width;
-
-                                tipCtx.fillText(text, 5, 15);
-                            }
+                            //tipCtx.fillText(text, 5, 15);
                         }
                     }
 
@@ -292,203 +401,106 @@
                     if (!hitComment && tipCanvas && "style" in tipCanvas)
                         tipCanvas.style.top = tipCanvas.style.left = -1000;
                 }
-            }
 
-            const menu = new menuBuilder("sideMenu", [{
-                    api: "http://localhost:3000/categories/",
-                    name: "cat"
-                }, {
-                    api: "http://localhost:3000/books/",
-                    name: "book"
-                }, {
-                    api: "http://localhost:3000/resources/",
-                    name: "resource",
-                    colName: "Page",
-                }],
-                async(item) => {
-                    if (item && myData in item && item.myData && Path in item.myData) {
-                        resource = item;
+                const itemClick = async(e) => {
+                    var tipCanvas = $("#tip")[0];
 
-                        await drawPage();
-                    }
-                });
+                    tipCanvas.style.left = -200;
 
-            menu.build();
+                    mapCols = new sortedList();
 
-            const legend0 = new legend(async(color) => {
-                const str0 = legend0.getCookie();
+                    let text = "";
 
-                //document.cookie = str0;
+                    if (mapRows && mapCols) {
+                        const hit = hitTest(row, col, [mapRows, mapCols]);
 
-                //$.cookie('the_cookie', 'the_value', {
-                //  expires: 7,
-                //path: '/'
-                //});
+                        if (hit && val in hit && hit.val && "Id" in hit.val && hit.val.Id > 0) { //} && hit.dist < hitTestDistSquare) {
+                            await $.ajax({
+                                type: "GET",
+                                url: `http://localhost:3000/comments/byid/${hit.val.Id}`,
+                                success: function(data) {
+                                    if (Array.isArray(data) && data.length == 1) {
 
-                console.log(`color = ${color}`);
+                                        const arr = data[0];
 
-                countdown = 1;
-                timestamp = Date.now();
-
-                if (countdown >= 0)
-                    window.requestAnimationFrame(drawCircles);
-            }, "sideMenu", "http://localhost:3000/authorkinds/");
-
-            legend0.build();
-
-            //document.cookie = legend0.getCookie();
-
-            $('#page-image').click((e) => itemClick(e));
-
-            $('#page-image0').click((e) => itemClick(e));
-
-            $('#page-image1').click((e) => itemClick(e));
-
-            const drawBubble = (e, text) => {
-                const left = $("#page-image").position().left;
-                const top = $("#page-image").position().top;
-
-                var tipCanvas = $("#page-image1")[0];
-
-                let hitComment = false;
-
-                row = e.pageY - top;
-                col = e.pageX - left;
-
-                mapCols = new sortedList();
-
-                if (mapRows && mapCols) {
-                    const hit = hitTest(row, col, [mapRows, mapCols]);
-
-                    if (hit && val in hit) { //} && hit.dist < hitTestDistSquare) {
-                        hitComment = true;
-
-                        const c = hit.val;
-
-                        const radius = 28;
-
-                        drawBubble1(text, tipCanvas, radius, 25);
-
-                        dispRow = c.Row + top - tipCanvas.height - 8;
-                        dispCol = c.Col + left - radius;
-
-                        tipCanvas.style.left = `${dispCol}px`;
-                        tipCanvas.style.top = `${dispRow}px`;
-
-                        //tipCtx.clearRect(0, 0, tipCanvas.width, tipCanvas.height);
-
-                        //textWidth = tipCtx.measureText(text).width;
-
-                        //tipCtx.fillText(text, 5, 15);
-                    }
-                }
-
-                if (mapRows) {
-                    mapRows.printConsole();
-                }
-
-                if (!hitComment && tipCanvas && "style" in tipCanvas)
-                    tipCanvas.style.top = tipCanvas.style.left = -1000;
-            }
-
-            const itemClick = async(e) => {
-                var tipCanvas = $("#tip")[0];
-
-                tipCanvas.style.left = -200;
-
-                mapCols = new sortedList();
-
-                let text = "";
-
-                if (mapRows && mapCols) {
-                    const hit = hitTest(row, col, [mapRows, mapCols]);
-
-                    if (hit && val in hit && hit.val && "Id" in hit.val && hit.val.Id > 0) { //} && hit.dist < hitTestDistSquare) {
-                        await $.ajax({
-                            type: "GET",
-                            url: `http://localhost:3000/comments/byid/${hit.val.Id}`,
-                            success: function(data) {
-                                if (Array.isArray(data) && data.length == 1) {
-
-                                    const arr = data[0];
-
-                                    if (Array.isArray(arr) && arr.length > 0) {
-                                        text = arr[0];
+                                        if (Array.isArray(arr) && arr.length > 0) {
+                                            text = arr[0];
+                                        }
                                     }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
-                }
 
-                drawBubble(e, text);
+                    drawBubble(e, text);
 
-                var tipCanvas = $("#tip")[0];
+                    var tipCanvas = $("#tip")[0];
 
-                let hitComment = false;
+                    let hitComment = false;
 
-                const left = $("#page-image").position().left;
-                const top = $("#page-image").position().top;
+                    const left = $("#page-image").position().left;
+                    const top = $("#page-image").position().top;
 
-                const left1 = $("#page-image1").position().left;
-                const top1 = $("#page-image1").position().top;
+                    const left1 = $("#page-image1").position().left;
+                    const top1 = $("#page-image1").position().top;
 
-                row = e.pageY - top;
-                col = e.pageX - left;
+                    row = e.pageY - top;
+                    col = e.pageX - left;
 
-                $('#dynamic-status').val(col + ', ' + row);
+                    $('#dynamic-status').val(col + ', ' + row);
 
-                mapCols = new sortedList();
+                    mapCols = new sortedList();
 
-                if (mapRows && mapCols) {
-                    const hit = hitTest(row, col, [mapRows, mapCols]);
+                    if (mapRows && mapCols) {
+                        const hit = hitTest(row, col, [mapRows, mapCols]);
 
-                    if (hit && val in hit) { //}.dist < hitTestDistSquare) {
-                        hitComment = true;
+                        if (hit && val in hit) { //}.dist < hitTestDistSquare) {
+                            hitComment = true;
 
-                        const c = hit.val;
+                            const c = hit.val;
 
-                        text = `${c.First} ${c.Last}`;
+                            text = `${c.First} ${c.Last}`;
 
-                        const div0 = $(".comment-text")[0];
+                            const div0 = $(".comment-text")[0];
 
-                        div0.innerHTML = text;
+                            div0.innerHTML = text;
 
-                        let a = 0;
+                            let a = 0;
+                        }
                     }
+
+                    if (mapRows) {
+                        mapRows.printConsole();
+                    }
+
+                    if (!hitComment && tipCanvas && "style" in tipCanvas)
+                        tipCanvas.style.top = tipCanvas.style.left = -1000;
                 }
 
-                if (mapRows) {
-                    mapRows.printConsole();
-                }
+                const insert = function(authorId, resId, row, col) {
+                    //var text = prompt("כתוב את חידושך", "");
+                    const text = randomString(10);
 
-                if (!hitComment && tipCanvas && "style" in tipCanvas)
-                    tipCanvas.style.top = tipCanvas.style.left = -1000;
-            }
+                    const data = {
+                        resId: resId,
+                        row: row,
+                        col: col,
+                        text: text,
+                        authorId: authorId
+                    };
 
-            const insert = function(authorId, resId, row, col) {
-                //var text = prompt("כתוב את חידושך", "");
-                const text = randomString(10);
+                    const strData = JSON.stringify(data);
 
-                const data = {
-                    resId: resId,
-                    row: row,
-                    col: col,
-                    text: text,
-                    authorId: authorId
+                    $.ajax({
+                        type: "POST",
+                        data: strData,
+                        url: `http://localhost:3000/comments/`,
+                        success: function(data) {
+                            console.log(data.toString);
+                        }
+                    });
                 };
-
-                const strData = JSON.stringify(data);
-
-                $.ajax({
-                    type: "POST",
-                    data: strData,
-                    url: `http://localhost:3000/comments/`,
-                    success: function(data) {
-                        console.log(data.toString);
-                    }
-                });
-            };
+            }
         })
     </script>
 </head>

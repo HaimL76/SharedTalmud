@@ -56,6 +56,17 @@ app.get('/comments/:resource', async(req, res) => {
     }
 });
 
+app.get('/users/:userId', async(req, res) => {
+    if (req && "params" in req && req.params && "userId" in req.params && req.params.userId > 0) {
+        const arr = await getUser(req.params.userId);
+
+        if (Array.isArray(arr))
+            utils.log(`arr.length=${arr.length}`);
+
+        res.send(arr);
+    }
+});
+
 app.get('/comments/byid/:id', async(req, res) => {
     if (req && "params" in req && req.params && "id" in req.params && req.params.id > 0) {
         const arr = await getComment(req.params.id);
@@ -122,6 +133,73 @@ const getComment = (id) => {
                 utils.log(`${strDateTime}, connected `);
 
                 const sql = `select c.[text] from ${TableComments} c where c.[Id] = ${id}`;
+
+                request = new Request(sql, function(err, rowCount) {
+                    if (err) {
+                        utils.log(err, 1);
+                    } else {
+                        //utils.log(rowCount + ' rows');
+                    }
+                });
+
+                const arr = [];
+
+                request.on('row', function(cols) {
+                    //if (Array.isArray(cols))
+                    //  utils.log(`cols.length = ${cols.length}`);
+
+                    const arr0 = [];
+
+                    cols.forEach((col) => {
+                        //utils.log(`${strDateTime}, ${col.value}`);
+                        arr0.push(col.value)
+                    });
+
+                    arr.push(arr0);
+                });
+
+                request.on('requestCompleted', function() {
+                    connection.close();
+
+                    resolve(arr);
+                });
+
+                request.on('done', function(rowCount, more, rows) {
+                    //utils.log(rowCount);
+                    const arr = [];
+
+                    rows.forEach((row) => {
+                        //utils.log(`${strDateTime}, ${row.value}`);
+                        arr.push(row.value)
+                    });
+
+                    resolve(arr);
+                });
+
+                connection.execSql(request);
+
+                utils.log(`${strDateTime}, after calling exeSql`);
+            });
+
+            connection.connect();
+
+            utils.log(`${strDateTime}, after calling connect`);
+        });
+}
+
+const getUser = (userId) => {
+    if (userId > 0)
+        return new Promise((resolve, reject) => {
+            const strDateTime = dtu.formatDateTime(new Date());
+
+            const connection = new Connection(config);
+
+            connection.on('connect', (err) => {
+                utils.log(`${strDateTime}, connected `);
+
+                const sql = `select u.[First], u.[Last] 
+                     from ${TableUsers} u left outer join ${TableAuthors} a on a.[Id] = u.[AuthorId] 
+                     where u.[Id] = ${userId}`
 
                 request = new Request(sql, function(err, rowCount) {
                     if (err) {
@@ -314,7 +392,7 @@ const getAuthorKinds = () => {
             let sql = `select ak.[Id], ak.[Name] ` +
                 ` from ${TableAuthorKinds} ak`;
 
-            utils.log(sql, 1);
+            //utils.log(sql, 1);
 
             request = new Request(sql, function(err, rowCount) {
                 if (err) {
@@ -523,7 +601,9 @@ app.post('/login', async(req, res) => {
         utils.log(`pass = ${pass}`);
 
         try {
-            result = await doLogin(user, pass);
+            result = await getLogin(user, pass);
+
+            console.log(JSON.stringify(result));
         } catch (e) {
             console.log(e);
 
@@ -536,107 +616,75 @@ app.post('/login', async(req, res) => {
     res.send(result);
 });
 
-const doLogin = (user, pass) => {
-    if (!user)
-        throw "user";
-
-    if (!pass)
-        throw "pass";
-
-    hashed = sha256Module.sha256Hash(`${user}${pass}`);
-
-    token = sha256Module.sha256Hash(`${user}${pass}${Date.now()}`);
-
-    userId = null;
-
+const getLogin = (user, pass) => {
     return new Promise((resolve, reject) => {
-        var sql = require("mssql");
+        const strDateTime = dtu.formatDateTime(new Date());
 
-        const Connection = require('tedious').Connection;
+        const connection = new Connection(config);
 
-        var connection = new Connection(config);
+        connection.on('connect', (err) => {
+            utils.log(`${strDateTime}, connected `);
 
-        connection.on('connect', function(err) {
-            const finishAndResolve = () => {
-                const response = {
-                    token: token,
-                    userId: userId
-                };
+            let sql = `select u.[Id], u.[Password] from ${TableUsers} u 
+                where [Username] = '${user}'`;
 
-                console.log(JSON.stringify(response));
+            utils.log(sql, 1);
 
-                connection.close();
+            request = new Request(sql, function(err, rowCount) {
+                if (err) {
+                    utils.log(err, 1);
+                } else {
+                    //utils.log(rowCount + ' rows');
+                }
+            });
 
-                resolve(response);
+            const userData = {
+                UserId: null,
+                Password: null
             };
 
-            const checkCols = (cols) => {
-                utils.log("checkCols", 1);
+            request.on('row', (cols) => {
+                console.log(`cols = ${JSON.stringify(cols)}`);
 
                 if (Array.isArray(cols) && cols.length > 0) {
-                    if (cols.length == 2) {
-                        const p = cols[1].value;
-
-                        if (p !== hashed)
-                            throw new "invalid password";
-                    }
-
-                    console.log(`cols = ${JSON.stringify(cols)}`);
-
-                    const id = cols[0].value;
-
-                    if (id > 0)
-                        userId = id;
+                    userData.UserId = cols[0].value;
+                    userData.Password = cols[1].value;
                 }
 
-                return userId;
-            };
-
-            //const sql = `select * from users where username = '${user}' and password = '${hashed}')`;
-            const sql1 = `SELECT [Id], [password] FROM ${TableUsers} WHERE [username] = '${user}'`; // and password = ${hashed}`;
-
-            utils.log(sql1, 1);
-
-            const request1 = new Request(sql, function(err) {
-                if (err)
-                    utils.log(JSON.stringify(err), 1);
+                console.log(`userData = ${JSON.stringify(userData)}`);
             });
 
-            const sql2 = `IF NOT EXISTS(SELECT * FROM ${TableUsers} WHERE [username] = '${user}')
-                                    insert into ${TableUsers} ([username], [password])
-                                    output inserted.Id
-                                    values('${user}', '${hashed}')`;
+            request.on('requestCompleted', () => {
+                connection.close();
 
-            utils.log(sql2, 1);
+                console.log(`userData = ${JSON.stringify(userData)}`);
 
-            const request2 = new Request(sql2, function(err) {
-                if (err)
-                    utils.log(JSON.stringify(err), 1);
+                resolve(userData);
             });
 
-            request1.on('row', (cols) => checkCols(cols));
+            request.on('done', (rowCount, more, rows) => {
+                console.log(`cols = ${JSON.stringify(rows)}`);
 
-            request2.on('row', (cols) => checkCols(cols));
+                if (Array.isArray(rows) && rows.length > 0) {
+                    const arr = rows[0].value;
 
-            request1.on("requestCompleted", function(rowCount, more) {
-                console.log("on request1 completed");
+                    userData.UserId = arr[0];
+                    userData.Password = arr[1];
+                }
 
-                if (userId > 0)
-                    return finishAndResolve();
-                else
-                    connection.execSql(request2);
+                console.log(`userData = ${JSON.stringify(userData)}`);
+
+                resolve(userData);
             });
 
-            request2.on("requestCompleted", function(rowCount, more) {
-                console.log("on request2 completed");
+            connection.execSql(request);
 
-                return finishAndResolve();
-            });
-
-            connection.execSql(request1);
+            utils.log(`${strDateTime}, after calling exeSql`, 1);
         });
 
         connection.connect();
+
+        utils.log(`${strDateTime}, after calling connect`, 1);
     });
 }
 

@@ -49,10 +49,10 @@
                 success: function(data) {
                     console.log(data.toString);
 
-                    if (data && "userId" in data) {
-                        const base64 = btoa(data);
+                    if (data && "UserId" in data) {
+                        const base64 = btoa(JSON.stringify(data));
 
-                        window.location.replace(`1.html?userInfo=${base64}`);
+                        window.location.replace(`1.html?userData=${base64}`);
                     }
                 }
             });
