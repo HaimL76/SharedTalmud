@@ -16,6 +16,7 @@ IF EXISTS(SELECT * FROM sys.tables WHERE [type] = 'U' and [name] = 'Users')
 
 CREATE TABLE [dbo].[Users](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[PersonId] [int] NOT NULL,
 	[Username] [nvarchar](50) NOT NULL,
 	[Password] [nvarchar](1024) NULL,
 	[AuthorId] [int] NULL,
@@ -28,7 +29,9 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 GO
 
-
+ALTER TABLE [dbo].[Users]  WITH CHECK ADD FOREIGN KEY([PersonId])
+REFERENCES [dbo].[Persons] ([Id])
+GO
 
 ALTER TABLE [dbo].[Users]  WITH CHECK ADD FOREIGN KEY([AuthorId])
 REFERENCES [dbo].[Authors] ([Id])

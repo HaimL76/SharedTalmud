@@ -22,6 +22,7 @@ const TableCategories = `[${Database}].[dbo].[Categories]`;
 const TableBooks = `[${Database}].[dbo].[Books]`;
 const TableResources = `[${Database}].[dbo].[Resources]`;
 const TableUsers = `[${Database}].[dbo].[Users]`;
+const TablePersons = `[${Database}].[dbo].[Persons]`;
 
 const Request = require('tedious').Request
 const Connection = require('tedious').Connection;
@@ -198,7 +199,8 @@ const getUser = (userId) => {
                 utils.log(`${strDateTime}, connected `);
 
                 const sql = `select u.[Username]
-                     from ${TableUsers} u left outer join ${TableAuthors} a on a.[Id] = u.[AuthorId] 
+                     from ${TableUsers} u innser join ${TablePersons} p on p.Id = u.PersonId
+                     left outer join ${TableAuthors} a on a.[Id] = u.[AuthorId] 
                      where u.[Id] = ${userId}`
 
                 request = new Request(sql, function(err, rowCount) {
@@ -611,6 +613,14 @@ app.post('/login', async(req, res) => {
         try {
             result = await getLogin(user, pass);
 
+            let userId = null;
+
+            if (result && "userId" in result)
+                userId = result.userId;
+
+            if (!userId)
+                result = await createLogin(user, pass);
+
             console.log(JSON.stringify(result));
         } catch (e) {
             console.log(e);
@@ -624,8 +634,10 @@ app.post('/login', async(req, res) => {
     res.send(result);
 });
 
-const getLogin = (user, pass) => {
+const createLogin = (user, pass) => {
     return new Promise((resolve, reject) => {
+        const hashed = sha256Module.sha256Hash(pass);
+
         const strDateTime = dtu.formatDateTime(new Date());
 
         const connection = new Connection(config);
@@ -633,8 +645,10 @@ const getLogin = (user, pass) => {
         connection.on('connect', (err) => {
             utils.log(`${strDateTime}, connected `);
 
-            let sql = `select u.[Id], u.[Password] from ${TableUsers} u 
-                where [Username] = '${user}'`;
+            let sql = `IF NOT EXISTS (SELECT * FROM ${TableUsers})            
+                insert into ${TableUsers} (Username, Password, PersonId)
+                output inserted.Username, inserted.Password
+                values('${user}', '${hashed}', 1)`;
 
             utils.log(sql, 1);
 
@@ -679,6 +693,86 @@ const getLogin = (user, pass) => {
                     userData.UserId = arr[0];
                     userData.Password = arr[1];
                 }
+
+                console.log(`userData = ${JSON.stringify(userData)}`);
+
+                resolve(userData);
+            });
+
+            connection.execSql(request);
+
+            utils.log(`${strDateTime}, after calling exeSql`, 1);
+        });
+
+        connection.connect();
+
+        utils.log(`${strDateTime}, after calling connect`, 1);
+    });
+}
+
+const getLogin = (user, pass) => {
+    return new Promise((resolve, reject) => {
+        hashed = sha256Module.sha256Hash(pass);
+
+        const strDateTime = dtu.formatDateTime(new Date());
+
+        const connection = new Connection(config);
+
+        connection.on('connect', (err) => {
+            utils.log(`${strDateTime}, connected `);
+
+            let sql = `select u.[Id], u.[Password] from ${TableUsers} u 
+                where [Username] = '${user}'`;
+
+            utils.log(sql, 1);
+
+            request = new Request(sql, function(err, rowCount) {
+                if (err) {
+                    utils.log(err, 1);
+                } else {
+                    //utils.log(rowCount + ' rows');
+                }
+            });
+
+            const userData = {
+                UserId: null,
+                Password: null
+            };
+
+            request.on('row', (cols) => {
+                console.log(`cols = ${JSON.stringify(cols)}`);
+
+                if (Array.isArray(cols) && cols.length > 0) {
+                    userData.UserId = cols[0].value;
+                    userData.Password = cols[1].value;
+                }
+
+                if (userData.Password !== hashed)
+                    userData.Password = null;
+
+                console.log(`userData = ${JSON.stringify(userData)}`);
+            });
+
+            request.on('requestCompleted', () => {
+                connection.close();
+
+                console.log(`userData = ${JSON.stringify(userData)}`);
+
+                resolve(userData);
+            });
+
+            request.on('done', (rowCount, more, rows) => {
+                console.log(`cols = ${JSON.stringify(rows)}`);
+
+                if (Array.isArray(rows) && rows.length > 0) {
+                    const arr = rows[0].value;
+
+                    userData.UserId = arr[0];
+                    userData.Password = arr[1];
+                }
+
+                if (userData.Password !== hashed)
+                    userData.Password = null;
 
                 console.log(`userData = ${JSON.stringify(userData)}`);
 
