@@ -645,9 +645,9 @@ const createLogin = (user, pass) => {
         connection.on('connect', (err) => {
             utils.log(`${strDateTime}, connected `);
 
-            let sql = `IF NOT EXISTS (SELECT * FROM ${TableUsers})            
+            let sql = `IF NOT EXISTS (SELECT * FROM ${TableUsers} where Username = '${user}')
                 insert into ${TableUsers} (Username, Password, PersonId)
-                output inserted.Username, inserted.Password
+                output inserted.Id, inserted.Password
                 values('${user}', '${hashed}', 1)`;
 
             utils.log(sql, 1);
