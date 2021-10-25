@@ -41,7 +41,12 @@
                 }
             }
 
-            if (user && "Username" in user && user.Username) {
+            let username = null;
+
+            if (user && "Username" in user && user.Username)
+                username = user.Username;
+
+            if (username) {
                 countdown = 1; //topOpacity;
                 timestamp = Date.now();
 

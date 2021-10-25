@@ -742,13 +742,15 @@ const getLogin = (user, pass) => {
             request.on('row', (cols) => {
                 console.log(`cols = ${JSON.stringify(cols)}`);
 
-                if (Array.isArray(cols) && cols.length > 0) {
-                    userData.UserId = cols[0].value;
-                    userData.Password = cols[1].value;
-                }
+                if (Array.isArray(cols) && cols.length > 1) {
+                    const userId = cols[0].value;
+                    const password = cols[1].value;
 
-                if (userData.Password !== hashed)
-                    userData.Password = null;
+                    if (password === hashed) {
+                        userData.UserId = userId;
+                        userData.Password = password;
+                    }
+                }
 
                 console.log(`userData = ${JSON.stringify(userData)}`);
             });
@@ -767,14 +769,18 @@ const getLogin = (user, pass) => {
                 if (Array.isArray(rows) && rows.length > 0) {
                     const arr = rows[0].value;
 
-                    userData.UserId = arr[0];
-                    userData.Password = arr[1];
+                    if (Array.isArray(arr) && arr.length > 1) {
+                        const userId = arr[0];
+                        const password = arr[1];
+
+                        if (password === hashed) {
+                            userData.UserId = userId;
+                            userData.Password = password;
+                        }
+                    }
+
+                    console.log(`userData = ${JSON.stringify(userData)}`);
                 }
-
-                if (userData.Password !== hashed)
-                    userData.Password = null;
-
-                console.log(`userData = ${JSON.stringify(userData)}`);
 
                 resolve(userData);
             });
