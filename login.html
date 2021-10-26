@@ -19,7 +19,7 @@
 
         $(document).ready(async function() {})
 
-        const doLogin = () => {
+        const doLogin = async() => {
             const user = $(`#${username}`).val();
             const pass = $(`#${password}`).val();
 
@@ -35,6 +35,10 @@
 
             //alert(hashed);
 
+            let userId = null;
+            let username0 = null;
+            let base64 = null;
+
             const data = {
                 user: user,
                 pass: pass
@@ -42,20 +46,34 @@
 
             const strData = JSON.stringify(data);
 
-            $.ajax({
+            await $.ajax({
                 type: "POST",
                 data: strData,
                 url: `http://localhost:3000/login/`,
                 success: function(data) {
                     console.log(data.toString);
 
-                    if (data && "UserId" in data) {
-                        const base64 = btoa(JSON.stringify(data));
+                    if (data) {
+                        base64 = btoa(JSON.stringify(data));
 
-                        window.location.replace(`1.html?userData=${base64}`);
+                        if ("UserId" in data)
+                            userId = data.UserId;
+
+                        if ("Username" in data)
+                            username0 = data.Username;
                     }
                 }
             });
+
+            if (userId > 0) {
+                window.location.replace(`1.html?userData=${base64}`);
+            } else {
+                const str = username0 ?
+                    "סיסמה שגויה" :
+                    "כשל ביצירת משתמש";
+
+                $("h1 span").text(str);
+            }
         }
     </script>
 </head>
@@ -79,6 +97,7 @@
             <input type="text" id="username" />
             <input type="text" id="password" />
             <input type="button" value="כניסה" onclick="doLogin()">
+            <h1><span></span></h1>
         </div>
     </div>
     <!--</div>-->

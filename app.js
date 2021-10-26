@@ -614,12 +614,24 @@ app.post('/login', async(req, res) => {
             result = await getLogin(user, pass);
 
             let userId = null;
+            let username = null;
 
-            if (result && "UserId" in result)
-                userId = result.UserId;
+            if (result) {
+                if ("UserId" in result)
+                    userId = result.UserId;
 
-            if (!userId)
-                result = await createLogin(user, pass);
+                if ("Username" in result)
+                    username = result.Username;
+            }
+
+            console.log(`userId from getLogin  = ${userId}`);
+
+            if (!userId) {
+                if (username)
+                    return res.send(result);
+                else
+                    result = await createLogin(user, pass);
+            }
 
             console.log(JSON.stringify(result));
         } catch (e) {
