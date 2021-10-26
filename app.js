@@ -199,7 +199,7 @@ const getUser = (userId) => {
                 utils.log(`${strDateTime}, connected `);
 
                 const sql = `select u.[Username]
-                     from ${TableUsers} u innser join ${TablePersons} p on p.Id = u.PersonId
+                     from ${TableUsers} u inner join ${TablePersons} p on p.Id = u.PersonId
                      left outer join ${TableAuthors} a on a.[Id] = u.[AuthorId] 
                      where u.[Id] = ${userId}`
 
@@ -615,8 +615,8 @@ app.post('/login', async(req, res) => {
 
             let userId = null;
 
-            if (result && "userId" in result)
-                userId = result.userId;
+            if (result && "UserId" in result)
+                userId = result.UserId;
 
             if (!userId)
                 result = await createLogin(user, pass);
@@ -721,7 +721,7 @@ const getLogin = (user, pass) => {
         connection.on('connect', (err) => {
             utils.log(`${strDateTime}, connected `);
 
-            let sql = `select u.[Id], u.[Password] from ${TableUsers} u 
+            let sql = `select u.[Id], u.[Password], u.[Username] from ${TableUsers} u 
                 where [Username] = '${user}'`;
 
             utils.log(sql, 1);
@@ -742,13 +742,15 @@ const getLogin = (user, pass) => {
             request.on('row', (cols) => {
                 console.log(`cols = ${JSON.stringify(cols)}`);
 
-                if (Array.isArray(cols) && cols.length > 1) {
+                if (Array.isArray(cols) && cols.length > 2) {
                     const userId = cols[0].value;
                     const password = cols[1].value;
 
+                    userData.Username = cols[2].value;
+
                     if (password === hashed) {
                         userData.UserId = userId;
-                        userData.Password = password;
+                        //userData.Password = password;
                     }
                 }
 
@@ -769,13 +771,15 @@ const getLogin = (user, pass) => {
                 if (Array.isArray(rows) && rows.length > 0) {
                     const arr = rows[0].value;
 
-                    if (Array.isArray(arr) && arr.length > 1) {
+                    if (Array.isArray(arr) && arr.length > 2) {
                         const userId = arr[0];
                         const password = arr[1];
 
+                        userData.Username = arr[2];
+
                         if (password === hashed) {
                             userData.UserId = userId;
-                            userData.Password = password;
+                            //userData.Password = password;
                         }
                     }
 
